@@ -1,0 +1,51 @@
+% ==================================================================
+% ============== Titler og navne ===================================
+% ==================================================================
+\newcommand{\korttitel}{Bachelor}
+\newcommand{\langtitel}{Extended user interface and simplification of the interactions with RobWork}
+
+\newcommand{\ForfatterAntal}{2}
+
+\newcommand{\navnA}{Anders Ellinge}
+\newcommand{\mailA}{aelli14@student.sdu.dk}
+
+\newcommand{\navnB}{Mathias Elbæk Gregersen}
+\newcommand{\mailB}{magre14@student.sdu.dk}
+
+\newcommand{\navnC}{null}
+\newcommand{\mailC}{null}
+
+\newcommand{\navnD}{null}
+\newcommand{\mailD}{null}
+
+\newcommand{\navnE}{null}
+\newcommand{\mailE}{null}
+
+\newcommand{\navnF}{null}
+\newcommand{\mailF}{null}
+
+\newcommand{\afleveringsdato}{Sometime in 2017}
+
+
+% Bruges til informationsside
+\newcommand{\kursuskode}{Kursuskode: Bachelor?}
+\newcommand{\startdato}{1. of february}
+\newcommand{\charactercount}{48,000}
+
+
+\newcommand{\VejlederAntal}{2}
+
+\newcommand{\vejlederA}{Lars-Peter Ellekilde}
+\newcommand{\vejledermailA}{lpe@mmmi.sdu.dk}
+
+\newcommand{\vejlederB}{Thomas Nicky Thulesen}
+\newcommand{\vejledermailB}{tnt@mmmi.sdu.dk}
+
+% ==================================================================
+% ============== Metadata ==========================================
+% ==================================================================											
+% Pdf'ens metadata defineres (\AtBeginDocument kaldes, da dette ellers skulle defineres efter \korttitel m.m. er defineret)
+\AtBeginDocument{				%OBS. Hvis hyperrefpakken udkommenteres giver dette fejl	
+	\hypersetup{pdftitle={\korttitel}		% Metadata
+				,pdfauthor={Anders Ellinge, Mathias Elbæk Gregersen}		% Metadata
+				,pdfsubject={\langtitel}}}	% Metadata
