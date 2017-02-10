@@ -22,3 +22,7 @@
 *.mtc1
 *.out
 *.synctex.gz
+
+#folders for plugin
+release/
+libs/
