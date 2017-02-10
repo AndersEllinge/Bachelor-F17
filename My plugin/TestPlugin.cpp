@@ -4,6 +4,8 @@
 
 #include <boost/bind.hpp>
 
+#include "TutorialConfig.h"
+
 using rw::kinematics::State;
 using rw::models::WorkCell;
 using rws::RobWorkStudioPlugin;
@@ -15,6 +17,7 @@ TestPlugin::TestPlugin():
 
     // now connect stuff from the ui component
     connect(helloWorldBtn, SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(versionButton, SIGNAL(pressed()), this, SLOT(btnPressed()) );
     //connect(_btn1    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
     //connect(_spinBox  ,SIGNAL(valueChanged(int)), this, SLOT(btnPressed()) );
 
@@ -35,9 +38,13 @@ void TestPlugin::close() {
 
 void TestPlugin::btnPressed() {
 	QObject *obj = sender();
+	if(obj == versionButton) {
+		log().info() << Tutorial_VERSION_MAJOR << "." << Tutorial_VERSION_MINOR << "\n";
+	}
 	if(obj == helloWorldBtn) {
 		log().info() << "Hello World!\n";
 	}
+	
 }
 
 void TestPlugin::stateChangedListener(const State& state) {

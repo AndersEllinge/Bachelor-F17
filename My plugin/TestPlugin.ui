@@ -32,6 +32,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="versionButton">
+       <property name="text">
+        <string>Version</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QRadioButton" name="onOffRadio">
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
