@@ -1,6 +1,8 @@
 #include "firstPlugIn.hpp"
 #include <RobWorkStudio.hpp>
 #include <boost/bind.hpp>
+#include </usr/local/RobWork/src/rw/models/WorkCell.hpp>
+#include <rw/loaders/WorkCellLoader.hpp>
 
 using rw::kinematics::State;
 using rw::models::WorkCell;
@@ -13,6 +15,7 @@ firstPlugIn::firstPlugIn():
 
 	//Connect buttons and stuff
 	connect(pushBtn1, SIGNAL(pressed()), this, SLOT(btnPressed()));
+	connect(workcellBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
 }
 
 firstPlugIn::~firstPlugIn()
@@ -24,7 +27,8 @@ void firstPlugIn::initialize() {
 }
 
 void firstPlugIn::open(WorkCell* workcell)
-{
+{	
+	_workcell = workcell;
 }
 
 void firstPlugIn::close() 
@@ -36,6 +40,9 @@ void firstPlugIn::btnPressed()
 	QObject *obj = sender();
 	if(obj==pushBtn1) {
         log().info() << "Button 1 pressed\n";
+	}
+	else if(obj==workcellBtn) {
+	log().info() << _workcell->getFilename() << "\n";	
 	}
 }
 
