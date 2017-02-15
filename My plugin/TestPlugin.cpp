@@ -14,9 +14,9 @@ TestPlugin::TestPlugin():
     setupUi(this);
 
     // now connect stuff from the ui component
-    connect(helloWorldBtn, SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(helloWorldBtn, SIGNAL(pressed()), this, SLOT(helloWorldBtnPressed()) );
     //connect(_btn1    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    //connect(_spinBox  ,SIGNAL(valueChanged(int)), this, SLOT(btnPressed()) );
+    connect(spinBox, SIGNAL(valueChanged(int)), this, SLOT(spinBoxChanged()) );
 
 }
 
@@ -28,15 +28,37 @@ void TestPlugin::initialize() {
 }
 
 void TestPlugin::open(WorkCell* workcell) {
+	_workcell = workcell;
 }
 
 void TestPlugin::close() {
 }
 
-void TestPlugin::btnPressed() {
+void TestPlugin::helloWorldBtnPressed() {
+	log().info() << "Started loading\n";
+
+	// Load in XML file and and construct WorkCell
+	rw::models::WorkCell::Ptr input = rw::loaders::XMLRWLoader::load("/home/mathias/Desktop/My plugin/wc.xml");
+	log().info() << "Loaded file " << input->getFilename() << "\n";
+
+	// Pull out information of the input WorkCell
+	//std::vector<rw::models::Object::Ptr> objs;
+	//objs = input->getObjects();
+
+	// Add information to WorkCell under use
+	//rw::models::WorkCell::Ptr workcell = getRobWorkStudio()->getView()->getWorkCellScene()->getWorkCell();
+	
+	//for (int i = 0; i < objs.size(); i++){
+	//	workcell->add(objs[i]);
+	//}
+	
+	
+}
+
+void TestPlugin::spinBoxChanged() {
 	QObject *obj = sender();
-	if(obj == helloWorldBtn) {
-		log().info() << "Hello World!\n";
+	if(obj == spinBox) {
+		lcdNumber->display(spinBox->value());
 	}
 }
 
