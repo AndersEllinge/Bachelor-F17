@@ -9,7 +9,7 @@ using rw::models::WorkCell;
 using rws::RobWorkStudioPlugin;
 
 TestPlugin::TestPlugin():
-    RobWorkStudioPlugin("TestPlugin", QIcon(":/pa_icon.png")) 
+    RobWorkStudioPlugin("TestPlugin", QIcon(":/pa_icon.png"))
 {
     setupUi(this);
 
@@ -38,7 +38,7 @@ void TestPlugin::helloWorldBtnPressed() {
 	log().info() << "Started loading\n\n";
 
 	// Load in XML file and and construct WorkCell
-	rw::models::WorkCell::Ptr input = rw::loaders::XMLRWLoader::load("/home/mathias/Desktop/My plugin/wc.xml");
+	rw::models::WorkCell::Ptr input = rw::loaders::WorkCellFactory::load("/home/osboxes/Desktop/Git/Bachelor-F17/testPlugin/wc.xml");
 	log().info() << "Loaded file " << input->getFilename() << "\n\n";
 
 	// Pull out information of the input WorkCell
@@ -57,7 +57,7 @@ void TestPlugin::helloWorldBtnPressed() {
 		log().info() << dvs[i]->getName() << "\n";
 	}
 	log().info() << "\n";
-	
+
 
 	// List information of current WorkCell
 	rw::models::WorkCell::Ptr workcell = getRobWorkStudio()->getView()->getWorkCellScene()->getWorkCell(); // Get WorkCell from scene
@@ -73,7 +73,7 @@ void TestPlugin::helloWorldBtnPressed() {
 	rw::models::Device::Ptr tmp = dvs[0];
 	tmp->unregister();
 	//tmp->registerIn(workcell->getStateStructure());
-	workcell->add(tmp);
+	//workcell->add(tmp);
 
 	// List information of curretn WorkCell again
 	wcDvs.clear();
@@ -100,6 +100,3 @@ void TestPlugin::stateChangedListener(const State& state) {
 #include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN(TestPlugin);
 #endif
-
-
-

@@ -4,6 +4,7 @@
 #include </usr/local/RobWork/src/rw/models/WorkCell.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
 
+
 using rw::kinematics::State;
 using rw::models::WorkCell;
 using rws::RobWorkStudioPlugin;
@@ -14,6 +15,13 @@ firstPlugIn::firstPlugIn():
 	setupUi(this);
 
 	//Connect buttons and stuff
+
+	QString sPath = "/usr/local/RobWork/example/ModelData/XMLDevices";
+
+	dirmodel = new QFileSystemModel(this);
+	treeView->setModel(dirmodel);
+	treeView->setRootIndex(dirmodel->setRootPath(sPath));
+
 	connect(pushBtn1, SIGNAL(pressed()), this, SLOT(btnPressed()));
 	connect(workcellBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
 }
@@ -27,11 +35,11 @@ void firstPlugIn::initialize() {
 }
 
 void firstPlugIn::open(WorkCell* workcell)
-{	
+{
 	_workcell = workcell;
 }
 
-void firstPlugIn::close() 
+void firstPlugIn::close()
 {
 }
 
@@ -42,11 +50,11 @@ void firstPlugIn::btnPressed()
         log().info() << "Button 1 pressed\n";
 	}
 	else if(obj==workcellBtn) {
-	log().info() << _workcell->getFilename() << "\n";	
+	log().info() << _workcell->getFilename() << "\n";
 	}
 }
 
-void firstPlugIn::stateChangedListener(const State& state) 
+void firstPlugIn::stateChangedListener(const State& state)
 {
 }
 

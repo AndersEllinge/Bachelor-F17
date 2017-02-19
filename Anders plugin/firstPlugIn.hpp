@@ -2,18 +2,20 @@
 #define FIRSTPLUGIN_HPP
 
 #include <RobWorkStudioConfig.hpp>
-
 #include <rws/RobWorkStudioPlugin.hpp>
-
 #include "ui_firstPlugIn.h"
-
 #include <rw/common/Ptr.hpp>
+#include <QtCore>
+#include <QtGui>
 
 
 namespace rw { namespace models { class Device; } }
 
 class firstPlugIn: public rws::RobWorkStudioPlugin, private Ui::firstPlugIn
 {
+
+QFileSystemModel *dirmodel;
+QFileSystemModel *filemodel;
 
 rw::models::WorkCell* _workcell;
 
@@ -37,7 +39,7 @@ private slots:
 
     void stateChangedListener(const rw::kinematics::State& state);
 
-    
+
 };
 
-#endif 
+#endif
