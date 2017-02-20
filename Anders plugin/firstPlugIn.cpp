@@ -22,8 +22,9 @@ firstPlugIn::firstPlugIn():
 	treeView->setModel(dirmodel);
 	treeView->setRootIndex(dirmodel->setRootPath(sPath));
 
-	connect(pushBtn1, SIGNAL(pressed()), this, SLOT(btnPressed()));
+	connect(fileNameBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
 	connect(workcellBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
+	connect(treeView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(treeViewPressed(const QModelIndex &)));
 }
 
 firstPlugIn::~firstPlugIn()
@@ -43,14 +44,20 @@ void firstPlugIn::close()
 {
 }
 
+void firstPlugIn::treeViewPressed(const QModelIndex & index)
+{
+	fName = dirmodel->fileInfo(index).absoluteFilePath();		// keep the information about the file
+}
+
 void firstPlugIn::btnPressed()
 {
 	QObject *obj = sender();
-	if(obj==pushBtn1) {
-        log().info() << "Button 1 pressed\n";
-	}
-	else if(obj==workcellBtn) {
+	if(obj==workcellBtn) {
 	log().info() << _workcell->getFilename() << "\n";
+	}
+	else if(obj==fileNameBtn) {
+	log().info() << fName.toStdString() << "\n";
+	getRobWorkStudio()->openFile(fName.toStdString()); // open whatever robwork project file with rws
 	}
 }
 

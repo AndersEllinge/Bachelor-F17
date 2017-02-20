@@ -6,37 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>244</width>
+    <height>385</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>DockWidget</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
-   <widget class="QListView" name="listView">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>10</y>
-      <width>181</width>
-      <height>191</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushBtn1">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>238</y>
-      <width>85</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Button 1</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="workcellBtn">
     <property name="geometry">
      <rect>
@@ -55,9 +32,22 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>181</width>
+      <width>221</width>
       <height>189</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="fileNameBtn">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>240</y>
+      <width>99</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>fileName</string>
     </property>
    </widget>
   </widget>

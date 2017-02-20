@@ -1,6 +1,7 @@
 #ifndef FIRSTPLUGIN_HPP
 #define FIRSTPLUGIN_HPP
 
+#include <RobWorkStudio.hpp>
 #include <RobWorkStudioConfig.hpp>
 #include <rws/RobWorkStudioPlugin.hpp>
 #include "ui_firstPlugIn.h"
@@ -16,6 +17,8 @@ class firstPlugIn: public rws::RobWorkStudioPlugin, private Ui::firstPlugIn
 
 QFileSystemModel *dirmodel;
 QFileSystemModel *filemodel;
+
+QString fName;
 
 rw::models::WorkCell* _workcell;
 
@@ -35,6 +38,7 @@ public:
     virtual void initialize();
 
 private slots:
+    void treeViewPressed(const QModelIndex & index);
     void btnPressed();
 
     void stateChangedListener(const rw::kinematics::State& state);
