@@ -4,8 +4,14 @@
 #include <RobWorkStudioConfig.hpp> // For RWS_USE_QT5 definition
 
 #include <rws/RobWorkStudioPlugin.hpp>
+#include <rw/loaders/rwxml/XMLParserUtil.hpp>
+#include <rw/loaders/rwxml/XMLRWParser.hpp>
 #include <rw/loaders/rwxml/XMLRWLoader.hpp>
-#include <rw/models/Object.hpp>
+
+#include <rw/kinematics/FixedFrame.hpp>
+#include <rw/kinematics/MovableFrame.hpp>
+#include <rw/models/RevoluteJoint.hpp>
+#include <rw/models/PrismaticJoint.hpp>
 
 #include "ui_TestPlugin.h"
 
@@ -26,6 +32,12 @@ public:
     virtual void close();
 
     virtual void initialize();
+
+private:
+    rw::kinematics::Frame* createFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc);
+
+    // Print functionality
+    void printInfo(rw::models::WorkCell::Ptr wc);
 
 
 private slots:

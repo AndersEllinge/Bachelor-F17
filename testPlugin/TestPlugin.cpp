@@ -9,7 +9,7 @@ using rw::models::WorkCell;
 using rws::RobWorkStudioPlugin;
 
 TestPlugin::TestPlugin():
-    RobWorkStudioPlugin("TestPlugin", QIcon(":/pa_icon.png")) 
+    RobWorkStudioPlugin("TestPlugin", QIcon(":/pa_icon.png"))
 {
     setupUi(this);
 
@@ -38,52 +38,52 @@ void TestPlugin::helloWorldBtnPressed() {
 	log().info() << "Started loading\n\n";
 
 	// Load in XML file and and construct WorkCell
-	rw::models::WorkCell::Ptr input = rw::loaders::XMLRWLoader::load("/home/mathias/Desktop/My plugin/wc.xml");
-	log().info() << "Loaded file " << input->getFilename() << "\n\n";
+	//rw::models::WorkCell::Ptr input = rw::loaders::XMLRWLoader::load("/home/mathias/Desktop/Git/Bachelor-F17/testPlugin/wc.xml");
+	//log().info() << "Loaded file " << input->getName() << "\n\n";
 
-	// Pull out information of the input WorkCell
-	std::vector<rw::kinematics::Frame*> frms = input->getFrames();
-	log().info() << "Found " << frms.size() << " frames\n"; // List number of frames
-	log().info() << "Frames:\n"; // List frames
-	for (int i = 0; i < frms.size(); i++){
-		log().info() << frms[i]->getName() << "\n";
-	}
-	log().info() << "\n";
-
-	std::vector<rw::models::Device::Ptr> dvs = input->getDevices();
-	log().info() << "Found " << dvs.size() << " devices\n"; // List number of devices
-	log().info() << "Devices:\n"; // List devices
-	for (int i = 0; i < dvs.size(); i++){
-		log().info() << dvs[i]->getName() << "\n";
-	}
-	log().info() << "\n";
-	
+	// Pull out and list information of the input WorkCell
+    //log().info() << "Info for loaded WorkCell\n";
+    //printInfo(input);
 
 	// List information of current WorkCell
-	rw::models::WorkCell::Ptr workcell = getRobWorkStudio()->getView()->getWorkCellScene()->getWorkCell(); // Get WorkCell from scene
-	std::vector<rw::models::Device::Ptr> wcDvs = workcell->getDevices();
-	log().info() << "Found " << wcDvs.size() << " devices in the scene WorkCell\n"; // List number of devices
-	log().info() << "Devices in the scene WorkCell:\n";
-	for (int i = 0; i < wcDvs.size(); i++){
-		log().info() << wcDvs[i]->getName() << "\n";
-	}
-	log().info() << "\n";
+    rw::models::WorkCell::Ptr workcell = getRobWorkStudio()->getWorkCell(); // Get WorkCell from scene
+    log().info() << "Info for scene WorkCell\n";
+    printInfo(workcell);
+
+    ///___________________________________________________________________________________________________________________________///
 
 	// Add information to current WorkCell
-	rw::models::Device::Ptr tmp = dvs[0];
-	tmp->unregister();
-	//tmp->registerIn(workcell->getStateStructure());
-	workcell->add(tmp);
+    // Parse in the information to add
+    boost::shared_ptr<DummyWorkcell> dwc = rw::loaders::XMLRWParser::parseWorkcell("/home/mathias/Desktop/Git/Bachelor-F17/testPlugin/wc.xml");
 
-	// List information of curretn WorkCell again
-	wcDvs.clear();
-	wcDvs = workcell->getDevices();
-	log().info() << "Found " << wcDvs.size() << " devices in the scene WorkCell\n"; // List number of devices
-	log().info() << "Devices in the scene WorkCell:\n";
-	for (int i = 0; i < wcDvs.size(); i++){
-		log().info() << wcDvs[i]->getName() << "\n";
-	}
-	log().info() << "\n";
+    // Create and add frames to scene WorkCell
+    rw::kinematics::Frame* tmpFrame = NULL;
+    for (int i = 0; i < dwc->_framelist.size(); i++){
+        tmpFrame = createFrame(dwc->_framelist[i], workcell);
+        //workcell->addFrame(tmpFrame);
+        //log().info() << dwc->_framelist[i].getName() << " " << dwc->_framelist[i]._type << "\n";
+    }
+
+    log().info() << "Info for updated scene WorkCell\n";
+    printInfo(workcell);
+
+
+
+
+
+
+
+    /* Test of adding a frame WORKING!
+    rw::kinematics::Frame *testFrame = NULL;
+    rw::math::Transform3D<> testTransform;
+    testFrame = new rw::kinematics::FixedFrame("testFrame", testTransform);
+    log().info() << "Frame id: " << testFrame->getID() << "\n";
+
+    workcell->addFrame(testFrame);
+
+    log().info() << "Info for scene WorkCell\n";
+    printInfo(workcell); */
+
 }
 
 void TestPlugin::spinBoxChanged() {
@@ -96,10 +96,66 @@ void TestPlugin::spinBoxChanged() {
 void TestPlugin::stateChangedListener(const State& state) {
 }
 
+// Extra functions here
+rw::kinematics::Frame* TestPlugin::createFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc) {
+    rw::kinematics::Frame* frame = NULL;
+    rw::kinematics::State state;
+    bool stateChanged = 0;
+
+    if (dFrame._type == "Fixed"){
+        frame = new rw::kinematics::FixedFrame(dFrame.getName(), dFrame._transform);
+    }
+
+    else if (dFrame._type == "Movable") {
+        rw::kinematics::MovableFrame* movFrame = new rw::kinematics::MovableFrame(dFrame.getName());
+        frame = movFrame;
+        wc->addFrame(frame);
+        state = getRobWorkStudio()->getWorkCell()->getDefaultState();
+        movFrame->setTransform(dFrame._transform, state);
+        stateChanged = 1;
+    }
+
+    else if (dFrame._type == "Prismatic") {
+        frame = new rw::models::PrismaticJoint(dFrame.getName(), dFrame._transform);
+    }
+
+    else if (dFrame._type == "Revolute") {
+        frame = new rw::models::RevoluteJoint(dFrame.getName(), dFrame._transform);
+    }
+
+    else if (dFrame._type == "EndEffector") {
+        frame = new rw::kinematics::FixedFrame(dFrame.getName(), dFrame._transform);
+    }
+
+    else{
+        RW_THROW("FRAME TYPE ERROR");
+    }
+
+    if (stateChanged){
+        state = getRobWorkStudio()->getWorkCell()->getStateStructure()->upgradeState(state); // Update workcell to new state
+        getRobWorkStudio()->setState(state); // Update RWS to the new state
+    }
+
+    return frame;
+}
+
+
+void TestPlugin::printInfo(rw::models::WorkCell::Ptr wc) {
+    log().info() << "Found " << wc->getFrames().size() << " frames:\n"; // List frames
+    for (int i = 0; i < wc->getFrames().size(); i++) {
+        log().info() << wc->getFrames()[i]->getName() << "\n";
+    }
+    log().info() << "\n";
+
+    log().info() << "Found " << wc->getDevices().size() << " devices:\n"; // List devices
+    for (int i = 0; i < wc->getDevices().size(); i++) {
+        log().info() << wc->getDevices()[i]->getName() << "\n";
+    }
+    log().info() << "\n\n";
+}
+
+
 #if !RWS_USE_QT5
 #include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN(TestPlugin);
 #endif
-
-
-
