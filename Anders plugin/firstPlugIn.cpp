@@ -16,7 +16,7 @@ firstPlugIn::firstPlugIn():
 
 	//Connect buttons and stuff
 
-	QString sPath = "/usr/local/RobWork/example/ModelData/XMLDevices";
+	QString sPath = "/usr/local/RobWork";
 
 	dirmodel = new QFileSystemModel(this);
 	treeView->setModel(dirmodel);
