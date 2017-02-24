@@ -8,10 +8,15 @@
 #include <rw/loaders/rwxml/XMLRWParser.hpp>
 #include <rw/loaders/rwxml/XMLRWLoader.hpp>
 
+#include <rw/math/Constants.hpp>
+#include <rw/math/Q.hpp>
+
 #include <rw/kinematics/FixedFrame.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
+#include <rw/models/DependentRevoluteJoint.hpp>
+#include <rw/models/DependentPrismaticJoint.hpp>
 
 #include "ui_TestPlugin.h"
 
@@ -34,7 +39,15 @@ public:
     virtual void initialize();
 
 private:
-    rw::kinematics::Frame* createFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc);
+    void createFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc);
+
+    // Help for createFrame
+    void createFixedFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc);
+    void createMovableFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc);
+    void createPrismaticFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc);
+    void createRevoluteFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc);
+
+    void addLimits(std::vector<DummyLimit> &limits, rw::kinematics::Frame* frame);
 
     // Print functionality
     void printInfo(rw::models::WorkCell::Ptr wc);
