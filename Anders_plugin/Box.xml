@@ -1,0 +1,12 @@
+<WorkCell name="Scene">
+
+  <Frame name="Box" type="Movable">
+    <RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+  </Frame>
+  <Drawable name="Box" refframe="Box" >
+    <RPY> 0 0 0</RPY> <Pos> 0 0 0 </Pos>
+    <Box x="0.8" y="0.8" z="0.816" />
+  </Drawable>
+
+
+</WorkCell>
