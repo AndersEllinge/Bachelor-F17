@@ -46,9 +46,9 @@ void TestPlugin::helloWorldBtnPressed() {
     //printInfo(input);
 
 	// List information of current WorkCell
-    rw::models::WorkCell::Ptr workcell = getRobWorkStudio()->getWorkCell(); // Get WorkCell from scene
+    rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell(); // Get WorkCell from scene
     log().info() << "Info for scene WorkCell\n";
-    printInfo(workcell);
+    printInfo(wc);
 
     ///___________________________________________________________________________________________________________________________///
 
@@ -57,13 +57,25 @@ void TestPlugin::helloWorldBtnPressed() {
     boost::shared_ptr<DummyWorkcell> dwc = rw::loaders::XMLRWParser::parseWorkcell("/home/mathias/Desktop/Git/Bachelor-F17/testPlugin/wc.xml");
 
     // Create and add frames to scene WorkCell
-    for (int i = 0; i < dwc->_framelist.size(); i++){
-        createFrame(dwc->_framelist[i], workcell);
-        log().info() << dwc->_framelist[i].getName() << " " << dwc->_framelist[i]._type << "\n";
+    for (size_t i = 0; i < dwc->_framelist.size(); i++){
+        createFrame(dwc->_framelist[i], wc);
+        //log().info() << dwc->_framelist[i].getName() << " " << dwc->_framelist[i]._type << "\n";
     }
 
+    // Create and add devices to current WorkCell
+    for (size_t i = 0; i < dwc->_devlist.size(); i++) {
+        createDevice(dwc->_devlist[i], wc);
+    }
+
+    /*
+    for (size_t i = 0; i < dwc->_models.size(); i++) {
+        addModelToFrame(dwc->_models[i], wc->findFrame(dwc->_models[i]._refframe), wc);
+        log().info() << dwc->_models[i]._name << "\n";
+    }
+    */
+
     log().info() << "Info for updated scene WorkCell\n";
-    printInfo(workcell);
+    printInfo(wc);
 
 
 
@@ -94,8 +106,9 @@ void TestPlugin::spinBoxChanged() {
 void TestPlugin::stateChangedListener(const State& state) {
 }
 
-// Extra functions here
-void TestPlugin::createFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc) {
+// Extra functions from here
+rw::kinematics::Frame* TestPlugin::createFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc) {
+    rw::kinematics::Frame* frame = NULL;
 
     if (dFrame._isDepend) { // Create a dependent frame
         // Setup and check before creatinf dependent frames
@@ -110,25 +123,28 @@ void TestPlugin::createFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc) {
         // Create frames
         if (dFrame._type == "Revolute") {  // Create dependent Revolute frame/joint
             rw::models::DependentRevoluteJoint* joint = new rw::models::DependentRevoluteJoint(dFrame.getName(), dFrame._transform, depJoint, dFrame._gain, dFrame._offset);
-            wc->addFrame(joint);
+            frame = joint;
+            addFrameToTree(dFrame, wc, frame);
         }
 
         else if (dFrame._type == "Prismatic") { // Create dependent Prismatic frame/joint
             rw::models::DependentPrismaticJoint* joint = new rw::models::DependentPrismaticJoint(dFrame.getName(), dFrame._transform, depJoint, dFrame._gain, dFrame._offset);
-            wc->addFrame(joint);
+            frame = joint;
+            addFrameToTree(dFrame, wc, frame);
         }
     }
 
     else if (dFrame._type == "Fixed") { // Create a Fixed frame
-        rw::kinematics::Frame* frame = new rw::kinematics::FixedFrame(dFrame.getName(), dFrame._transform);
-        wc->addFrame(frame);
+        frame = new rw::kinematics::FixedFrame(dFrame.getName(), dFrame._transform);
+        addFrameToTree(dFrame, wc, frame);
     }
 
     else if (dFrame._type == "Movable") { // Create a Movable frame
-        rw::kinematics::MovableFrame* frame = new rw::kinematics::MovableFrame(dFrame.getName());
-        wc->addFrame(frame);
+        rw::kinematics::MovableFrame* mFrame = new rw::kinematics::MovableFrame(dFrame.getName());
+        frame = mFrame;
+        addFrameToTree(dFrame, wc, frame);
         rw::kinematics::State state = wc->getDefaultState();
-        frame->setTransform(dFrame._transform, state);
+        mFrame->setTransform(dFrame._transform, state);
         state = wc->getStateStructure()->upgradeState(state); // Upgrade the state of the WorkCell
         wc->getStateStructure()->setDefaultState(state); // Set the state of the WorkCell
         getRobWorkStudio()->setState(state); // Update RWS to the new state
@@ -136,38 +152,85 @@ void TestPlugin::createFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc) {
     }
 
     else if (dFrame._type == "Prismatic") { // Create a Prismatic frame/joint
-        rw::models::PrismaticJoint* j = new rw::models::PrismaticJoint(dFrame.getName(), dFrame._transform);
-        wc->addFrame(j);
-        addLimits(dFrame._limits, j);
+        rw::models::PrismaticJoint* joint = new rw::models::PrismaticJoint(dFrame.getName(), dFrame._transform);
+        frame = joint;
+        addFrameToTree(dFrame, wc, frame);
+        addLimits(dFrame._limits, joint);
         if (dFrame._state != ActiveState)
-            j->setActive(false);
+            joint->setActive(false);
     }
 
     else if (dFrame._type == "Revolute") { // Create a Revolute frame/joint
-        rw::models::RevoluteJoint* j = new rw::models::RevoluteJoint(dFrame.getName(), dFrame._transform);
-        wc->addFrame(j);
-        addLimits(dFrame._limits, j);
+        rw::models::RevoluteJoint* joint = new rw::models::RevoluteJoint(dFrame.getName(), dFrame._transform);
+        frame = joint;
+        addFrameToTree(dFrame, wc, frame);
+        addLimits(dFrame._limits, joint);
         if (dFrame._state != ActiveState)
-            j->setActive(false);
+            joint->setActive(false);
     }
 
     else if (dFrame._type == "EndEffector") { // Create a EndEffector frame
-        rw::kinematics::Frame* frame = new rw::kinematics::FixedFrame(dFrame.getName(), dFrame._transform);
-        wc->addFrame(frame);
+        frame = new rw::kinematics::FixedFrame(dFrame.getName(), dFrame._transform);
+        addFrameToTree(dFrame, wc, frame);
     }
 
     else{
         RW_THROW("FRAME TYPE ERROR");
+    }
+
+    // Add DHparams as property if any
+    if (dFrame._hasDHparam) {
+        DHParam &param = dFrame._dhparam;
+
+        if (param._dhtype == Revolute) {
+            if (param._type == "HGP" && param._hgptype == "parallel") {
+                rw::models::DHParameterSet dhset(param._alpha, param._a, param._offset, param._b, true);
+                rw::models::DHParameterSet::set(dhset, frame);
+            } else {
+                rw::models::DHParameterSet dhset(param._alpha, param._a, param._d, param._offset, param._type);
+                rw::models::DHParameterSet::set(dhset, frame);
+            }
+        } else if (param._dhtype == Prismatic) {
+            if (param._type == "HGP" && param._hgptype == "parallel") {
+                rw::models::DHParameterSet dhset(param._alpha, param._a, param._beta, param._offset, true);
+                rw::models::DHParameterSet::set(dhset, frame);
+            } else {
+                rw::models::DHParameterSet dhset(param._alpha, param._a, param._offset, param._theta, param._type);
+                rw::models::DHParameterSet::set(dhset, frame);
+            }
+        }
+    }
+
+    addFrameProps(dFrame, frame, wc);
+
+    return frame;
+}
+
+void TestPlugin::addFrameToTree(DummyFrame dFrame, rw::models::WorkCell::Ptr wc, rw::kinematics::Frame* f) {
+    rw::kinematics::Frame* parent = wc->findFrame(dFrame._refframe);
+    wc->addFrame(f, parent);
+
+}
+
+void TestPlugin::addFrameProps(DummyFrame dFrame, rw::kinematics::Frame* f, rw::models::WorkCell::Ptr wc) {
+    for (size_t i = 0; i < dFrame._properties.size(); i++) {
+        const DummyProperty& dprop = dFrame._properties[i];
+        addPropertyToMap(dprop, f->getPropertyMap());
+    }
+    log().info() << "DILLER " << dFrame._models.size() << "\n";
+    for (size_t i = 0; i < dFrame._models.size(); i++) {
+        addModelToFrame(dFrame._models[i], f, wc);
     }
 }
 
 void TestPlugin::addLimits(std::vector<DummyLimit> &limits, rw::kinematics::Frame* frame) {
     rw::models::Joint* j = dynamic_cast<rw::models::Joint*>(frame);
     if (j == NULL)
-        RW_THROW("FRAME NOT A JOINT");
+        return;
+        //RW_THROW("FRAME NOT A JOINT");
 
     double convFactor;
-    for (int i = 0; i < limits.size(); i++){
+    for (size_t i = 0; i < limits.size(); i++){
         convFactor = 1.0;
         if (dynamic_cast<rw::models::RevoluteJoint*>(j) != NULL) {
             convFactor = rw::math::Deg2Rad;
@@ -195,15 +258,195 @@ void TestPlugin::addLimits(std::vector<DummyLimit> &limits, rw::kinematics::Fram
 
 }
 
+void TestPlugin::addPropertyToMap(const DummyProperty &dprop, rw::common::PropertyMap& map){
+    if(dprop._type=="string"){
+        map.add(dprop._name, dprop._desc, dprop._val);
+    } else if(dprop._type=="double"){
+
+    	try {
+    		double val = boost::lexical_cast<double>(dprop._val);
+        	map.add(dprop._name, dprop._desc, val);
+    	} catch(const std::exception& e) {
+
+    		RW_WARN("Could not parse double property value: " << dprop._name << ". An error occoured:\n " << std::string(e.what()));
+
+    	}
+    } else if(dprop._type=="Q"){
+        std::stringstream istr(dprop._val);
+        std::vector<double> res;
+        while (!istr.eof()) {
+            double d;
+            istr >> d;
+            res.push_back(d);
+        }
+        rw::math::Q val(res);
+        map.add(dprop._name, dprop._desc, val);
+    }
+
+}
+
+void TestPlugin::addModelToFrame(DummyModel& model, rw::kinematics::Frame* f, rw::models::WorkCell::Ptr wc) {
+
+	std::vector<std::string> scope = model._scope;
+
+	for (size_t i = 0; i < model._geo.size(); i++) {
+		std::ostringstream val;
+
+		switch (model._geo[i]._type) {
+		case PolyType:
+			if (!rw::common::StringUtil::isAbsoluteFileName(model._geo[i]._filename + ".tmp")) {
+				val << rw::common::StringUtil::getDirectoryName(model._geo[i]._pos.file);
+			}
+			val << model._geo[i]._filename;
+			break;
+		case PlaneType:
+			val << "#Plane";
+			break;
+		case CubeType:
+			val << "#Box " << model._geo[i]._x << " " << model._geo[i]._y << " " << model._geo[i]._z;
+			break;
+		case SphereType:
+			val << "#Sphere " << model._geo[i]._radius;
+			break;
+		case ConeType:
+			val << "#Cone " << model._geo[i]._radius << " " << model._geo[i]._z;
+			break;
+		case CylinderType:
+			val << "#Cylinder " << model._geo[i]._radius << " " << model._geo[i]._z << " " << 20;
+			break;
+		case TubeType:
+			// #Tube radius thickness height divisions
+			val << "#Tube " << model._geo[i]._radius << " " << model._geo[i]._x << " " << model._geo[i]._z << " " << 20;
+			break;
+		case CustomType:
+			val << "#Custom " << model._geo[i]._filename << " " << model._geo[i]._parameters;
+			break;
+		default:
+			val << "";
+			break;
+		}
+
+		rw::models::RigidObject::Ptr object;
+        if (model._isDrawable || model._colmodel) {
+            if (wc->findObject(f->getName()) != NULL) {
+                object = wc->findObject(f->getName()).cast<rw::models::RigidObject>();
+            }
+            else
+                object = new rw::models::RigidObject(f);
+        }
+
+		if (model._colmodel && model._isDrawable) {
+
+			// The geom is to be used as both collision geometry and visualization model
+			rw::graphics::Model3D::Ptr model3d = rw::loaders::Model3DFactory::getModel(val.str(), model._name);
+			model3d->setTransform(model._transform);
+			model3d->setName(model._name);
+
+			rw::geometry::Geometry::Ptr geom = rw::loaders::GeometryFactory::load(val.str(), true);
+			geom->setName(model._name);
+			geom->setTransform(model._transform);
+			geom->setFrame(f);
+
+			if (object != NULL) {
+				object->addModel(model3d);
+				object->addGeometry(geom);
+			}
+
+		} else if (model._colmodel) {
+			// its only a collision geometry
+
+			rw::geometry::Geometry::Ptr geom = rw::loaders::GeometryFactory::load(val.str(), true);
+			geom->setName(model._name);
+
+			geom->setTransform(model._transform);
+			geom->setFrame(f);
+
+			if (object != NULL) {
+				object->addGeometry(geom);
+			}
+
+		} else if (model._isDrawable) {
+			// its only a drawable
+
+			rw::graphics::Model3D::Ptr model3d = rw::loaders::Model3DFactory::getModel(val.str(), val.str());
+
+			model3d->setName(model._name);
+
+			model3d->setTransform(model._transform);
+
+			if (object != NULL) {
+				object->addModel(model3d);
+			}
+
+		}
+        wc->add(object);
+	}
+}
+
+void TestPlugin::createDevice(DummyDevice dDevice, rw::models::WorkCell::Ptr wc) {
+    // Create the device and add to wc
+    rw::models::Device::Ptr device = NULL;
+    if (dDevice._type == SerialType) {
+        std::vector<rw::kinematics::Frame*> chain;
+        for (size_t i = 0; i < dDevice._frames.size(); i++) {
+            chain.push_back(createFrame(dDevice._frames[i], wc));
+        }
+
+        ///*
+        BOOST_FOREACH(DummyFrame& dframe, dDevice._frames) {
+            addDevicePropsToFrame(dDevice, wc->findFrame(dframe.getName()), wc);
+        }
+        //*/
+        //addDevicePropsToFrame(dDevice, wc->findFrame(dDevice._frames[0].getName()), wc);
+
+        device = new rw::models::SerialDevice(chain, dDevice.getName(), wc->getDefaultState());
+        wc->addDevice(device);
+    }
+
+    // Add all device properties
+	typedef std::pair<std::string, std::vector<DummyProperty> > DPropValType;
+	BOOST_FOREACH( DPropValType val, dDevice._propertyMap) {
+		BOOST_FOREACH( DummyProperty dprop, val.second ) {
+		    addPropertyToMap(dprop,  device->getPropertyMap());
+		}
+	}
+
+    BOOST_FOREACH(QConfig& config, dDevice._qconfig) {
+    device->getBase()->getPropertyMap().add<rw::math::Q>(config.name, "", rw::math::Q(config.q.size(), &config.q[0]));
+    device->getPropertyMap().add<rw::math::Q>(config.name, "", rw::math::Q(config.q.size(), &config.q[0]));
+    }
+
+    getRobWorkStudio()->setState(wc->getDefaultState()); // Update RWS to the new state
+}
+
+void TestPlugin::addDevicePropsToFrame(DummyDevice dDevice, rw::kinematics::Frame* f, rw::models::WorkCell::Ptr wc) {
+    std::vector<boost::shared_ptr<rw::common::Property<std::string> > > proplist = dDevice._propMap[f->getName()];
+
+    for (size_t j = 0; j < proplist.size(); j++) {
+		f->getPropertyMap().add(proplist[j]->getIdentifier(), proplist[j]->getDescription(), proplist[j]->getValue());
+	}
+
+    std::vector<DummyModel> modellist = dDevice._modelMap[f->getName()];
+
+    for (size_t j = 0; j < modellist.size(); j++) {
+    	//addModelToFrame(modellist[j], f, wc);
+	}
+
+    std::vector<DummyLimit> limits = dDevice._limitMap[f->getName()];
+
+    addLimits(limits, f);
+
+}
+
 void TestPlugin::printInfo(rw::models::WorkCell::Ptr wc) {
     log().info() << "Found " << wc->getFrames().size() << " frames:\n"; // List frames
-    for (int i = 0; i < wc->getFrames().size(); i++) {
+    for (size_t i = 0; i < wc->getFrames().size(); i++) {
         log().info() << wc->getFrames()[i]->getName() << "\n";
     }
     log().info() << "\n";
 
     log().info() << "Found " << wc->getDevices().size() << " devices:\n"; // List devices
-    for (int i = 0; i < wc->getDevices().size(); i++) {
+    for (size_t i = 0; i < wc->getDevices().size(); i++) {
         log().info() << wc->getDevices()[i]->getName() << "\n";
     }
     log().info() << "\n\n";

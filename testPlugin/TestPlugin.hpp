@@ -17,6 +17,19 @@
 #include <rw/models/PrismaticJoint.hpp>
 #include <rw/models/DependentRevoluteJoint.hpp>
 #include <rw/models/DependentPrismaticJoint.hpp>
+#include <rw/models/DHParameterSet.hpp>
+#include <rw/models/RigidObject.hpp>
+
+#include <rw/models/SerialDevice.hpp>
+
+#include <rw/loaders/GeometryFactory.hpp>
+#include <rw/loaders/Model3DFactory.hpp>
+
+#include <rw/common/Property.hpp>
+#include <rw/common/StringUtil.hpp>
+#include <rw/common/AnyPtr.hpp>
+
+#include <boost/lexical_cast.hpp>
 
 #include "ui_TestPlugin.h"
 
@@ -39,15 +52,18 @@ public:
     virtual void initialize();
 
 private:
-    void createFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc);
+    rw::kinematics::Frame* createFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc);
+    void createDevice(DummyDevice dDevice, rw::models::WorkCell::Ptr wc);
 
     // Help for createFrame
-    void createFixedFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc);
-    void createMovableFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc);
-    void createPrismaticFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc);
-    void createRevoluteFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc);
-
+    void addPropertyToMap(const DummyProperty &dprop, rw::common::PropertyMap& map); // From XML RW LOADER (copy, namespace modified)
+    void addModelToFrame(DummyModel& model, rw::kinematics::Frame* f, rw::models::WorkCell::Ptr wc); // Mainly from XML RW LOADER (changed input and output, modified function to fit)
+    void addFrameToTree(DummyFrame dFrame, rw::models::WorkCell::Ptr wc, rw::kinematics::Frame* f);
+    void addFrameProps(DummyFrame dFrame, rw::kinematics::Frame* f, rw::models::WorkCell::Ptr wc);
     void addLimits(std::vector<DummyLimit> &limits, rw::kinematics::Frame* frame);
+
+    // Help for createDevice
+    void addDevicePropsToFrame(DummyDevice dDevice, rw::kinematics::Frame* f, rw::models::WorkCell::Ptr wc);
 
     // Print functionality
     void printInfo(rw::models::WorkCell::Ptr wc);
