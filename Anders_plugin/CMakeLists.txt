@@ -48,7 +48,7 @@ ENDIF()
 MESSAGE("-- Build type: " ${CMAKE_BUILD_TYPE})
 
 #Include default settings for constructing a robwork dependent project
-SET(RobWork_DIR ${RW_ROOT}/cmake) 
+SET(RobWork_DIR ${RW_ROOT}/cmake)
 FIND_PACKAGE(RobWork REQUIRED)
 INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIRS} )
 LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
@@ -101,7 +101,7 @@ ELSE()
 ENDIF()
 
 # Add the source files to build
-SET(SrcFiles firstPlugIn.cpp ${UIS_OUT_H})
+SET(SrcFiles firstPlugIn.cpp listView.cpp ${UIS_OUT_H})
 
 # The shared library to build:
 ADD_LIBRARY(firstPlugIn MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})

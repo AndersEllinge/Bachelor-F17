@@ -19,15 +19,19 @@
 
 namespace rw { namespace models { class Device; } }
 
+class listView;
+
 class firstPlugIn: public rws::RobWorkStudioPlugin, private Ui::firstPlugIn
 {
 
 QFileSystemModel *dirmodel;
+listView *fileList;
 QFileSystemModel *filemodel;
 
 QString fName;
 
 rw::models::WorkCell* _workcell;
+
 
 Q_OBJECT
 Q_INTERFACES( rws::RobWorkStudioPlugin )
@@ -44,16 +48,18 @@ public:
 
     virtual void initialize();
 
+    void mousePressEvent(QMouseEvent *event);
+
 private:
     rw::kinematics::Frame* createFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc);
+    listView *listFiles;
+
 
 private slots:
     void treeViewPressed(const QModelIndex & index);
     void btnPressed();
     void printInfo(rw::models::WorkCell::Ptr wc);
     void stateChangedListener(const rw::kinematics::State& state);
-
-
 };
 
 #endif

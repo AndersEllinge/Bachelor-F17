@@ -1,4 +1,5 @@
 #include "firstPlugIn.hpp"
+#include "listView.hpp"
 #include <RobWorkStudio.hpp>
 #include <boost/bind.hpp>
 
@@ -11,20 +12,38 @@ using rws::RobWorkStudioPlugin;
 firstPlugIn::firstPlugIn():
 	RobWorkStudioPlugin("firstPlugInUI", QIcon(":/pa_icon.png"))
 {
-	setupUi(this);
+	//setupUi(this);
+	//QString sPath = "/home/osboxes/Desktop/Git/Bachelor-F17/Anders_plugin";
 
-	//Connect buttons and stuff
+    QDockWidget *window = new QDockWidget;
 
-	QString sPath = "/home/osboxes/Desktop/Git/Bachelor-F17/";
+/*
+	dirmodel = new QFileSystemModel(this);
+	QListView *fileList = new QListView(this);
+	fileList->setModel(dirmodel);
+    fileList->setRootIndex(dirmodel->setRootPath(sPath));
+	fileList->setMinimumSize(200,400);
+	fileList->move(10,20);
+*/
 
+	QHBoxLayout *layout = new QHBoxLayout;
+	fileList = new listView(this);
+	layout->addWidget(fileList);
+	window->setLayout(layout);
+
+
+
+	/*
 	dirmodel = new QFileSystemModel(this);
 	treeView->setModel(dirmodel);
 	treeView->setRootIndex(dirmodel->setRootPath(sPath));
+	treeView->setDragEnabled(true);
+	*/
 
-	connect(fileNameBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
-	connect(workcellBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
-	connect(loadObjectFrame, SIGNAL(pressed()), this, SLOT(btnPressed()));
-	connect(treeView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(treeViewPressed(const QModelIndex &)));
+	//connect(fileNameBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
+	//connect(workcellBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
+	//connect(loadObjectFrame, SIGNAL(pressed()), this, SLOT(btnPressed()));
+	//connect(treeView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(treeViewPressed(const QModelIndex &)));
 }
 
 firstPlugIn::~firstPlugIn()
@@ -74,6 +93,12 @@ void firstPlugIn::btnPressed()
 		}
 	}
 }
+
+void firstPlugIn::mousePressEvent(QMouseEvent *event)
+{
+	log().info() << "clikie clickie" << "\n";
+}
+
 
 rw::kinematics::Frame* firstPlugIn::createFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc) {
     rw::kinematics::Frame* frame = NULL;

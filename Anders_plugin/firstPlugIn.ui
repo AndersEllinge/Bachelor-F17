@@ -16,23 +16,20 @@
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QTreeView" name="treeView"/>
-    </item>
-    <item row="1" column="0">
      <widget class="QPushButton" name="workcellBtn">
       <property name="text">
        <string>Print Info</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="0">
+    <item row="1" column="0">
      <widget class="QPushButton" name="fileNameBtn">
       <property name="text">
        <string>Load file</string>
       </property>
      </widget>
     </item>
-    <item row="3" column="0">
+    <item row="2" column="0">
      <widget class="QPushButton" name="loadObjectFrame">
       <property name="text">
        <string>Load Object Frame</string>
