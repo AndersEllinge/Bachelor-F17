@@ -67,13 +67,6 @@ void TestPlugin::helloWorldBtnPressed() {
         createDevice(dwc->_devlist[i], wc);
     }
 
-    /*
-    for (size_t i = 0; i < dwc->_models.size(); i++) {
-        addModelToFrame(dwc->_models[i], wc->findFrame(dwc->_models[i]._refframe), wc);
-        log().info() << dwc->_models[i]._name << "\n";
-    }
-    */
-
     log().info() << "Info for updated scene WorkCell\n";
     printInfo(wc);
 
@@ -148,7 +141,6 @@ rw::kinematics::Frame* TestPlugin::createFrame(DummyFrame dFrame, rw::models::Wo
         state = wc->getStateStructure()->upgradeState(state); // Upgrade the state of the WorkCell
         wc->getStateStructure()->setDefaultState(state); // Set the state of the WorkCell
         getRobWorkStudio()->setState(state); // Update RWS to the new state
-        //createMovableFrame(dFrame, wc);
     }
 
     else if (dFrame._type == "Prismatic") { // Create a Prismatic frame/joint
@@ -217,7 +209,6 @@ void TestPlugin::addFrameProps(DummyFrame dFrame, rw::kinematics::Frame* f, rw::
         const DummyProperty& dprop = dFrame._properties[i];
         addPropertyToMap(dprop, f->getPropertyMap());
     }
-    log().info() << "DILLER " << dFrame._models.size() << "\n";
     for (size_t i = 0; i < dFrame._models.size(); i++) {
         addModelToFrame(dFrame._models[i], f, wc);
     }
@@ -239,16 +230,16 @@ void TestPlugin::addLimits(std::vector<DummyLimit> &limits, rw::kinematics::Fram
         switch (limits[i]._type) {
             case (PosLimitType):
                 j->setBounds(std::pair<rw::math::Q, rw::math::Q>(rw::math::Q(1, limits[i]._min * convFactor), rw::math::Q(1, limits[i]._max * convFactor)));
-                log().info() << "Pos limit min -> " << limits[i]._min * convFactor << "\n";
-                log().info() << "Pos limit max -> " << limits[i]._max * convFactor << "\n";
+                //log().info() << "Pos limit min -> " << limits[i]._min * convFactor << "\n";
+                //log().info() << "Pos limit max -> " << limits[i]._max * convFactor << "\n";
                 break;
             case (VelLimitType):
                 j->setMaxVelocity(rw::math::Q(1, limits[i]._max * convFactor));
-                log().info() << "Vel limit -> " << limits[i]._max * convFactor << "\n";
+                //log().info() << "Vel limit -> " << limits[i]._max * convFactor << "\n";
                 break;
             case (AccLimitType):
     		    j->setMaxAcceleration(rw::math::Q(1, limits[i]._max * convFactor));
-                log().info() << "Acc limit -> " << limits[i]._max * convFactor << "\n";
+                //log().info() << "Acc limit -> " << limits[i]._max * convFactor << "\n";
     		    break;
             default:
                 assert(0);
@@ -286,8 +277,6 @@ void TestPlugin::addPropertyToMap(const DummyProperty &dprop, rw::common::Proper
 }
 
 void TestPlugin::addModelToFrame(DummyModel& model, rw::kinematics::Frame* f, rw::models::WorkCell::Ptr wc) {
-
-	std::vector<std::string> scope = model._scope;
 
 	for (size_t i = 0; i < model._geo.size(); i++) {
 		std::ostringstream val;
@@ -331,8 +320,9 @@ void TestPlugin::addModelToFrame(DummyModel& model, rw::kinematics::Frame* f, rw
             if (wc->findObject(f->getName()) != NULL) {
                 object = wc->findObject(f->getName()).cast<rw::models::RigidObject>();
             }
-            else
+            else{
                 object = new rw::models::RigidObject(f);
+            }
         }
 
 		if (model._colmodel && model._isDrawable) {
@@ -379,29 +369,44 @@ void TestPlugin::addModelToFrame(DummyModel& model, rw::kinematics::Frame* f, rw
 			}
 
 		}
+
+        //for (size_t i = 0; i < object->getGeometry().size(); i++)
+            //log().info() << "GEOM WITH NAME: " << object->getGeometry()[i]->getName() << "\n";
+
         wc->add(object);
+        /*
+        log().info() << "Test1\n";
+        rw::models::RigidObject::Ptr test = wc->findObject(f->getName()).cast<rw::models::RigidObject>();
+        for (size_t i = 0; i < test->getGeometry().size(); i++)
+            log().info() << "GEOM WITH NAME: " << test->getGeometry()[i]->getName() << "\n";
+
+        rw::models::RigidObject::Ptr test2 = getRobWorkStudio()->getView()->getWorkCellScene()->getWorkCell()->findObject(f->getName()).cast<rw::models::RigidObject>();
+        for (size_t i = 0; i < test2->getGeometry().size(); i++)
+            log().info() << "GEOM WITH NAME: " << test2->getGeometry()[i]->getName() << "\n";
+        */
+        //log().info() << "ADDED OBJECT: " << object->getName() << "\n";
 	}
 }
 
 void TestPlugin::createDevice(DummyDevice dDevice, rw::models::WorkCell::Ptr wc) {
     // Create the device and add to wc
     rw::models::Device::Ptr device = NULL;
+
     if (dDevice._type == SerialType) {
         std::vector<rw::kinematics::Frame*> chain;
         for (size_t i = 0; i < dDevice._frames.size(); i++) {
             chain.push_back(createFrame(dDevice._frames[i], wc));
         }
 
-        ///*
         BOOST_FOREACH(DummyFrame& dframe, dDevice._frames) {
+            //addFrameProps(dframe, wc->findFrame(dframe.getName()), wc);
             addDevicePropsToFrame(dDevice, wc->findFrame(dframe.getName()), wc);
         }
-        //*/
-        //addDevicePropsToFrame(dDevice, wc->findFrame(dDevice._frames[0].getName()), wc);
 
         device = new rw::models::SerialDevice(chain, dDevice.getName(), wc->getDefaultState());
         wc->addDevice(device);
     }
+
 
     // Add all device properties
 	typedef std::pair<std::string, std::vector<DummyProperty> > DPropValType;
@@ -412,11 +417,11 @@ void TestPlugin::createDevice(DummyDevice dDevice, rw::models::WorkCell::Ptr wc)
 	}
 
     BOOST_FOREACH(QConfig& config, dDevice._qconfig) {
-    device->getBase()->getPropertyMap().add<rw::math::Q>(config.name, "", rw::math::Q(config.q.size(), &config.q[0]));
-    device->getPropertyMap().add<rw::math::Q>(config.name, "", rw::math::Q(config.q.size(), &config.q[0]));
+        device->getBase()->getPropertyMap().add<rw::math::Q>(config.name, "", rw::math::Q(config.q.size(), &config.q[0]));
+        device->getPropertyMap().add<rw::math::Q>(config.name, "", rw::math::Q(config.q.size(), &config.q[0]));
     }
 
-    getRobWorkStudio()->setState(wc->getDefaultState()); // Update RWS to the new state
+    //getRobWorkStudio()->updateAndRepaint();
 }
 
 void TestPlugin::addDevicePropsToFrame(DummyDevice dDevice, rw::kinematics::Frame* f, rw::models::WorkCell::Ptr wc) {
@@ -427,13 +432,11 @@ void TestPlugin::addDevicePropsToFrame(DummyDevice dDevice, rw::kinematics::Fram
 	}
 
     std::vector<DummyModel> modellist = dDevice._modelMap[f->getName()];
-
     for (size_t j = 0; j < modellist.size(); j++) {
-    	//addModelToFrame(modellist[j], f, wc);
+    	addModelToFrame(modellist[j], f, wc);
 	}
 
     std::vector<DummyLimit> limits = dDevice._limitMap[f->getName()];
-
     addLimits(limits, f);
 
 }
@@ -448,6 +451,16 @@ void TestPlugin::printInfo(rw::models::WorkCell::Ptr wc) {
     log().info() << "Found " << wc->getDevices().size() << " devices:\n"; // List devices
     for (size_t i = 0; i < wc->getDevices().size(); i++) {
         log().info() << wc->getDevices()[i]->getName() << "\n";
+    }
+    log().info() << "\n\n";
+
+    log().info() << "Found " << wc->getObjects().size() << " objects:\n"; // List objects
+    for (size_t i = 0; i < wc->getObjects().size(); i++) {
+        log().info() << wc->getObjects()[i]->getName() << " with geoms: ";
+        for(size_t j = 0; j < wc->getObjects()[i]->getGeometry().size(); j++){
+            log().info() << wc->getObjects()[i]->getGeometry()[j]->getName() << " ";
+        }
+        log().info() << "\n";
     }
     log().info() << "\n\n";
 }

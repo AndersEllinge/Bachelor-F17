@@ -20,5 +20,13 @@
     <Frame name="testEndEffector" type="EndEffector"/>
     -->
 
+    <Frame name="testMovable" type="Movable">
+        <Transform>
+		1 0 0 2.546
+		0 1 0 0.323
+		0 0 1 1.083
+	    </Transform>
+    </Frame>
+
     <Include file="Fanuc-LRM200i/fanuc_lrm200i.xml"/>
 </WorkCell>

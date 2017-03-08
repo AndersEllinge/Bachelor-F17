@@ -68,6 +68,8 @@ private:
     // Print functionality
     void printInfo(rw::models::WorkCell::Ptr wc);
 
+    std::vector<rw::models::RigidObject::Ptr> obj;
+
 
 private slots:
     void helloWorldBtnPressed();
