@@ -49,7 +49,7 @@ void TestPlugin::helloWorldBtnPressed() {
     rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell(); // Get WorkCell from scene
     log().info() << "Info for scene WorkCell\n";
     printInfo(wc);
-
+    /*
     ///___________________________________________________________________________________________________________________________///
 
 	// Add information to current WorkCell
@@ -66,9 +66,21 @@ void TestPlugin::helloWorldBtnPressed() {
     for (size_t i = 0; i < dwc->_devlist.size(); i++) {
         createDevice(dwc->_devlist[i], wc);
     }
+    */
+
+    rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy"));
+    getRobWorkStudio()->setWorkCell(dummy);
+
+    testLoader loader;
+    std::string path = "/home/mathias/Desktop/Git/Bachelor-F17/testPlugin/wc.xml";
+    loader.addToWorkCell(path, wc);
+
+    getRobWorkStudio()->updateAndRepaint();
 
     log().info() << "Info for updated scene WorkCell\n";
     printInfo(wc);
+
+    getRobWorkStudio()->setWorkCell(wc);
 
 
 
@@ -280,6 +292,7 @@ void TestPlugin::addModelToFrame(DummyModel& model, rw::kinematics::Frame* f, rw
 
 	for (size_t i = 0; i < model._geo.size(); i++) {
 		std::ostringstream val;
+        bool needsToBeAdded = 0;
 
 		switch (model._geo[i]._type) {
 		case PolyType:
@@ -322,6 +335,7 @@ void TestPlugin::addModelToFrame(DummyModel& model, rw::kinematics::Frame* f, rw
             }
             else{
                 object = new rw::models::RigidObject(f);
+                needsToBeAdded = 1;
             }
         }
 
@@ -369,22 +383,8 @@ void TestPlugin::addModelToFrame(DummyModel& model, rw::kinematics::Frame* f, rw
 			}
 
 		}
-
-        //for (size_t i = 0; i < object->getGeometry().size(); i++)
-            //log().info() << "GEOM WITH NAME: " << object->getGeometry()[i]->getName() << "\n";
-
-        wc->add(object);
-        /*
-        log().info() << "Test1\n";
-        rw::models::RigidObject::Ptr test = wc->findObject(f->getName()).cast<rw::models::RigidObject>();
-        for (size_t i = 0; i < test->getGeometry().size(); i++)
-            log().info() << "GEOM WITH NAME: " << test->getGeometry()[i]->getName() << "\n";
-
-        rw::models::RigidObject::Ptr test2 = getRobWorkStudio()->getView()->getWorkCellScene()->getWorkCell()->findObject(f->getName()).cast<rw::models::RigidObject>();
-        for (size_t i = 0; i < test2->getGeometry().size(); i++)
-            log().info() << "GEOM WITH NAME: " << test2->getGeometry()[i]->getName() << "\n";
-        */
-        //log().info() << "ADDED OBJECT: " << object->getName() << "\n";
+        if (needsToBeAdded)
+            wc->add(object);
 	}
 }
 

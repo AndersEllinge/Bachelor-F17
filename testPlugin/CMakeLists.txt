@@ -1,12 +1,12 @@
 #####################################################
 # Template for building RobWork dependent projects
-# - the src should contain code for putting into libraries 
+# - the src should contain code for putting into libraries
 # - the plugins contain code for multiple RobWorkStudio plugins
-# - the test for testing 
+# - the test for testing
 # - the example dir for illustrativ examples of your project
 #
 # Use config.cmake to change default settings and edit this
-# file for adding additional dependencies to external projects  
+# file for adding additional dependencies to external projects
 #####################################################
 
 #
@@ -56,7 +56,7 @@ ENDIF()
 MESSAGE("-- Build type: " ${CMAKE_BUILD_TYPE})
 
 #Include default settings for constructing a robwork dependent project
-SET(RobWork_DIR ${RW_ROOT}/cmake) 
+SET(RobWork_DIR ${RW_ROOT}/cmake)
 FIND_PACKAGE(RobWork REQUIRED)
 INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIRS} )
 LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
@@ -93,7 +93,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # MOC
 IF(RWS_USE_QT5)
-	QT5_WRAP_CPP(MocSrcFiles TestPlugin.hpp)
+	QT5_WRAP_CPP(MocSrcFiles TestPlugin.hpp )
 ELSE()
 	QT4_WRAP_CPP(MocSrcFiles TestPlugin.hpp)
 ENDIF()
@@ -106,9 +106,8 @@ ELSE()
 ENDIF()
 
 # Add the source files to build
-SET(SrcFiles TestPlugin.cpp ${UIS_OUT_H})
+SET(SrcFiles TestPlugin.cpp testLoader.cpp ${UIS_OUT_H})
 
 # The shared library to build:
 ADD_LIBRARY(TestPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
 TARGET_LINK_LIBRARIES(TestPlugin ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
-
