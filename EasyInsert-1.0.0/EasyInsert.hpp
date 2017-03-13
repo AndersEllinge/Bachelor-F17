@@ -6,6 +6,7 @@
 #include <rws/RobWorkStudioPlugin.hpp>
 #include "ui_EasyInsert.h"
 #include <rw/common/Ptr.hpp>
+#include "loader.hpp"
 
 #include <QFileSystemModel>
 
@@ -37,12 +38,13 @@ public:
 private:
     QFileSystemModel *dirmodel;
     QString fName;
-    QString sPath = "/home/osboxes/Desktop/Git/Bachelor-F17";
+    QString sPath = "/";
     rw::models::WorkCell* _workcell;
 
 private slots:
     void stateChangedListener(const rw::kinematics::State& state);
-    void loadBtnPressed(const QModelIndex & index);
+    void treeViewPressed(const QModelIndex & index);
+    void btnPressed();
 
 };
 

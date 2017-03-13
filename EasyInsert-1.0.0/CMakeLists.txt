@@ -101,7 +101,7 @@ ELSE()
 ENDIF()
 
 # Add the source files to build
-SET(SrcFiles EasyInsert.cpp ${UIS_OUT_H})
+SET(SrcFiles EasyInsert.cpp loader.cpp ${UIS_OUT_H})
 
 # The shared library to build:
 ADD_LIBRARY(EasyInsert MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
