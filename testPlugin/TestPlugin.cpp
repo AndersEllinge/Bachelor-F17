@@ -71,11 +71,15 @@ void TestPlugin::helloWorldBtnPressed() {
     rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy"));
     getRobWorkStudio()->setWorkCell(dummy);
 
+    /*
     testLoader loader;
     std::string path = "/home/mathias/Desktop/Git/Bachelor-F17/testPlugin/wc.xml";
     loader.addToWorkCell(path, wc);
+    */
 
-    getRobWorkStudio()->updateAndRepaint();
+    ei::loader::add("/home/mathias/Desktop/Git/Bachelor-F17/testPlugin/wc.xml", wc);
+
+    //getRobWorkStudio()->updateAndRepaint();
 
     log().info() << "Info for updated scene WorkCell\n";
     printInfo(wc);

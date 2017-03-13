@@ -106,7 +106,7 @@ ELSE()
 ENDIF()
 
 # Add the source files to build
-SET(SrcFiles TestPlugin.cpp testLoader.cpp ${UIS_OUT_H})
+SET(SrcFiles TestPlugin.cpp loader.cpp ${UIS_OUT_H})
 
 # The shared library to build:
 ADD_LIBRARY(TestPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})

@@ -3,7 +3,7 @@
 
 #include <RobWorkStudioConfig.hpp> // For RWS_USE_QT5 definition
 
-#include "testLoader.hpp"
+#include "loader.hpp"
 
 #include <rws/RobWorkStudioPlugin.hpp>
 #include <rw/loaders/rwxml/XMLParserUtil.hpp>
