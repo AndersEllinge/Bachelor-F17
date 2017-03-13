@@ -5,7 +5,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0)
 
 
 # The name of the project.
-PROJECT(firstPlugIn)
+PROJECT(textfinder)
 
 
 # Used to resolve absolute path names
@@ -74,7 +74,7 @@ ELSE()
 ENDIF()
 
 # if we want to use ui files add them here
-SET(UIS_FILES firstPlugIn.ui )
+SET(UIS_FILES textfinder.ui )
 
 IF(RWS_USE_QT5)
 	QT5_WRAP_UI(UIS_OUT_H ${UIS_FILES})
@@ -88,10 +88,11 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # MOC
 IF(RWS_USE_QT5)
-	QT5_WRAP_CPP(MocSrcFiles firstPlugIn.hpp)
+	QT5_WRAP_CPP(MocSrcFiles textfinder.hpp)
 ELSE()
-	QT4_WRAP_CPP(MocSrcFiles firstPlugIn.hpp)
+	QT4_WRAP_CPP(MocSrcFiles textfinder.hpp)
 ENDIF()
+
 
 # Rcc the files:
 IF(RWS_USE_QT5)
@@ -100,11 +101,12 @@ ELSE()
 	QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
 ENDIF()
 
+
 # Add the source files to build
-SET(SrcFiles firstPlugIn.cpp ${UIS_OUT_H})
+SET(SrcFiles textfinder.cpp ${UIS_OUT_H})
 
 # The shared library to build:
-ADD_LIBRARY(firstPlugIn MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
-TARGET_LINK_LIBRARIES(firstPlugIn ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
+ADD_LIBRARY(textfinder MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
+TARGET_LINK_LIBRARIES(textfinder ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
 
 MESSAGE("-- " ${PROJECT_NAME} " done!")

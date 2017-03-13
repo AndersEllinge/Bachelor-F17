@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>input.txt</file>
+        <file>pa_icon.png</file>
+    </qresource>
+</RCC>

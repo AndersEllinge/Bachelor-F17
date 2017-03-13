@@ -5,7 +5,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0)
 
 
 # The name of the project.
-PROJECT(firstPlugIn)
+PROJECT(EasyInsert)
 
 
 # Used to resolve absolute path names
@@ -74,7 +74,7 @@ ELSE()
 ENDIF()
 
 # if we want to use ui files add them here
-SET(UIS_FILES firstPlugIn.ui )
+SET(UIS_FILES EasyInsert.ui )
 
 IF(RWS_USE_QT5)
 	QT5_WRAP_UI(UIS_OUT_H ${UIS_FILES})
@@ -88,9 +88,9 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # MOC
 IF(RWS_USE_QT5)
-	QT5_WRAP_CPP(MocSrcFiles firstPlugIn.hpp)
+	QT5_WRAP_CPP(MocSrcFiles EasyInsert.hpp)
 ELSE()
-	QT4_WRAP_CPP(MocSrcFiles firstPlugIn.hpp)
+	QT4_WRAP_CPP(MocSrcFiles EasyInsert.hpp)
 ENDIF()
 
 # Rcc the files:
@@ -101,10 +101,10 @@ ELSE()
 ENDIF()
 
 # Add the source files to build
-SET(SrcFiles firstPlugIn.cpp ${UIS_OUT_H})
+SET(SrcFiles EasyInsert.cpp ${UIS_OUT_H})
 
 # The shared library to build:
-ADD_LIBRARY(firstPlugIn MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
-TARGET_LINK_LIBRARIES(firstPlugIn ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
+ADD_LIBRARY(EasyInsert MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
+TARGET_LINK_LIBRARIES(EasyInsert ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
 
 MESSAGE("-- " ${PROJECT_NAME} " done!")

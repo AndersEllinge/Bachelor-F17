@@ -1,5 +1,5 @@
 #include "firstPlugIn.hpp"
-#include "listView.hpp"
+//#include "listView.hpp"
 #include <RobWorkStudio.hpp>
 #include <boost/bind.hpp>
 
@@ -13,32 +13,34 @@ firstPlugIn::firstPlugIn():
 	RobWorkStudioPlugin("firstPlugInUI", QIcon(":/pa_icon.png"))
 {
 	//setupUi(this);
-	//QString sPath = "/home/osboxes/Desktop/Git/Bachelor-F17/Anders_plugin";
+	QString sPath = "/home/osboxes/Desktop/Git/Bachelor-F17/Anders_plugin";
 
     QDockWidget *window = new QDockWidget;
 
-/*
+
 	dirmodel = new QFileSystemModel(this);
 	QListView *fileList = new QListView(this);
 	fileList->setModel(dirmodel);
     fileList->setRootIndex(dirmodel->setRootPath(sPath));
 	fileList->setMinimumSize(200,400);
 	fileList->move(10,20);
-*/
 
+
+
+/*
 	QHBoxLayout *layout = new QHBoxLayout;
 	fileList = new listView(this);
 	layout->addWidget(fileList);
 	window->setLayout(layout);
+*/
 
 
-
-	/*
+/*
 	dirmodel = new QFileSystemModel(this);
 	treeView->setModel(dirmodel);
 	treeView->setRootIndex(dirmodel->setRootPath(sPath));
 	treeView->setDragEnabled(true);
-	*/
+*/
 
 	//connect(fileNameBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
 	//connect(workcellBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
