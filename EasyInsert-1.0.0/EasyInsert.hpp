@@ -39,7 +39,6 @@ private:
     QFileSystemModel *dirmodel;
     QString fName;
     QString sPath = "/";
-    rw::models::WorkCell* _workcell;
 
 private slots:
     void stateChangedListener(const rw::kinematics::State& state);

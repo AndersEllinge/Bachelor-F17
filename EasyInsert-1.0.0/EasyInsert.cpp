@@ -1,10 +1,6 @@
 #include "EasyInsert.hpp"
 #include <boost/bind.hpp>
 
-using rw::kinematics::State;
-using rw::models::WorkCell;
-using rws::RobWorkStudioPlugin;
-
 
 EasyInsert::EasyInsert():
     RobWorkStudioPlugin("EasyInsert", QIcon(":/pa_icon.png"))
@@ -30,7 +26,6 @@ void EasyInsert::initialize()
 
 void EasyInsert::open(WorkCell* workcell)
 {
-	_workcell = workcell;
 }
 
 void EasyInsert::close()
