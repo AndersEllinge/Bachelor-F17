@@ -768,11 +768,11 @@ void ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc) 
 
 		// container for actions to execute when all frames and devices has been loaded
 		DummySetup setup;
-	    //setup.scene = ownedPtr(new SceneDescriptor());
+	    //setup.scene = ownedPtr(new SceneDescriptor()); // THIS LINE CHANGED
         setup.scene = wc->getSceneDescriptor();
 
 		// Start parsing workcell
-		//boost::shared_ptr<DummyWorkcell> workcell = XMLRWParser::parseWorkcell(filename);
+		//boost::shared_ptr<DummyWorkcell> workcell = XMLRWParser::parseWorkcell(filename); // THIS LINE CHANGED
 		setup.dwc = XMLRWParser::parseWorkcell(filename);
 
 		// do sanity check on the workcell,
@@ -795,17 +795,17 @@ void ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc) 
 		}
 
 		// Now build a workcell from the parsed results
-		//setup.tree = new StateStructure();
+		//setup.tree = new StateStructure(); // THIS LINE CHANGED
         setup.tree = wc->getStateStructure().get();
-		//setup.world = setup.tree->getRoot();
+		//setup.world = setup.tree->getRoot(); // THIS LINE CHANGED
         setup.world = wc->getWorldFrame();
 		setup.frameMap[setup.world->getName()] = setup.world;
 
 		// Create WorkCell
-		//WorkCell::Ptr wc = ownedPtr(new WorkCell(ownedPtr(setup.tree), setup.dwc->_name, fname));
-		//wc->setSceneDescriptor(setup.scene);
-		//if(setup.scene)
-		//    setup.scene->setWorkCell(wc);
+		//WorkCell::Ptr wc = ownedPtr(new WorkCell(ownedPtr(setup.tree), setup.dwc->_name, fname)); // THIS LINE CHANGED
+		//wc->setSceneDescriptor(setup.scene); // THIS LINE CHANGED
+		//if(setup.scene) // THIS LINE CHANGED
+		//    setup.scene->setWorkCell(wc); // THIS LINE CHANGED
 
 		// first create all frames defined in the workcell
 		for (size_t i = 0; i < setup.dwc->_framelist.size(); i++) {
@@ -969,4 +969,11 @@ void ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc) 
 void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc) {
 	ei::loader loader;
 	loader.addToWorkCell(filename, wc);
+}
+
+rw::models::WorkCell::Ptr ei::loader::load(std::string filename) {
+    ei::loader loader;
+    rw::models::WorkCell::Ptr wc = rw::common::ownedPtr(new rw::models::WorkCell(""));
+    loader.addToWorkCell(filename, wc);
+    return wc;
 }

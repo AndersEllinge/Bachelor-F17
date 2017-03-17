@@ -15,9 +15,11 @@ public:
     loader(){}
     virtual ~loader(){}
 
-    void addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc);
+    static void add(const std::string filename, rw::models::WorkCell::Ptr wc);
+    static rw::models::WorkCell::Ptr load(std::string filename);
 
-    static void add(std::string filename, rw::models::WorkCell::Ptr wc);
+private:
+    void addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc);
 };
 }
 

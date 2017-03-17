@@ -37,71 +37,25 @@ void TestPlugin::close() {
 void TestPlugin::helloWorldBtnPressed() {
 	log().info() << "Started loading\n\n";
 
-	// Load in XML file and and construct WorkCell
-	//rw::models::WorkCell::Ptr input = rw::loaders::XMLRWLoader::load("/home/mathias/Desktop/Git/Bachelor-F17/testPlugin/wc.xml");
-	//log().info() << "Loaded file " << input->getName() << "\n\n";
-
-	// Pull out and list information of the input WorkCell
-    //log().info() << "Info for loaded WorkCell\n";
-    //printInfo(input);
-
-	// List information of current WorkCell
-    rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell(); // Get WorkCell from scene
-    log().info() << "Info for scene WorkCell\n";
-    printInfo(wc);
-    /*
-    ///___________________________________________________________________________________________________________________________///
-
-	// Add information to current WorkCell
-    // Parse in the information to add
-    boost::shared_ptr<DummyWorkcell> dwc = rw::loaders::XMLRWParser::parseWorkcell("/home/mathias/Desktop/Git/Bachelor-F17/testPlugin/wc.xml");
-
-    // Create and add frames to scene WorkCell
-    for (size_t i = 0; i < dwc->_framelist.size(); i++){
-        createFrame(dwc->_framelist[i], wc);
-        //log().info() << dwc->_framelist[i].getName() << " " << dwc->_framelist[i]._type << "\n";
-    }
-
-    // Create and add devices to current WorkCell
-    for (size_t i = 0; i < dwc->_devlist.size(); i++) {
-        createDevice(dwc->_devlist[i], wc);
-    }
-    */
-
-    rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy"));
-    getRobWorkStudio()->setWorkCell(dummy);
-
-    /*
-    testLoader loader;
-    std::string path = "/home/mathias/Desktop/Git/Bachelor-F17/testPlugin/wc.xml";
-    loader.addToWorkCell(path, wc);
-    */
-
-    ei::loader::add("/home/mathias/Desktop/Git/Bachelor-F17/testPlugin/wc.xml", wc);
-
-    //getRobWorkStudio()->updateAndRepaint();
-
-    log().info() << "Info for updated scene WorkCell\n";
+    /// Test for adding content of wc file to rws wc file
+    rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell(); // Get wc from rws
+    log().info() << "Info for scene WorkCell\n"; // List information of wc
     printInfo(wc);
 
-    getRobWorkStudio()->setWorkCell(wc);
+    rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
+    getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
+
+    ei::loader::add("/home/mathias/Desktop/Git/Bachelor-F17/testPlugin/wc.xml", wc); // Run loader
+
+    log().info() << "Info for updated scene WorkCell\n"; // List information updated wc
+    printInfo(wc);
+
+    getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
 
 
-
-
-
-
-
-    /* Test of adding a frame WORKING!
-    rw::kinematics::Frame *testFrame = NULL;
-    rw::math::Transform3D<> testTransform;
-    testFrame = new rw::kinematics::FixedFrame("testFrame", testTransform);
-    log().info() << "Frame id: " << testFrame->getID() << "\n";
-
-    workcell->addFrame(testFrame);
-
-    log().info() << "Info for scene WorkCell\n";
-    printInfo(workcell); */
+    /// Test for loading in new wc
+    //rw::models::WorkCell::Ptr newWc = ei::loader::load("/home/mathias/Desktop/Git/Bachelor-F17/testPlugin/wc.xml");
+    //getRobWorkStudio()->setWorkCell(newWc); // Load new wc
 
 }
 
