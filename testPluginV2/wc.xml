@@ -1,0 +1,24 @@
+<WorkCell name="testCell">
+    <!--
+    <Frame name="testFixed"/>
+    <Frame name="testMovable" type="Movable">
+        <Transform>
+		1 0 0 2.546
+		0 1 0 0.323
+		0 0 1 1.083
+	    </Transform>
+    </Frame>
+    <Frame name="testMovable2" type="Movable">
+        <Transform>
+		1 0 0 1.546
+		0 1 0 1.323
+		0 0 1 1.083
+	    </Transform>
+    </Frame>
+    <Frame name="testPrismatic" type="Prismatic"/>
+    <Frame name="testRevolute" type="Revolute"/>
+    <Frame name="testEndEffector" type="EndEffector"/>
+    -->
+
+    <Include file="Fanuc-LRM200i/fanuc_lrm200i.xml"/>
+</WorkCell>

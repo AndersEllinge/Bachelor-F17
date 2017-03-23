@@ -31,6 +31,8 @@
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/AnyPtr.hpp>
 
+#include <rw/proximity/CollisionSetup.hpp>
+
 #include <boost/lexical_cast.hpp>
 
 #include "ui_TestPlugin.h"
@@ -54,27 +56,12 @@ public:
     virtual void initialize();
 
 private:
-    rw::kinematics::Frame* createFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc);
-    void createDevice(DummyDevice dDevice, rw::models::WorkCell::Ptr wc);
-
-    // Help for createFrame
-    void addPropertyToMap(const DummyProperty &dprop, rw::common::PropertyMap& map); // From XML RW LOADER (copy, namespace modified)
-    void addModelToFrame(DummyModel& model, rw::kinematics::Frame* f, rw::models::WorkCell::Ptr wc); // Mainly from XML RW LOADER (changed input and output, modified function to fit)
-    void addFrameToTree(DummyFrame dFrame, rw::models::WorkCell::Ptr wc, rw::kinematics::Frame* f);
-    void addFrameProps(DummyFrame dFrame, rw::kinematics::Frame* f, rw::models::WorkCell::Ptr wc);
-    void addLimits(std::vector<DummyLimit> &limits, rw::kinematics::Frame* frame);
-
-    // Help for createDevice
-    void addDevicePropsToFrame(DummyDevice dDevice, rw::kinematics::Frame* f, rw::models::WorkCell::Ptr wc);
-
     // Print functionality
     void printInfo(rw::models::WorkCell::Ptr wc);
 
-    std::vector<rw::models::RigidObject::Ptr> obj;
-
 
 private slots:
-    void insertBtn1Pressed();
+    void insertBtnPressed();
 
     void stateChangedListener(const rw::kinematics::State& state);
 };

@@ -14,10 +14,7 @@ TestPlugin::TestPlugin():
     setupUi(this);
 
     // now connect stuff from the ui component
-    connect(helloWorldBtn, SIGNAL(pressed()), this, SLOT(helloWorldBtnPressed()) );
-    //connect(_btn1    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(spinBox, SIGNAL(valueChanged(int)), this, SLOT(spinBoxChanged()) );
-
+    connect(insertBtn1, SIGNAL(pressed()), this, SLOT(insertBtn1Pressed()) );
 }
 
 TestPlugin::~TestPlugin() {
@@ -28,13 +25,13 @@ void TestPlugin::initialize() {
 }
 
 void TestPlugin::open(WorkCell* workcell) {
-	_workcell = workcell;
+	//_workcell = workcell;
 }
 
 void TestPlugin::close() {
 }
 
-void TestPlugin::helloWorldBtnPressed() {
+void TestPlugin::insertBtn1Pressed() {
 	log().info() << "Started loading\n\n";
 
     /// Test for adding content of wc file to rws wc file
@@ -57,13 +54,6 @@ void TestPlugin::helloWorldBtnPressed() {
     //rw::models::WorkCell::Ptr newWc = ei::loader::load("/home/mathias/Desktop/Git/Bachelor-F17/testPlugin/wc.xml");
     //getRobWorkStudio()->setWorkCell(newWc); // Load new wc
 
-}
-
-void TestPlugin::spinBoxChanged() {
-	QObject *obj = sender();
-	if(obj == spinBox) {
-        lcdNumber->display(spinBox->value());
-	}
 }
 
 void TestPlugin::stateChangedListener(const State& state) {

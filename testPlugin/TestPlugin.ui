@@ -25,37 +25,11 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QPushButton" name="helloWorldBtn">
+      <widget class="QPushButton" name="insertBtn1">
        <property name="text">
-        <string>Hello World</string>
+        <string>Insert fanuc</string>
        </property>
       </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="onOffRadio">
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
-       <property name="text">
-        <string>On / Off</string>
-       </property>
-       <property name="autoRepeat">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox">
-       <property name="text">
-        <string>CheckBox</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSpinBox" name="spinBox"/>
-     </item>
-     <item>
-      <widget class="QLCDNumber" name="lcdNumber"/>
      </item>
     </layout>
    </widget>
