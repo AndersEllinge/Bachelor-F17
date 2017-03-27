@@ -800,25 +800,49 @@ void ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, 
             }
 
             // FIX MODELMAP
-            std::vector<std::string> tmpModelMapFirst;
+            std::vector<std::string> tmpMapFirst;
             std::vector<std::vector<DummyModel>> tmpModelMapSecond;
 
-            for(std::map<std::string, std::vector<DummyModel>>::iterator it = setup.dwc->_devlist[0]._modelMap.begin(); it != setup.dwc->_devlist[0]._modelMap.end(); ++it){
-                rw::common::Log::log().info() << it->first << " " << it->second[0]._name << "\n";
-
-                tmpModelMapFirst.push_back(it->first);
+            for(std::map<std::string, std::vector<DummyModel>>::iterator it = setup.dwc->_devlist[0]._modelMap.begin(); it != setup.dwc->_devlist[0]._modelMap.end(); ++it) {
+                //rw::common::Log::log().info() << it->first << " " << it->second[0]._name << "\n";
+                tmpMapFirst.push_back(it->first);
                 tmpModelMapSecond.push_back(it->second);
             }
 
-            for(int i = 0; i < tmpModelMapFirst.size(); i++) {
-                setup.dwc->_devlist[0]._modelMap[renameFrameName(tmpModelMapFirst[i], name)] = tmpModelMapSecond[i];
+            for(int i = 0; i < tmpMapFirst.size(); i++) {
+                setup.dwc->_devlist[0]._modelMap.erase(tmpMapFirst[i]);
+                setup.dwc->_devlist[0]._modelMap[renameFrameName(tmpMapFirst[i], name)] = tmpModelMapSecond[i];
             }
 
+            /// FIX LIMITMAP
+            tmpMapFirst.clear();
+            std::vector<std::vector<DummyLimit>> tmpLimitMapSecond;
+
+            for(std::map<std::string, std::vector<DummyLimit>>::iterator it = setup.dwc->_devlist[0]._limitMap.begin(); it != setup.dwc->_devlist[0]._limitMap.end(); ++it) {
+                //rw::common::Log::log().info() << it->first << " " << it->second[0]._type << " " << it->second[0]._min << " " << it->second[0]._max << "\n";
+                tmpMapFirst.push_back(it->first);
+                tmpLimitMapSecond.push_back(it->second);
+            }
+
+            for(int i = 0; i < tmpMapFirst.size(); i++) {
+                setup.dwc->_devlist[0]._limitMap.erase(tmpMapFirst[i]);
+                setup.dwc->_devlist[0]._limitMap[renameFrameName(tmpMapFirst[i], name)] = tmpLimitMapSecond[i];
+            }
+
+
             /// FIX PROPMAP
-            rw::common::Log::log().info() << "SEX\n";
-            for(std::map<std::string, std::vector<DummyProperty>>::iterator it = setup.dwc->_devlist[0]._propertyMap.begin(); it != setup.dwc->_devlist[0]._propertyMap.end(); ++it){
-                rw::common::Log::log().info() << "SEX1\n";
-                rw::common::Log::log().info() << it->first << " " << it->second[0]._name << "\n";
+            tmpMapFirst.clear();
+            std::vector<std::vector<DummyProperty>> tmpPropertyMapSecond;
+
+            for(std::map<std::string, std::vector<DummyProperty>>::iterator it = setup.dwc->_devlist[0]._propertyMap.begin(); it != setup.dwc->_devlist[0]._propertyMap.end(); ++it) {
+                //rw::common::Log::log().info() << it->first << " " << it->second[0]._name << "\n";
+                tmpMapFirst.push_back(it->first);
+                tmpPropertyMapSecond.push_back(it->second);
+            }
+
+            for(int i = 0; i < tmpMapFirst.size(); i++) {
+                setup.dwc->_devlist[0]._propertyMap.erase(tmpMapFirst[i]);
+                setup.dwc->_devlist[0]._propertyMap[renameFrameName(tmpMapFirst[i], name)] = tmpPropertyMapSecond[i];
             }
 
             ///
@@ -1000,13 +1024,6 @@ void ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, 
             collisionSetup.addExcludePair(nAdd[i]);
             collisionSetup.removeExcludePair(exList[i]);
         }
-
-        /*
-        for (int i = 0; i < exList.size(); i++) {
-            rw::common::Log::log().info() << exList[i].first << " " << exList[i].second << std::endl;
-        }
-        rw::common::Log::log().info() << std::endl;
-        */
 
         ///////////////////////////////////////////////////////////////////
 
