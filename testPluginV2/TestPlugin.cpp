@@ -60,7 +60,7 @@ void TestPlugin::printInfo(rw::models::WorkCell::Ptr wc) {
 }
 
 void TestPlugin::insertBtnPressed() {
-    QString name = nameField->toPlainText();
+    QString name = inputName->text();
 
     rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell(); // Get wc from rws
 
@@ -69,10 +69,24 @@ void TestPlugin::insertBtnPressed() {
 
     ei::loader::add("/home/mathias/Desktop/Git/Bachelor-F17/testPlugin/wc.xml", wc, name.toStdString()); // Run loader
 
+    // TEST FOR INITIAL PLACEMENT
+    rw::kinematics::Frame* base = wc->findDevice(name.toStdString())->getBase();
+    rw::kinematics::MovableFrame* mbase = dynamic_cast<rw::kinematics::MovableFrame*>(base);
+    rw::math::Vector3D<double> displacement(inputX->value()/100, inputY->value()/100, inputZ->value()/100);
+    rw::math::Transform3D<double> transform(displacement);
+    rw::kinematics::State state = wc->getDefaultState();
+
+    mbase->setTransform(transform, state);
+
+    state = wc->getStateStructure()->upgradeState(state);
+    wc->getStateStructure()->setDefaultState(state);
+
     getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
 
-    rw::proximity::CollisionSetup colset = wc->getCollisionSetup();
-    auto exList = colset.getExcludeList();
+    log().info() << "\n";
+    log().info() << "VALUE FOR X-INPUT = " << inputX->value() << "\n";
+    log().info() << "VALUE FOR Y-INPUT = " << inputY->value() << "\n";
+    log().info() << "VALUE FOR Z-INPUT = " << inputZ->value() << "\n";
 
     //printInfo(wc);
 }
