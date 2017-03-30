@@ -6,37 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>244</width>
-    <height>385</height>
+    <width>466</width>
+    <height>332</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>DockWidget</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QPushButton" name="workcellBtn">
-      <property name="text">
-       <string>Print Info</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QPushButton" name="fileNameBtn">
-      <property name="text">
-       <string>Load file</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QPushButton" name="loadObjectFrame">
-      <property name="text">
-       <string>Load Object Frame</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
+   <layout class="QVBoxLayout" name="verticalLayout"/>
   </widget>
  </widget>
  <resources/>

@@ -88,9 +88,9 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # MOC
 IF(RWS_USE_QT5)
-	QT5_WRAP_CPP(MocSrcFiles firstPlugIn.hpp)
+	QT5_WRAP_CPP(MocSrcFiles firstPlugIn.hpp listView.hpp dialog.hpp)
 ELSE()
-	QT4_WRAP_CPP(MocSrcFiles firstPlugIn.hpp)
+	QT4_WRAP_CPP(MocSrcFiles firstPlugIn.hpp listView.hpp dialog.hpp)
 ENDIF()
 
 # Rcc the files:
@@ -101,7 +101,7 @@ ELSE()
 ENDIF()
 
 # Add the source files to build
-SET(SrcFiles firstPlugIn.cpp ${UIS_OUT_H})
+SET(SrcFiles firstPlugIn.cpp listView.cpp dialog.cpp ${UIS_OUT_H})
 
 # The shared library to build:
 ADD_LIBRARY(firstPlugIn MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})

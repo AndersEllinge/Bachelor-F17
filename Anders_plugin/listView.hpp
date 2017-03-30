@@ -1,30 +1,38 @@
 #ifndef LISTVIEW_HPP
 #define LISTVIEW_HPP
 
-#include <QtCore>
-#include <QtGui>
 #include <QListView>
+#include <QFileSystemModel>
 
-class QDragEnterEvent;
-class QDropEvent;
-class QMouseEvent;
 
-class listView : public QWidget
+class listView : public QListView
 {
 
 Q_OBJECT
 
 public:
-    listView(QWidget *parent);
+    listView(QWidget* Parent);
     ~listView();
+
+    void updateSystemModelPath(QString path);
+
+
+private slots:
 
 signals:
 
 protected:
 
 private:
+
+    //void mousePressEvent(QMouseEvent *event);
+
+
     QString sPath = "/home/osboxes/Desktop/Git/Bachelor-F17/Anders_plugin";
-    QFileSystemModel *dirmodel;
+    //QFileSystemModel *dirmodel;
     QListView *fileList;
+
+
+
 };
 #endif

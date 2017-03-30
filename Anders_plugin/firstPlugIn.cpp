@@ -5,6 +5,7 @@
 
 
 
+
 using rw::kinematics::State;
 using rw::models::WorkCell;
 using rws::RobWorkStudioPlugin;
@@ -12,40 +13,57 @@ using rws::RobWorkStudioPlugin;
 firstPlugIn::firstPlugIn():
 	RobWorkStudioPlugin("firstPlugInUI", QIcon(":/pa_icon.png"))
 {
-	//setupUi(this);
-	QString sPath = "/home/osboxes/Desktop/Git/Bachelor-F17/Anders_plugin";
+	//create the widgets
+	QScrollArea *widg = new QScrollArea(this);
+	widg->setWidgetResizable(true);
+	dockWidgetContent = new QWidget(this);
+	verticalLayout = new QVBoxLayout(dockWidgetContent);
+	_listView = new listView(dockWidgetContent);
+	dirmodel = new QFileSystemModel(_listView);
+    _listView->setModel(dirmodel);
+	_listView->setRootIndex(dirmodel->setRootPath(sPath));
+	//_selectionModel = _listView->selectionModel();
 
-    QDockWidget *window = new QDockWidget;
+	//add menu bar, cant make a qmenubar apparently because linux sux with its global menubars
+	_toolBar = new QToolBar(dockWidgetContent);
 
+	_settingsButton = new QToolButton();
+	_settingsButton->setIcon(QIcon(":/settings.png"));
+	_settingsMenu = new QMenu("Settings menu");
+	QAction *_settingsAction = new QAction("test menu item",this);
+	_settingsMenu->addAction(_settingsAction);
+	_settingsButton->setMenu(_settingsMenu);
+	_settingsButton->setPopupMode(QToolButton::InstantPopup);
+	_toolBar->addWidget(_settingsButton);
+	connect(_settingsAction, SIGNAL(triggered()), this, SLOT(settings()));
 
-	dirmodel = new QFileSystemModel(this);
-	QListView *fileList = new QListView(this);
-	fileList->setModel(dirmodel);
-    fileList->setRootIndex(dirmodel->setRootPath(sPath));
-	fileList->setMinimumSize(200,400);
-	fileList->move(10,20);
+	//load buttons
+	devBtn = new QPushButton("Devices",dockWidgetContent);
+	geoBtn = new QPushButton("Geometries",dockWidgetContent);
+	fraBtn = new QPushButton("Frames",dockWidgetContent);
+	loadBtn = new QPushButton("Load",dockWidgetContent);
 
+	//connect buttons
+	connect(devBtn, SIGNAL(clicked()), this, SLOT(tabDevices()));
+	connect(geoBtn, SIGNAL(clicked()), this, SLOT(tabGeometries()));
+	connect(fraBtn, SIGNAL(clicked()), this, SLOT(tabFrames()));
+	connect(loadBtn, SIGNAL(clicked()), this, SLOT(load()));
 
+	//setup the layout
+	verticalLayout->addWidget(_toolBar);
+	verticalLayout->setAlignment(_toolBar,Qt::AlignRight);
+	verticalLayout->addWidget(_listView);
+	verticalLayout->addWidget(devBtn);
+	verticalLayout->addWidget(geoBtn);
+	verticalLayout->addWidget(fraBtn);
+	verticalLayout->addSpacing(20);
+	verticalLayout->addWidget(loadBtn);
 
-/*
-	QHBoxLayout *layout = new QHBoxLayout;
-	fileList = new listView(this);
-	layout->addWidget(fileList);
-	window->setLayout(layout);
-*/
+	dockWidgetContent->setLayout(verticalLayout);
 
+	widg->setWidget(dockWidgetContent);
+	this->setWidget(widg);
 
-/*
-	dirmodel = new QFileSystemModel(this);
-	treeView->setModel(dirmodel);
-	treeView->setRootIndex(dirmodel->setRootPath(sPath));
-	treeView->setDragEnabled(true);
-*/
-
-	//connect(fileNameBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
-	//connect(workcellBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
-	//connect(loadObjectFrame, SIGNAL(pressed()), this, SLOT(btnPressed()));
-	//connect(treeView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(treeViewPressed(const QModelIndex &)));
 }
 
 firstPlugIn::~firstPlugIn()
@@ -65,83 +83,56 @@ void firstPlugIn::close()
 {
 }
 
-void firstPlugIn::treeViewPressed(const QModelIndex & index)
-{
-	fName = dirmodel->fileInfo(index).absoluteFilePath();		// keep the information about the file
-}
-
-void firstPlugIn::btnPressed()
-{
-	QObject *obj = sender();
-	if(obj==workcellBtn) {
-	rw::models::WorkCell::Ptr workcell = getRobWorkStudio()->getWorkCell();
-	log().info() << "Info for scene WorkCell\n";
-	printInfo(workcell);
-	}
-
-	else if(obj==fileNameBtn) {
-	log().info() << fName.toStdString() << "\n";
-	getRobWorkStudio()->openFile(fName.toStdString()); // open whatever robwork project file with rws
-	}
-
-	else if(obj==loadObjectFrame) {
-
-	rw::models::WorkCell::Ptr workcell = getRobWorkStudio()->getWorkCell(); // Get WorkCell from scene
-
-	boost::shared_ptr<DummyWorkcell> dwc = rw::loaders::XMLRWParser::parseWorkcell(fName.toStdString());
-
-		for (int i = 0; i < dwc->_framelist.size(); i++){
-			createFrame(dwc->_framelist[i], workcell);
-		}
-	}
-}
-
 void firstPlugIn::mousePressEvent(QMouseEvent *event)
 {
 	log().info() << "clikie clickie" << "\n";
 }
 
+void firstPlugIn::printLog(std::string text)
+{
+	log().info() << text << "\n";
+}
 
-rw::kinematics::Frame* firstPlugIn::createFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc) {
-    rw::kinematics::Frame* frame = NULL;
-    rw::kinematics::State state;
-    bool stateChanged = 0;
+void firstPlugIn::tabDevices()
+{
+	sPath = "/usr/local/RobWork/example/ModelData";
+	_listView->setRootIndex(dirmodel->setRootPath(sPath));
+}
 
-    if (dFrame._type == "Fixed"){
-        frame = new rw::kinematics::FixedFrame(dFrame.getName(), dFrame._transform);
-    }
+void firstPlugIn::tabGeometries()
+{
+	sPath = "/usr/local/RobWork";
+	_listView->setRootIndex(dirmodel->setRootPath(sPath));
+}
 
-    else if (dFrame._type == "Movable") {
-        rw::kinematics::MovableFrame* movFrame = new rw::kinematics::MovableFrame(dFrame.getName());
-        frame = movFrame;
-        wc->addFrame(frame);
-        state = getRobWorkStudio()->getWorkCell()->getDefaultState();
-        movFrame->setTransform(dFrame._transform, state);
-        stateChanged = 1;
-    }
+void firstPlugIn::tabFrames()
+{
+	sPath = "/usr/local/RobWork/example/ModelData/XMLDevices/Fanuc-LRM200i";
+	_listView->setRootIndex(dirmodel->setRootPath(sPath));
+}
 
-    else if (dFrame._type == "Prismatic") {
-        frame = new rw::models::PrismaticJoint(dFrame.getName(), dFrame._transform);
-    }
+void firstPlugIn::load()
+{
+	QString st = "Load";
+	QModelIndex index = _listView->currentIndex();
+	QString itemText = dirmodel->filePath(index);
 
-    else if (dFrame._type == "Revolute") {
-        frame = new rw::models::RevoluteJoint(dFrame.getName(), dFrame._transform);
-    }
+	_loadDialog = new dialog(itemText, st, dockWidgetContent);
 
-    else if (dFrame._type == "EndEffector") {
-        frame = new rw::kinematics::FixedFrame(dFrame.getName(), dFrame._transform);
-    }
+	_loadDialog->addToDialog(_loadDialog->createNameBox());
+	_loadDialog->addToDialog(_loadDialog->createConfigurationBox());
+	_loadDialog->addToDialog(_loadDialog->createButtonBox());
+	_loadDialog->open();
+}
 
-    else{
-        RW_THROW("FRAME TYPE ERROR");
-    }
+void firstPlugIn::settings()
+{
+	QString st = "Settings";
 
-    if (stateChanged){
-        state = getRobWorkStudio()->getWorkCell()->getStateStructure()->upgradeState(state); // Update workcell to new state
-        getRobWorkStudio()->setState(state); // Update RWS to the new state
-    }
+	_settingsDialog = new dialog(st, dockWidgetContent);
 
-    return frame;
+	_settingsDialog->addToDialog(_settingsDialog->createButtonBox());
+	_settingsDialog->open();
 }
 
 void firstPlugIn::printInfo(rw::models::WorkCell::Ptr wc) {

@@ -33,3 +33,8 @@ void TextFinder::loadTextFile()
     QTextCursor cursor = ui->textEdit->textCursor();
     cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor, 1);
 }
+
+void TextFinder::on_listView_activated(const QModelIndex &index)
+{
+
+}

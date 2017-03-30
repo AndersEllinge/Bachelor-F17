@@ -1,15 +1,23 @@
 #ifndef FIRSTPLUGIN_HPP
 #define FIRSTPLUGIN_HPP
 
-#include <RobWorkStudio.hpp>
 #include <RobWorkStudioConfig.hpp>
 #include <rws/RobWorkStudioPlugin.hpp>
+
 #include "ui_firstPlugIn.h"
+#include "listView.hpp"
+#include "dialog.hpp"
 #include <rw/common/Ptr.hpp>
 #include <QtCore>
 #include <QtGui>
+#include <QToolBar>
+#include <QToolButton>
+#include <QAction>
+#include <QMenu>
 #include <QFileSystemModel>
 #include <QListView>
+#include <QScrollArea>
+#include <QPushButton>
 #include <rw/loaders/rwxml/XMLParserUtil.hpp>
 #include <rw/loaders/rwxml/XMLRWParser.hpp>
 #include <rw/loaders/rwxml/XMLRWLoader.hpp>
@@ -25,15 +33,6 @@ namespace rw { namespace models { class Device; } }
 
 class firstPlugIn: public rws::RobWorkStudioPlugin, private Ui::firstPlugIn
 {
-
-QFileSystemModel *dirmodel;
-//listView *fileList;
-//QFileSystemModel *filemodel;
-
-QString fName;
-
-rw::models::WorkCell* _workcell;
-
 
 Q_OBJECT
 Q_INTERFACES( rws::RobWorkStudioPlugin )
@@ -52,14 +51,36 @@ public:
 
     void mousePressEvent(QMouseEvent *event);
 
-private:
-    rw::kinematics::Frame* createFrame(DummyFrame dFrame, rw::models::WorkCell::Ptr wc);
+    void printLog(std::string text);
 
+private:
+    rw::models::WorkCell* _workcell;
+
+    QString sPath = "/";
+    listView* _listView;
+    QFileSystemModel *dirmodel;
+    //QItemSelectionModel* _selectionModel;
+    QWidget* dockWidgetContent;
+    QVBoxLayout* verticalLayout;
+    dialog* _loadDialog = nullptr;
+    dialog* _settingsDialog = nullptr;
+
+    QPushButton* devBtn;    //device sort button
+    QPushButton* geoBtn;    //geometry sort button
+    QPushButton* fraBtn;    //frame sort button
+    QPushButton* loadBtn;   //load button for things to be loaded into the workcell
+
+    QToolBar* _toolBar;
+    QToolButton* _settingsButton;
+    QMenu* _settingsMenu;
 
 
 private slots:
-    void treeViewPressed(const QModelIndex & index);
-    void btnPressed();
+    void tabDevices();
+    void tabGeometries();
+    void tabFrames();
+    void load();
+    void settings();
     void printInfo(rw::models::WorkCell::Ptr wc);
     void stateChangedListener(const rw::kinematics::State& state);
 };

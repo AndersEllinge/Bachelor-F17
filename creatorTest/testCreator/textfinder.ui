@@ -22,10 +22,10 @@
         <widget class="QListView" name="listView">
          <property name="geometry">
           <rect>
-           <x>60</x>
-           <y>30</y>
+           <x>70</x>
+           <y>60</y>
            <width>256</width>
-           <height>192</height>
+           <height>121</height>
           </rect>
          </property>
         </widget>
