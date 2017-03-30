@@ -432,7 +432,7 @@ Frame *createFrame(DummyFrame& dframe, DummySetup &setup) {
 	setup.frameMap[frame->getName()] = frame;
 	setup.toChildMap[dframe.getRefFrame()].push_back(frame);
 	RW_DEBUGS("Frame created: " << frame->getName() << " --> " << dframe.getRefFrame());
-    //rw::common::Log::log().info() << "Frame created: " << frame->getName() << " --> " << dframe.getRefFrame() << std::endl;
+    rw::common::Log::log().info() << "Frame created: " << frame->getName() << " --> " << dframe.getRefFrame() << " --> " << dframe._type << std::endl;
 	return frame;
 }
 
@@ -1024,6 +1024,8 @@ void ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, 
             collisionSetup.addExcludePair(nAdd[i]);
             collisionSetup.removeExcludePair(exList[i]);
         }
+
+        collisionSetup.merge(wc->getCollisionSetup()); // MERGE WITH CURRENT SETUP
 
         ///////////////////////////////////////////////////////////////////
 

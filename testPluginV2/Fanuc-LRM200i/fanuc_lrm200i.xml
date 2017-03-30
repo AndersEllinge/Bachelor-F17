@@ -1,8 +1,8 @@
 <SerialDevice name="LRM200">
- <Frame name="Base" type="Movable">
+ <Frame name="Base">
   <RPY> 0 0 0 </RPY> <Pos> 0 0 0.35 </Pos>
 </Frame>
-
+ 
  <Joint name="Joint1" type="Revolute">
   <RPY> 0 0 0 </RPY> <Pos> 0 0 0</Pos>
  </Joint>
@@ -26,7 +26,7 @@
   <Pos>0 0 -0.08</Pos>
  </Frame>
 
-
+  
  <PosLimit refjoint="Joint1" min="-180" max="180" />
  <PosLimit refjoint="Joint2" min="-180" max="180" />
  <PosLimit refjoint="Joint3" min="-180" max="180" />
@@ -55,12 +55,12 @@
   <RPY> 0 90 180 </RPY> <Pos> 0.325 0 0.44</Pos>
   <Polytope file="Geometry/JT4-LR200i-1" /></Drawable>
  <Drawable name="J5Geo" refframe="Joint5">
-  <RPY> 0 0 -90 </RPY> <Pos> -0.44 -0.325 0</Pos>
+  <RPY> 0 0 -90 </RPY> <Pos> -0.44 -0.325 0</Pos>  
   <Polytope file="Geometry/JT5-LR200i-1" /></Drawable>
  <Drawable name="J6Geo" refframe="Joint6">
-  <RPY> 0 90 0 </RPY> <Pos>-0.325 0 0.44</Pos>
+  <RPY> 0 90 0 </RPY> <Pos>-0.325 0 0.44</Pos>  
   <Polytope file="Geometry/JT6-LR200i-1" /></Drawable>
-
+  
  <CollisionSetup file="CollisionSetup.xml" />
-
+  
 </SerialDevice>

@@ -67,16 +67,22 @@ void TestPlugin::insertBtnPressed() {
     rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
     getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
 
-    ei::loader::add("/home/mathias/Desktop/Git/Bachelor-F17/testPlugin/wc.xml", wc, name.toStdString()); // Run loader
+    ei::loader::add("/home/mathias/Desktop/Git/Bachelor-F17/testPluginV2/Fanuc-LRM200i/fanuc_lrm200i.xml", wc, name.toStdString()); // Run loader
 
-    // TEST FOR INITIAL PLACEMENT
-    rw::kinematics::Frame* base = wc->findDevice(name.toStdString())->getBase();
-    rw::kinematics::MovableFrame* mbase = dynamic_cast<rw::kinematics::MovableFrame*>(base);
     rw::math::Vector3D<double> displacement(inputX->value()/100, inputY->value()/100, inputZ->value()/100);
     rw::math::Transform3D<double> transform(displacement);
     rw::kinematics::State state = wc->getDefaultState();
 
-    mbase->setTransform(transform, state);
+    // TEST FOR INITIAL PLACEMENT
+    rw::kinematics::Frame* base = wc->findDevice(name.toStdString())->getBase();
+
+    rw::kinematics::MovableFrame* mbase = dynamic_cast<rw::kinematics::MovableFrame*>(base); // Test for base is movable frame
+    if (mbase != NULL)
+        mbase->setTransform(transform, state);
+
+    rw::kinematics::FixedFrame* fbase = dynamic_cast<rw::kinematics::FixedFrame*>(base); // Test for base is fixed frame
+    if (fbase != NULL)
+        fbase->setTransform(transform);
 
     state = wc->getStateStructure()->upgradeState(state);
     wc->getStateStructure()->setDefaultState(state);
