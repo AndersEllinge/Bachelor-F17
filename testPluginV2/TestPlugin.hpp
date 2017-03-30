@@ -12,6 +12,7 @@
 
 #include <rw/math/Constants.hpp>
 #include <rw/math/Q.hpp>
+#include <rw/math/Rotation3D.hpp>
 
 #include <rw/kinematics/FixedFrame.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
