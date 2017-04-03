@@ -70,8 +70,12 @@ void TestPlugin::insertBtnPressed() {
     ei::loader::add("/home/mathias/Desktop/Git/Bachelor-F17/testPluginV2/Fanuc-LRM200i/fanuc_lrm200i.xml", wc, name.toStdString(),
         inputX->value(), inputY->value(), inputZ->value(), inputR->value(), inputP->value(), inputRY->value()); // Run loader
 
-    getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+    ei::creator::addFixedFrame(wc, "testFixed", "WORLD");
+    ei::creator::addMovableFrame(wc, "testMovable", "testFixed");
 
+    ei::creator::addBox("testBox", "testFixed", wc, 0.1f, 0.1f, 0.1f);
+
+    getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
 
     // Yaw x, Roll z, Pitch y
     //log().info() << "\n";

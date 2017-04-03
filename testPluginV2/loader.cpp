@@ -844,13 +844,6 @@ void ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, 
                 setup.dwc->_devlist[0]._propertyMap.erase(tmpMapFirst[i]);
                 setup.dwc->_devlist[0]._propertyMap[renameFrameName(tmpMapFirst[i], name)] = tmpPropertyMapSecond[i];
             }
-
-            ///
-
-
-
-
-
         }
         ///////////////////////////////////////////////////////////////////
 
@@ -1005,28 +998,29 @@ void ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, 
 
         ///////////////////////////////////////////////////////////////////
         /// FIX OF COLSETUP
-        auto exList = collisionSetup.getExcludeList();
-        /*
-        for (int i = 0; i < exList.size(); i++) {
-            rw::common::Log::log().info() << exList[i].first << " " << exList[i].second << std::endl;
+        if (name != "") {
+            auto exList = collisionSetup.getExcludeList();
+            /*
+            for (int i = 0; i < exList.size(); i++) {
+                rw::common::Log::log().info() << exList[i].first << " " << exList[i].second << std::endl;
+            }
+            */
+
+            //rw::common::Log::log().info() << std::endl;
+            std::vector<rw::common::StringPair> nAdd;
+            for (int i = 0; i < exList.size(); i++) {
+                std::string frst = renameFrameName(exList[i].first, name);
+                std::string scnd = renameFrameName(exList[i].second, name);
+                nAdd.push_back(std::pair<std::string, std::string>(frst, scnd));
+            }
+
+            for (int i = 0; i < nAdd.size(); i++) {
+                collisionSetup.addExcludePair(nAdd[i]);
+                collisionSetup.removeExcludePair(exList[i]);
+            }
+
+            collisionSetup.merge(wc->getCollisionSetup()); // MERGE WITH CURRENT SETUP
         }
-        */
-
-        //rw::common::Log::log().info() << std::endl;
-        std::vector<rw::common::StringPair> nAdd;
-        for (int i = 0; i < exList.size(); i++) {
-            std::string frst = renameFrameName(exList[i].first, name);
-            std::string scnd = renameFrameName(exList[i].second, name);
-            nAdd.push_back(std::pair<std::string, std::string>(frst, scnd));
-        }
-
-        for (int i = 0; i < nAdd.size(); i++) {
-            collisionSetup.addExcludePair(nAdd[i]);
-            collisionSetup.removeExcludePair(exList[i]);
-        }
-
-        collisionSetup.merge(wc->getCollisionSetup()); // MERGE WITH CURRENT SETUP
-
         ///////////////////////////////////////////////////////////////////
 
 		CollisionSetup::set(collisionSetup, wc);
