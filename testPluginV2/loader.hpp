@@ -16,7 +16,9 @@ public:
     virtual ~loader(){}
 
     static void add(const std::string filename, rw::models::WorkCell::Ptr wc, std::string name);
-    static rw::models::WorkCell::Ptr load(std::string filename);
+    static void add(const std::string filename, rw::models::WorkCell::Ptr wc, std::string name, rw::math::Transform3D<double> transform);
+    static void add(const std::string filename, rw::models::WorkCell::Ptr wc, std::string name, double x, double y, double z, double R, double P, double Y);
+    rw::models::WorkCell::Ptr load(std::string filename, std::string name = "");
 
 private:
     void addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, std::string name);

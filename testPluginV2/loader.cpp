@@ -1076,9 +1076,43 @@ void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::st
 	loader.addToWorkCell(filename, wc, name);
 }
 
-rw::models::WorkCell::Ptr ei::loader::load(std::string filename) {
+void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name, rw::math::Transform3D<double> transform) {
     ei::loader loader;
-    rw::models::WorkCell::Ptr wc = rw::common::ownedPtr(new rw::models::WorkCell(""));
-    loader.addToWorkCell(filename, wc, "");
+	loader.addToWorkCell(filename, wc, name); // Add device to wc
+
+    rw::kinematics::State state = wc->getDefaultState(); // Get state of wc
+
+    rw::kinematics::Frame* base = wc->findDevice(name)->getBase(); // Get base of device
+
+    rw::kinematics::MovableFrame* mbase = dynamic_cast<rw::kinematics::MovableFrame*>(base); // Test for base is movable frame
+    if (mbase != NULL)
+        mbase->setTransform(transform, state); // Add transform to movable base
+
+    rw::kinematics::FixedFrame* fbase = dynamic_cast<rw::kinematics::FixedFrame*>(base); // Test for base is fixed frame
+    if (fbase != NULL)
+        fbase->setTransform(transform); // Add transform to fixed base
+
+    state = wc->getStateStructure()->upgradeState(state); // Upgrade state
+    wc->getStateStructure()->setDefaultState(state); // Update state
+}
+
+void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name, double x, double y, double z, double R, double P, double Y) {
+    rw::math::Vector3D<double> displacement(x/100, y/100, z/100);
+
+    rw::math::Rotation3D<double> rotationR(cos(R), sin(R), 0, -sin(R), cos(R), 0, 0, 0, 1);
+    rw::math::Rotation3D<double> rotationY(1, 0, 0, 0, cos(Y), sin(Y), 0, -sin(Y), cos(Y));
+    rw::math::Rotation3D<double> rotationP(cos(P), 0, -sin(P), 0, 1, 0, sin(P), 0, cos(P));
+
+    rw::math::Rotation3D<double> combinedRotation = rw::math::Rotation3D<double>::multiply(rw::math::Rotation3D<double>::multiply(rotationP, rotationR), rotationY);
+
+    rw::math::Transform3D<double> transform(displacement, combinedRotation);
+
+    ei::loader::add(filename, wc, name, transform);
+}
+
+rw::models::WorkCell::Ptr ei::loader::load(std::string filename, std::string name) {
+    ei::loader loader;
+    rw::models::WorkCell::Ptr wc = rw::common::ownedPtr(new rw::models::WorkCell(name));
+    loader.addToWorkCell(filename, wc, name);
     return wc;
 }
