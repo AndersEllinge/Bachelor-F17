@@ -53,7 +53,17 @@ public:
 
     void printLog(std::string text);
 
+protected:
+    //! Close Event inherited from QT
+	void closeEvent( QCloseEvent * e );
+
+    rw::common::PropertyMap _propMap;
+    rw::common::PropertyMap *_settingsMap;
+
 private:
+    void setupSettings();
+
+
     rw::models::WorkCell* _workcell;
 
     QString sPath = "/";
@@ -72,6 +82,7 @@ private:
 
     QToolBar* _toolBar;
     QToolButton* _settingsButton;
+    QToolButton* _undoButton;
     QMenu* _settingsMenu;
 
 

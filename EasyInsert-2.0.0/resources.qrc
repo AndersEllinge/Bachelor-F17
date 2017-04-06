@@ -1,0 +1,14 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+<file>pa_icon.png</file>
+<file>undo.png</file>
+<file>cube.png</file>
+<file>cone.png</file>
+<file>cylinder.png</file>
+<file>sphere.png</file>
+<file>plane.png</file>
+<file>tube.png</file>
+
+
+</qresource>
+</RCC>
