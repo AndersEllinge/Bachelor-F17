@@ -7,7 +7,10 @@
 #include "ui_EasyInsert.h"
 #include "listView.hpp"
 #include "dialog.hpp"
+#include "loader.hpp"
+#include "creator.hpp"
 #include <rw/common/Ptr.hpp>
+#include <rw/math/Transform3D.hpp>
 
 #include <QTableWidget>
 #include <QTableWidgetItem>
@@ -63,6 +66,7 @@ private:
     QWidget* _geoTab;
     dialog* _settingsDialog;
     dialog* _loadDialog;
+    dialog* _geometriDialog;
 
 protected:
 
@@ -76,6 +80,14 @@ private slots:
     void stateChangedListener(const rw::kinematics::State& state);
     void loadDevice();
     void settings();
+    void cube();
+    void plane();
+    void sphere();
+    void cone();
+    void cylinder();
+    void tube();
+    void fixedFrame();
+    void movableFrame();
 
 
 };

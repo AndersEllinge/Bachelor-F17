@@ -88,9 +88,9 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # MOC
 IF(RWS_USE_QT5)
-	QT5_WRAP_CPP(MocSrcFiles EasyInsert.hpp listView.hpp dialog.hpp)
+	QT5_WRAP_CPP(MocSrcFiles EasyInsert.hpp listView.hpp dialog.hpp creator.hpp loader.hpp)
 ELSE()
-	QT4_WRAP_CPP(MocSrcFiles EasyInsert.hpp listView.hpp dialog.hpp)
+	QT4_WRAP_CPP(MocSrcFiles EasyInsert.hpp listView.hpp dialog.hpp creator.hpp loader.hpp)
 ENDIF()
 
 # Rcc the files:
@@ -101,7 +101,7 @@ ELSE()
 ENDIF()
 
 # Add the source files to build
-SET(SrcFiles EasyInsert.cpp listView.cpp dialog.cpp ${UIS_OUT_H})
+SET(SrcFiles EasyInsert.cpp listView.cpp dialog.cpp creator.cpp loader.cpp ${UIS_OUT_H})
 
 # The shared library to build:
 ADD_LIBRARY(EasyInsert MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})

@@ -18,12 +18,14 @@ dialog::dialog(QString dialog, QWidget *parent)
 }
 
 
-dialog::dialog(QString filePath, QString dialog, QWidget *parent)
+dialog::dialog(rw::models::WorkCell::Ptr wc, QString dialog, QWidget *parent)
     : QDialog(parent)
 {
+    _workCell = wc;
+
     mainLayout = new QVBoxLayout();
 
-    setLayout(mainLayout);
+    //setLayout(mainLayout);
 
     setWindowTitle(dialog);
 
@@ -57,22 +59,57 @@ QWidget* dialog::createNameBox()
     return nameBox;
 }
 
+QWidget* dialog::createCheckFramesBox()
+{
+    checkBox = new QGroupBox(tr("Configurations:"));
+    QGridLayout *layout = new QGridLayout();
+    QButtonGroup *group = new QButtonGroup();
+
+
+    checkFrames[0] = new QCheckBox("New Moveable Frame",this);
+    checkFrames[1] = new QCheckBox("Existing Frame",this);
+
+    group->addButton(checkFrames[0]);
+    group->addButton(checkFrames[1]);
+
+    checkFrames[0]->setChecked(true);
+
+    layout->addWidget(checkFrames[0],0,0);
+    layout->addWidget(checkFrames[1],0,1);
+
+    checkBox->setLayout(layout);
+
+    return checkBox;
+}
+
 QWidget* dialog::createConfigurationBox()
 {
     configuration = new QGroupBox(tr("Configurations:"));
     QGridLayout *layout = new QGridLayout();
-    for (int i = 0; i < 3; ++i)
-    {
-        if ( i == 1 )
-            labels[i] = new QLabel(tr("X"));
-        else if ( i == 2 )
-            labels[i] = new QLabel(tr("Y"));
-        else
-            labels[i] = new QLabel(tr("Z"));
 
-        doubleSpinBoxes[i] = new QDoubleSpinBox();
-        layout->addWidget(labels[i], i + 1, 0);
-        layout->addWidget(doubleSpinBoxes[i], i + 1, 1);
+    QLabel *labels[6];
+
+    labels[0] = new QLabel(tr("X"));
+    labels[1] = new QLabel(tr("Y"));
+    labels[2] = new QLabel(tr("Z"));
+    labels[3] = new QLabel(tr("Roll"));
+    labels[4] = new QLabel(tr("Pitch"));
+    labels[5] = new QLabel(tr("Yaw"));
+
+    doubleSpinBoxes[0] = makeDoubleSpinBox();
+    doubleSpinBoxes[1] = makeDoubleSpinBox();
+    doubleSpinBoxes[2] = makeDoubleSpinBox();
+    doubleSpinBoxes[3] = makeDoubleSpinBox();
+    doubleSpinBoxes[4] = makeDoubleSpinBox();
+    doubleSpinBoxes[5] = makeDoubleSpinBox();
+
+    for (size_t i = 0; i < 3; i++) {
+        layout->addWidget(labels[i], i, 0);
+        layout->addWidget(doubleSpinBoxes[i], i, 1);
+    }
+    for (size_t i = 3; i < 6; i++) {
+        layout->addWidget(labels[i], i-3, 2);
+        layout->addWidget(doubleSpinBoxes[i], i-3, 3);
     }
 
     layout->setColumnStretch(1, 10);
@@ -82,6 +119,115 @@ QWidget* dialog::createConfigurationBox()
     return configuration;
 }
 
+QWidget* dialog::createConfigurationBoxCube()
+{
+    configurationCube = new QGroupBox(tr("Dimension sizes:"));
+    QGridLayout *layout = new QGridLayout();
+
+    QLabel *labels[3];
+
+    labels[0] = new QLabel(tr("X"));
+    labels[1] = new QLabel(tr("Y"));
+    labels[2] = new QLabel(tr("Z"));
+
+
+    doubleSpinBoxesGeometires[0] = makeDoubleSpinBox();
+    doubleSpinBoxesGeometires[1] = makeDoubleSpinBox();
+    doubleSpinBoxesGeometires[2] = makeDoubleSpinBox();
+
+    for (size_t i = 0; i < 3; i++) {
+        layout->addWidget(labels[i], i, 0);
+        layout->addWidget(doubleSpinBoxesGeometires[i], i, 1);
+    }
+
+    layout->setColumnStretch(1, 10);
+    layout->setColumnStretch(2, 20);
+    configurationCube->setLayout(layout);
+
+    return configurationCube;
+}
+
+QWidget* dialog::createConfigurationBoxSphere()
+{
+    configurationSphere = new QGroupBox(tr("Dimension sizes:"));
+    QGridLayout *layout = new QGridLayout();
+
+    QLabel *labels;
+
+    labels = new QLabel(tr("Radius"));
+
+    doubleSpinBoxesGeometires[0] = makeDoubleSpinBox();
+
+    layout->addWidget(labels, 0, 0);
+    layout->addWidget(doubleSpinBoxesGeometires[0], 0, 1);
+
+
+    layout->setColumnStretch(1, 10);
+    layout->setColumnStretch(2, 20);
+    configurationSphere->setLayout(layout);
+
+    return configurationSphere;
+}
+
+QWidget* dialog::createConfigurationBoxCone()
+{
+    configurationCone = new QGroupBox(tr("Dimension sizes:"));
+    QGridLayout *layout = new QGridLayout();
+
+    QLabel *labels[2];
+
+    labels[0] = new QLabel(tr("Radius"));
+    labels[1] = new QLabel(tr("Height"));
+
+    doubleSpinBoxesGeometires[0] = makeDoubleSpinBox();
+    doubleSpinBoxesGeometires[1] = makeDoubleSpinBox();
+
+    layout->addWidget(labels[0], 0, 0);
+    layout->addWidget(doubleSpinBoxesGeometires[0], 0, 1);
+
+    layout->addWidget(labels[1], 1, 0);
+    layout->addWidget(doubleSpinBoxesGeometires[1], 1, 1);
+
+
+    layout->setColumnStretch(1, 10);
+    layout->setColumnStretch(2, 20);
+    configurationCone->setLayout(layout);
+
+    return configurationCone;
+}
+
+QWidget* dialog::createConfigurationBoxTube()
+{
+    configurationCone = new QGroupBox(tr("Dimension sizes:"));
+    QGridLayout *layout = new QGridLayout();
+
+    QLabel *labels[2];
+
+    labels[0] = new QLabel(tr("Radius"));
+    labels[1] = new QLabel(tr("Thickness"));
+    labels[2] = new QLabel(tr("Height"));
+
+    doubleSpinBoxesGeometires[0] = makeDoubleSpinBox();
+    doubleSpinBoxesGeometires[1] = makeDoubleSpinBox();
+    doubleSpinBoxesGeometires[2] = makeDoubleSpinBox();
+
+    layout->addWidget(labels[0], 0, 0);
+    layout->addWidget(doubleSpinBoxesGeometires[0], 0, 1);
+
+    layout->addWidget(labels[1], 1, 0);
+    layout->addWidget(doubleSpinBoxesGeometires[1], 1, 1);
+
+    layout->addWidget(labels[2], 2, 0);
+    layout->addWidget(doubleSpinBoxesGeometires[2], 2, 1);
+
+
+    layout->setColumnStretch(1, 10);
+    layout->setColumnStretch(2, 20);
+    configurationCone->setLayout(layout);
+
+    return configurationCone;
+}
+
 QWidget* dialog::createLibSettingsBox()
 {
     setupSettings();
@@ -89,6 +235,7 @@ QWidget* dialog::createLibSettingsBox()
 
     //QLineEdit *pathLine[3];
     QPushButton* btns[3];
+    QLabel *labels[3];
     QGroupBox *libSettingsbox = new QGroupBox(tr("Choose path for libraries:"));
     QGridLayout *layout = new QGridLayout();
     for (int i = 0; i < 3; ++i)
@@ -129,6 +276,26 @@ QWidget* dialog::createLibSettingsBox()
     libSettingsbox->setLayout(layout);
 
     return libSettingsbox;
+}
+
+QWidget* dialog::createFrameSelection()
+{
+    selectFrame = new QGroupBox(tr("Select Frame:"));
+    QGridLayout *layout = new QGridLayout();
+
+    comboFrames = new QComboBox();
+
+    std::vector<rw::kinematics::Frame*> frames = _workCell->getFrames();
+
+    for (size_t i = 0; i < frames.size(); i++) {
+        comboFrames->addItem(QString::fromStdString(frames[i]->getName()));
+    }
+
+    layout->addWidget(comboFrames);
+    selectFrame->setLayout(layout);
+
+    return selectFrame;
+
 }
 
 void dialog::reject()
@@ -176,7 +343,7 @@ void dialog::setDirectoryDialog(int i)
     } else {
         _settingsMap->set<std::string>("Frames", dir.toStdString());
     }
-    
+
     QString str1 = _settingsMap->get<std::string>("Devices", "/").c_str();
     QString str2 = _settingsMap->get<std::string>("Geometries", "/").c_str();
     QString str3 = _settingsMap->get<std::string>("Frames", "/").c_str();
@@ -185,6 +352,17 @@ void dialog::setDirectoryDialog(int i)
     pathLine[1]->setText(str2);
     pathLine[2]->setText(str3);
 
+}
+
+QDoubleSpinBox* dialog::makeDoubleSpinBox()
+{
+    QDoubleSpinBox* box = new QDoubleSpinBox();
+    box->setDecimals(3);
+    box->setRange(-100, 100);
+
+    box->setSingleStep(0.001);
+
+    return box;
 }
 
 dialog::~dialog()

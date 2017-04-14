@@ -131,7 +131,7 @@ QWidget* EasyInsert::createDevTab()
 QWidget* EasyInsert::createGeoTab()
 {
     QScrollArea *widg = new QScrollArea();
-    widg->setWidgetResizable(true);
+    //widg->setWidgetResizable(true);
     widg->setFrameShape(QFrame::NoFrame);
     QWidget *geoTab = new QWidget();
     QGridLayout *layout = new QGridLayout(geoTab);
@@ -142,50 +142,61 @@ QWidget* EasyInsert::createGeoTab()
     btns[0]->setIcon(QIcon(":/cube.png"));
     btns[0]->setToolTip("Cube");
     btns[0]->setIconSize(QSize(50, 50));
+    connect(btns[0], SIGNAL(clicked()), this, SLOT(cube()));
 
     btns[1] = new QToolButton();
     btns[1]->setIcon(QIcon(":/cylinder.png"));
     btns[1]->setToolTip("Cylinder");
     btns[1]->setIconSize(QSize(50, 50));
+    connect(btns[1], SIGNAL(clicked()), this, SLOT(cylinder()));
 
     btns[2] = new QToolButton();
     btns[2]->setIcon(QIcon(":/cone.png"));
     btns[2]->setToolTip("Cone");
     btns[2]->setIconSize(QSize(50, 50));
+    connect(btns[2], SIGNAL(clicked()), this, SLOT(cone()));
 
     btns[3] = new QToolButton();
     btns[3]->setIcon(QIcon(":/plane.png"));
     btns[3]->setToolTip("Plane");
     btns[3]->setIconSize(QSize(50, 50));
+    connect(btns[3], SIGNAL(clicked()), this, SLOT(plane()));
 
     btns[4] = new QToolButton();
     btns[4]->setIcon(QIcon(":/sphere.png"));
     btns[4]->setToolTip("Sphere");
     btns[4]->setIconSize(QSize(50, 50));
+    connect(btns[4], SIGNAL(clicked()),this, SLOT(sphere()));
 
     btns[5] = new QToolButton();
     btns[5]->setIcon(QIcon(":/tube.png"));
     btns[5]->setToolTip("Tube");
     btns[5]->setIconSize(QSize(50, 50));
+    connect(btns[5], SIGNAL(clicked()),this, SLOT(tube()));
 
     btns[6] = new QToolButton();
     btns[6]->setIcon(QIcon(":/undo.png"));
-    btns[6]->setToolTip("Undo");
+    btns[6]->setToolTip("Fixed Frame");
     btns[6]->setIconSize(QSize(50, 50));
+    connect(btns[6], SIGNAL(clicked()),this, SLOT(fixedFrame()));
 
     btns[7] = new QToolButton();
     btns[7]->setIcon(QIcon(":/undo.png"));
-    btns[7]->setToolTip("Undo");
+    btns[7]->setToolTip("Movable Frame");
     btns[7]->setIconSize(QSize(50, 50));
+    connect(btns[7], SIGNAL(clicked()),this, SLOT(movableFrame()));
 
     layout->addWidget(btns[0], 0, 0);
-    layout->addWidget(btns[1], 1, 0);
-    layout->addWidget(btns[2], 2, 0);
-    layout->addWidget(btns[3], 3, 0);
-    layout->addWidget(btns[4], 0, 1);
-    layout->addWidget(btns[5], 1, 1);
-    layout->addWidget(btns[6], 2, 1);
+    layout->addWidget(btns[1], 0, 1);
+    layout->addWidget(btns[2], 1, 0);
+    layout->addWidget(btns[3], 1, 1);
+    layout->addWidget(btns[4], 2, 0);
+    layout->addWidget(btns[5], 2, 1);
+    layout->addWidget(btns[6], 3, 0);
     layout->addWidget(btns[7], 3, 1);
+
+    layout->setColumnMinimumWidth(0,50);
+    layout->setColumnMinimumWidth(1,50);
 
     geoTab->setLayout(layout);
     widg->setWidget(geoTab);
@@ -226,12 +237,401 @@ void EasyInsert::loadDevice()
 	QModelIndex index = view->currentIndex();
 	QString itemText = dirmodel->filePath(index);
 
-	_loadDialog = new dialog(itemText, st, this);
+	_loadDialog = new dialog(st, this);
 
 	_loadDialog->addToDialog(_loadDialog->createNameBox());
 	_loadDialog->addToDialog(_loadDialog->createConfigurationBox());
 	_loadDialog->addToDialog(_loadDialog->createButtonBox());
-	_loadDialog->open();
+	_loadDialog->exec();
+
+
+    if (_loadDialog->result() == QDialog::Accepted)
+  	{
+    	rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+
+        rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
+        getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
+
+        ei::loader::add(itemText.toStdString(),wc,_loadDialog->nameLine->text().toStdString(),
+            _loadDialog->doubleSpinBoxes[0]->value(),
+            _loadDialog->doubleSpinBoxes[1]->value(),
+            _loadDialog->doubleSpinBoxes[2]->value(),
+            _loadDialog->doubleSpinBoxes[3]->value(),
+            _loadDialog->doubleSpinBoxes[4]->value(),
+            _loadDialog->doubleSpinBoxes[5]->value());
+
+        getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+  	}
+
+}
+
+void EasyInsert::cube()
+{
+    QString st = "Cube";
+    rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+    _geometriDialog = new dialog(wc,st,this);
+
+    _geometriDialog->addToDialog(_geometriDialog->createNameBox());
+    _geometriDialog->addToDialog(_geometriDialog->createCheckFramesBox());
+    _geometriDialog->addToDialog(_geometriDialog->createFrameSelection());
+    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBoxCube());
+    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBox());
+
+    _geometriDialog->addToDialog(_geometriDialog->createButtonBox());
+
+    _geometriDialog->exec();
+
+    if (_geometriDialog->result() == QDialog::Accepted)
+  	{
+        rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+
+        rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
+        getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
+
+        rw::math::Vector3D<double> displacement(
+                _geometriDialog->doubleSpinBoxes[1]->value(),
+                _geometriDialog->doubleSpinBoxes[2]->value(),
+                _geometriDialog->doubleSpinBoxes[3]->value());
+
+        rw::math::Transform3D<double> transform(displacement);
+
+        if (_geometriDialog->checkFrames[0]->isChecked()) // moveable frame
+            ei::creator::addBox(_geometriDialog->nameLine->text().toStdString(),
+                                _geometriDialog->comboFrames->currentText().toStdString(),
+                                wc,
+                                (float)_geometriDialog->doubleSpinBoxesGeometires[0]->value(),
+                                (float)_geometriDialog->doubleSpinBoxesGeometires[1]->value(),
+                                (float)_geometriDialog->doubleSpinBoxesGeometires[2]->value(),
+                                transform);
+        else // fixed frame
+            ei::creator::addBox(_geometriDialog->nameLine->text().toStdString(),
+                                wc->findFrame(_geometriDialog->comboFrames->currentText().toStdString()),
+                                wc,
+                                (float)_geometriDialog->doubleSpinBoxesGeometires[0]->value(),
+                                (float)_geometriDialog->doubleSpinBoxesGeometires[1]->value(),
+                                (float)_geometriDialog->doubleSpinBoxesGeometires[2]->value(),
+                                transform);
+
+        getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+
+  	}
+}
+
+void EasyInsert::plane()
+{
+    QString st = "Plane";
+    rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+    _geometriDialog = new dialog(wc,st,this);
+
+    _geometriDialog->addToDialog(_geometriDialog->createNameBox());
+    _geometriDialog->addToDialog(_geometriDialog->createCheckFramesBox());
+    _geometriDialog->addToDialog(_geometriDialog->createFrameSelection());
+    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBox());
+
+    _geometriDialog->addToDialog(_geometriDialog->createButtonBox());
+
+    _geometriDialog->exec();
+
+    if (_geometriDialog->result() == QDialog::Accepted)
+    {
+        rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+
+        rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
+        getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
+
+        rw::math::Vector3D<double> displacement(
+                _geometriDialog->doubleSpinBoxes[1]->value(),
+                _geometriDialog->doubleSpinBoxes[2]->value(),
+                _geometriDialog->doubleSpinBoxes[3]->value());
+
+        rw::math::Transform3D<double> transform(displacement);
+
+        if (_geometriDialog->checkFrames[0]->isChecked()) // check for new moveable
+            ei::creator::addPlane(_geometriDialog->nameLine->text().toStdString(),
+                                _geometriDialog->comboFrames->currentText().toStdString(),
+                                wc,
+                                transform);
+        else // else fixed frame
+            ei::creator::addPlane(_geometriDialog->nameLine->text().toStdString(),
+                                wc->findFrame(_geometriDialog->comboFrames->currentText().toStdString()),
+                                wc,
+                                transform);
+
+        getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+    }
+}
+
+void EasyInsert::sphere()
+{
+    QString st = "Sphere";
+    rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+    _geometriDialog = new dialog(wc,st,this);
+
+    _geometriDialog->addToDialog(_geometriDialog->createNameBox());
+    _geometriDialog->addToDialog(_geometriDialog->createCheckFramesBox());
+    _geometriDialog->addToDialog(_geometriDialog->createFrameSelection());
+    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBoxSphere());
+    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBox());
+
+    _geometriDialog->addToDialog(_geometriDialog->createButtonBox());
+
+    _geometriDialog->exec();
+
+    if (_geometriDialog->result() == QDialog::Accepted)
+    {
+        rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+
+        rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
+        getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
+
+        rw::math::Vector3D<double> displacement(
+                _geometriDialog->doubleSpinBoxes[1]->value(),
+                _geometriDialog->doubleSpinBoxes[2]->value(),
+                _geometriDialog->doubleSpinBoxes[3]->value());
+
+        rw::math::Transform3D<double> transform(displacement);
+
+        if (_geometriDialog->checkFrames[0]->isChecked()) // check for new moveable
+            ei::creator::addSphere(_geometriDialog->nameLine->text().toStdString(),
+                                _geometriDialog->comboFrames->currentText().toStdString(),
+                                wc,
+                                _geometriDialog->doubleSpinBoxesGeometires[0]->value(),
+                                transform);
+        else
+            ei::creator::addSphere(_geometriDialog->nameLine->text().toStdString(),
+                                wc->findFrame(_geometriDialog->comboFrames->currentText().toStdString()),
+                                wc,
+                                _geometriDialog->doubleSpinBoxesGeometires[0]->value(),
+                                transform);
+
+        getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+    }
+}
+
+void EasyInsert::cone()
+{
+    QString st = "Cone";
+    rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+    _geometriDialog = new dialog(wc,st,this);
+
+    _geometriDialog->addToDialog(_geometriDialog->createNameBox());
+    _geometriDialog->addToDialog(_geometriDialog->createCheckFramesBox());
+    _geometriDialog->addToDialog(_geometriDialog->createFrameSelection());
+    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBoxCone());
+    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBox());
+
+    _geometriDialog->addToDialog(_geometriDialog->createButtonBox());
+
+    _geometriDialog->exec();
+
+    if (_geometriDialog->result() == QDialog::Accepted)
+    {
+        rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+
+        rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
+        getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
+
+        rw::math::Vector3D<double> displacement(
+                _geometriDialog->doubleSpinBoxes[1]->value(),
+                _geometriDialog->doubleSpinBoxes[2]->value(),
+                _geometriDialog->doubleSpinBoxes[3]->value());
+
+        rw::math::Transform3D<double> transform(displacement);
+
+        if (_geometriDialog->checkFrames[0]->isChecked()) // check for new moveable
+            ei::creator::addCone(_geometriDialog->nameLine->text().toStdString(),
+                                _geometriDialog->comboFrames->currentText().toStdString(),
+                                wc,
+                                _geometriDialog->doubleSpinBoxesGeometires[0]->value(),
+                                _geometriDialog->doubleSpinBoxesGeometires[1]->value(),
+                                transform);
+        else
+            ei::creator::addCone(_geometriDialog->nameLine->text().toStdString(),
+                                wc->findFrame(_geometriDialog->comboFrames->currentText().toStdString()),
+                                wc,
+                                _geometriDialog->doubleSpinBoxesGeometires[0]->value(),
+                                _geometriDialog->doubleSpinBoxesGeometires[1]->value(),
+                                transform);
+
+        getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+    }
+}
+
+void EasyInsert::cylinder()
+{
+    QString st = "Cylinder";
+    rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+    _geometriDialog = new dialog(wc,st,this);
+
+    _geometriDialog->addToDialog(_geometriDialog->createNameBox());
+    _geometriDialog->addToDialog(_geometriDialog->createCheckFramesBox());
+    _geometriDialog->addToDialog(_geometriDialog->createFrameSelection());
+    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBoxCone()); //cylinder and cone uses the same parameters
+    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBox());
+
+    _geometriDialog->addToDialog(_geometriDialog->createButtonBox());
+
+    _geometriDialog->exec();
+
+    if (_geometriDialog->result() == QDialog::Accepted)
+    {
+        rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+
+        rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
+        getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
+
+        rw::math::Vector3D<double> displacement(
+                _geometriDialog->doubleSpinBoxes[1]->value(),
+                _geometriDialog->doubleSpinBoxes[2]->value(),
+                _geometriDialog->doubleSpinBoxes[3]->value());
+
+        rw::math::Transform3D<double> transform(displacement);
+
+        if (_geometriDialog->checkFrames[0]->isChecked()) // check for new moveable
+            ei::creator::addCylinder(_geometriDialog->nameLine->text().toStdString(),
+                                _geometriDialog->comboFrames->currentText().toStdString(),
+                                wc,
+                                _geometriDialog->doubleSpinBoxesGeometires[0]->value(),
+                                _geometriDialog->doubleSpinBoxesGeometires[1]->value(),
+                                transform);
+        else
+            ei::creator::addCylinder(_geometriDialog->nameLine->text().toStdString(),
+                                wc->findFrame(_geometriDialog->comboFrames->currentText().toStdString()),
+                                wc,
+                                _geometriDialog->doubleSpinBoxesGeometires[0]->value(),
+                                _geometriDialog->doubleSpinBoxesGeometires[1]->value(),
+                                transform);
+
+        getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+    }
+}
+
+void EasyInsert::tube()
+{
+    QString st = "Tube";
+    rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+    _geometriDialog = new dialog(wc,st,this);
+
+    _geometriDialog->addToDialog(_geometriDialog->createNameBox());
+    _geometriDialog->addToDialog(_geometriDialog->createCheckFramesBox());
+    _geometriDialog->addToDialog(_geometriDialog->createFrameSelection());
+    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBoxTube());
+    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBox());
+
+    _geometriDialog->addToDialog(_geometriDialog->createButtonBox());
+
+    _geometriDialog->exec();
+
+    if (_geometriDialog->result() == QDialog::Accepted)
+    {
+        rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+
+        rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
+        getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
+
+        rw::math::Vector3D<double> displacement(
+                _geometriDialog->doubleSpinBoxes[1]->value(),
+                _geometriDialog->doubleSpinBoxes[2]->value(),
+                _geometriDialog->doubleSpinBoxes[3]->value());
+
+        rw::math::Transform3D<double> transform(displacement);
+
+        if (_geometriDialog->checkFrames[0]->isChecked()) // check for new moveable
+            ei::creator::addTube(_geometriDialog->nameLine->text().toStdString(),
+                                _geometriDialog->comboFrames->currentText().toStdString(),
+                                wc,
+                                _geometriDialog->doubleSpinBoxesGeometires[0]->value(),
+                                _geometriDialog->doubleSpinBoxesGeometires[1]->value(),
+                                _geometriDialog->doubleSpinBoxesGeometires[2]->value(),
+                                transform);
+        else
+            ei::creator::addTube(_geometriDialog->nameLine->text().toStdString(),
+                                wc->findFrame(_geometriDialog->comboFrames->currentText().toStdString()),
+                                wc,
+                                _geometriDialog->doubleSpinBoxesGeometires[0]->value(),
+                                _geometriDialog->doubleSpinBoxesGeometires[1]->value(),
+                                _geometriDialog->doubleSpinBoxesGeometires[2]->value(),
+                                transform);
+
+
+        getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+    }
+}
+
+void EasyInsert::fixedFrame()
+{
+    QString st = "Fixed Frame";
+    rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+    _geometriDialog = new dialog(wc,st,this);
+
+    _geometriDialog->addToDialog(_geometriDialog->createNameBox());
+    //_geometriDialog->addToDialog(_geometriDialog->createCheckFramesBox());
+    _geometriDialog->addToDialog(_geometriDialog->createFrameSelection());
+    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBox());
+
+    _geometriDialog->addToDialog(_geometriDialog->createButtonBox());
+
+    _geometriDialog->exec();
+
+    if (_geometriDialog->result() == QDialog::Accepted)
+    {
+        rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+
+        rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
+        getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
+
+        rw::math::Vector3D<double> displacement(
+                _geometriDialog->doubleSpinBoxes[1]->value(),
+                _geometriDialog->doubleSpinBoxes[2]->value(),
+                _geometriDialog->doubleSpinBoxes[3]->value());
+
+        rw::math::Transform3D<double> transform(displacement);
+
+        ei::creator::addFixedFrame(wc,
+                            _geometriDialog->nameLine->text().toStdString(),
+                            _geometriDialog->comboFrames->currentText().toStdString(),
+                            transform);
+
+        getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+    }
+}
+
+void EasyInsert::movableFrame()
+{
+    QString st = "Movable Frame";
+    rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+    _geometriDialog = new dialog(wc,st,this);
+
+    _geometriDialog->addToDialog(_geometriDialog->createNameBox());
+    //_geometriDialog->addToDialog(_geometriDialog->createCheckFramesBox());
+    _geometriDialog->addToDialog(_geometriDialog->createFrameSelection());
+    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBox());
+
+    _geometriDialog->addToDialog(_geometriDialog->createButtonBox());
+
+    _geometriDialog->exec();
+
+    if (_geometriDialog->result() == QDialog::Accepted)
+    {
+        rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+
+        rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
+        getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
+
+        rw::math::Vector3D<double> displacement(
+                _geometriDialog->doubleSpinBoxes[1]->value(),
+                _geometriDialog->doubleSpinBoxes[2]->value(),
+                _geometriDialog->doubleSpinBoxes[3]->value());
+
+        rw::math::Transform3D<double> transform(displacement);
+
+        ei::creator::addMovableFrame(wc,
+                            _geometriDialog->nameLine->text().toStdString(),
+                            _geometriDialog->comboFrames->currentText().toStdString(),
+                            transform);
+
+        getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+    }
 }
 
 void EasyInsert::stateChangedListener(const State& state)
