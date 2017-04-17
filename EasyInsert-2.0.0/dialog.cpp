@@ -231,48 +231,38 @@ QWidget* dialog::createConfigurationBoxTube()
 QWidget* dialog::createLibSettingsBox()
 {
     setupSettings();
-    QSignalMapper *signalMapper = new QSignalMapper(this);
+    //QSignalMapper *signalMapper = new QSignalMapper(this);
 
     //QLineEdit *pathLine[3];
-    QPushButton* btns[3];
-    QLabel *labels[3];
-    QGroupBox *libSettingsbox = new QGroupBox(tr("Choose path for libraries:"));
+    QPushButton* btns;
+    QLabel *labels;
+    QGroupBox *libSettingsbox = new QGroupBox(tr("Choose path for libraries: "));
     QGridLayout *layout = new QGridLayout();
-    for (int i = 0; i < 3; ++i)
-    {
-        if ( i == 0 )
-            labels[i] = new QLabel(tr("Devices"));
-        else if ( i == 1 )
-            labels[i] = new QLabel(tr("Geometries"));
-        else
-            labels[i] = new QLabel(tr("Frames"));
 
-        pathLine[i] = new QLineEdit();
-        pathLine[i]->setEchoMode(QLineEdit::Normal);
-        pathLine[i]->setReadOnly(true);
-        layout->addWidget(labels[i], i + 1, 0);
-        layout->addWidget(pathLine[i], i + 1, 1);
-        btns[i] = new QPushButton("...",this);
-        btns[i]->setFixedSize(25,25);
+    labels = new QLabel(tr("Devices"));
 
-        connect(btns[i], SIGNAL(clicked()), signalMapper, SLOT(map()));
-        signalMapper->setMapping(btns[i], i);
-        layout->addWidget(btns[i], i + 1, 2);
-    }
+    pathLine = new QLineEdit();
+    pathLine->setEchoMode(QLineEdit::Normal);
+    pathLine->setReadOnly(true);
+    layout->addWidget(labels, 0, 0);
+    layout->addWidget(pathLine, 0, 1);
+    btns = new QPushButton("...",this);
+    btns->setFixedSize(25,25);
+
+    /*  connect(btns[i], SIGNAL(clicked()), signalMapper, SLOT(map())); // this mapping is used when more than 1 lirbiary is set
+        signalMapper->setMapping(btns[i], i);                           // because you cant pass integers with the slots
+        layout->addWidget(btns[i], i + 1, 2);                           // so to enable this again, remember to add an parameter int to setdirdialog
+
     connect(signalMapper, SIGNAL(mapped(int)),this, SIGNAL(clicked(int)));
     connect(this, SIGNAL(clicked(int)),this, SLOT(setDirectoryDialog(int)));
+    */
+    layout->addWidget(btns, 0, 2);
+    connect(btns, SIGNAL(clicked()),this, SLOT(setDirectoryDialog()));
 
     QString str1 = _settingsMap->get<std::string>("Devices", "/").c_str();
-    QString str2 = _settingsMap->get<std::string>("Geometries", "/").c_str();
-    QString str3 = _settingsMap->get<std::string>("Frames", "/").c_str();
 
-    pathLine[0]->setText(str1);
-    pathLine[1]->setText(str2);
-    pathLine[2]->setText(str3);
+    pathLine->setText(str1);
 
-    //layout->setColumnStretch(1, 10);
-    //layout->setColumnStretch(2, 20);
-    //layout->setColumnStretch(3, 10);
     libSettingsbox->setLayout(layout);
 
     return libSettingsbox;
@@ -329,28 +319,28 @@ void dialog::setupSettings()
 	_settingsMap = _propMap.getPtr<rw::common::PropertyMap>("EasyInsertSettings");
 }
 
-void dialog::setDirectoryDialog(int i)
+void dialog::setDirectoryDialog()
 {
     QString dir = QFileDialog::getExistingDirectory(
 		this,
 		tr("Open Directory"),
        	"/",
 	    QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-    if (i == 0) {
+    //if (i == 0) {
         _settingsMap->set<std::string>("Devices", dir.toStdString());
-    } else if (i == 1) {
-        _settingsMap->set<std::string>("Geometries", dir.toStdString());
-    } else {
-        _settingsMap->set<std::string>("Frames", dir.toStdString());
-    }
+    //} else if (i == 1) {
+    //    _settingsMap->set<std::string>("Geometries", dir.toStdString());
+    //} else {
+    //    _settingsMap->set<std::string>("Frames", dir.toStdString());
+    //}
 
     QString str1 = _settingsMap->get<std::string>("Devices", "/").c_str();
-    QString str2 = _settingsMap->get<std::string>("Geometries", "/").c_str();
-    QString str3 = _settingsMap->get<std::string>("Frames", "/").c_str();
+    //QString str2 = _settingsMap->get<std::string>("Geometries", "/").c_str();
+    //QString str3 = _settingsMap->get<std::string>("Frames", "/").c_str();
 
-    pathLine[0]->setText(str1);
-    pathLine[1]->setText(str2);
-    pathLine[2]->setText(str3);
+    pathLine->setText(str1);
+    //pathLine[1]->setText(str2);
+    //pathLine[2]->setText(str3);
 
 }
 

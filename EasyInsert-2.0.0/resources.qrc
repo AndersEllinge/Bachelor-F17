@@ -8,6 +8,8 @@
 <file>sphere.png</file>
 <file>plane.png</file>
 <file>tube.png</file>
+<file>movable.png</file>
+<file>fixed.png</file>
 
 
 </qresource>

@@ -69,14 +69,14 @@ private:
 
     QVBoxLayout *mainLayout;
 
-    QLineEdit *pathLine[3];
+    QLineEdit *pathLine;
 
     QDialogButtonBox *buttonBox;
 
     rw::models::WorkCell::Ptr _workCell;
 
 private slots:
-    void setDirectoryDialog(int i);
+    void setDirectoryDialog();
 
 
 signals:
