@@ -70,41 +70,44 @@ void TestPlugin::insertBtnPressed() {
     rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
     getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
 
-    // Loader test: Device
-    //ei::loader::add("/home/mathias/Desktop/Git/Bachelor-F17/testPluginV2/Fanuc-LRM200i/fanuc_lrm200i.xml", wc, name.toStdString(),
-    //    inputX->value(), inputY->value(), inputZ->value(), inputR->value(), inputP->value(), inputRY->value()); // Run loader
+    try {
+        // Loader test: Device
+        ei::loader::add("/home/mathias/Desktop/Git/Bachelor-F17/testPluginV2/Fanuc-LRM200i/fanuc_lrm200i.xml", wc, name.toStdString(),
+            inputX->value(), inputY->value(), inputZ->value(), inputR->value(), inputP->value(), inputRY->value()); // Run loader
 
-    // Creator test: Frames
-    ei::creator::addFixedFrame(wc, "testFixed", "WORLD");
-    ei::creator::addMovableFrame(wc, "testMovable", "testFixed");
+        // Creator test: Frames
+        //ei::creator::addFixedFrame(wc, "testFixed", "WORLD");
+        //ei::creator::addMovableFrame(wc, "testMovable", "testFixed");
 
-    // Creator test: Box
-    //ei::creator::addBox("testBox", "testFixed", wc, 0.1f, 0.1f, 0.1f, testTransform);
-    //ei::creator::addBox("testBox2", wc->findFrame("WORLD"), wc, 0.2f, 0.2f, 0.2f, testTransform);
+        // Creator test: Box
+        //ei::creator::addBox("testBox", "testFixed", wc, 0.1f, 0.1f, 0.1f, testTransform);
+        //ei::creator::addBox("testBox2", wc->findFrame("WORLD"), wc, 0.2f, 0.2f, 0.2f, testTransform);
 
-    // Creator test: Plane
-    //ei::creator::addPlane("testPlane", "testFixed", wc, testTransform);
-    //ei::creator::addPlane("testPlane2", wc->findFrame("WORLD"), wc, testTransform);
+        // Creator test: Plane
+        //ei::creator::addPlane("testPlane", "testFixed", wc, testTransform);
+        //ei::creator::addPlane("testPlane2", wc->findFrame("WORLD"), wc, testTransform);
 
-    // Creator test: Sphere
-    //ei::creator::addSphere("testSphere", "testFixed", wc, 0.1f, testTransform);
-    //ei::creator::addSphere("testSphere2", wc->findFrame("WORLD"), wc, 0.2f, testTransform);
+        // Creator test: Sphere
+        //ei::creator::addSphere("testSphere", "testFixed", wc, 0.1f, testTransform);
+        //ei::creator::addSphere("testSphere2", wc->findFrame("WORLD"), wc, 0.2f, testTransform);
 
-    // Creator test: Cone
-    //ei::creator::addCone("testCone", "testFixed", wc, 0.1f, 0.2f, testTransform);
-    //ei::creator::addCone("testCone2", wc->findFrame("WORLD"), wc, 0.2f, 0.4f, testTransform);
+        // Creator test: Cone
+        //ei::creator::addCone("testCone", "testFixed", wc, 0.1f, 0.2f, testTransform);
+        //ei::creator::addCone("testCone2", wc->findFrame("WORLD"), wc, 0.2f, 0.4f, testTransform);
 
-    // Creator test: Cylinder
-    //ei::creator::addCylinder("testCylinder", "testFixed", wc, 0.1f, 0.2f, testTransform);
-    //ei::creator::addCylinder("testCylinder2", wc->findFrame("WORLD"), wc, 0.2f, 0.4f, testTransform);
+        // Creator test: Cylinder
+        //ei::creator::addCylinder("testCylinder", "testFixed", wc, 0.1f, 0.2f, testTransform);
+        //ei::creator::addCylinder("testCylinder2", wc->findFrame("WORLD"), wc, 0.2f, 0.4f, testTransform);
 
-    // Creator test: Tube
-    //ei::creator::addTube("testTube", "testFixed", wc, 0.2f, 0.1f, 0.4f, testTransform);
-    //ei::creator::addTube("testTube2", wc->findFrame("WORLD"), wc, 0.4f, 0.2f, 0.8f, testTransform);
-
-
-
-    getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+        // Creator test: Tube
+        //ei::creator::addTube("testTube", "testFixed", wc, 0.2f, 0.1f, 0.4f, testTransform);
+        //ei::creator::addTube("testTube2", wc->findFrame("WORLD"), wc, 0.4f, 0.2f, 0.8f, testTransform);
+        getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+    }
+    catch(const std::exception& ex) {
+        getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+        RW_THROW("Name of device already in use");
+    }
 
     // Yaw x, Roll z, Pitch y
     //log().info() << "\n";

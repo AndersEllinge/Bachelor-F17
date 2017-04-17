@@ -154,14 +154,6 @@ void ei::creator::addTube(std::string name, rw::kinematics::Frame* frame, rw::mo
     creator.addObject(name, frame, wc, val.str(), transform);
 }
 
-
-
-
-
-
-
-
-
 // Util funcs
 rw::geometry::Geometry::Ptr ei::creator::createGoem(std::string name, rw::kinematics::Frame* frame, std::string val, rw::math::Transform3D<double> transform) {
     rw::geometry::Geometry::Ptr geom = rw::loaders::GeometryFactory::load(val, true);
