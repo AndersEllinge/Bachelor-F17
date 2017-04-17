@@ -288,8 +288,12 @@ void EasyInsert::cube()
 
     _geometriDialog->exec();
 
-    if (_geometriDialog->result() == QDialog::Accepted)
+    if (_geometriDialog->result() == QDialog::Accepted )
   	{
+        if (_geometriDialog->nameLine->text().toStdString() == "") {
+            RW_THROW("Give geometri a name");
+        }
+
         rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
 
         rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
@@ -348,6 +352,9 @@ void EasyInsert::plane()
 
     if (_geometriDialog->result() == QDialog::Accepted)
     {
+        if (_geometriDialog->nameLine->text().toStdString() == "") {
+            RW_THROW("Give geometri a name");
+        }
         rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
 
         rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
@@ -401,6 +408,10 @@ void EasyInsert::sphere()
 
     if (_geometriDialog->result() == QDialog::Accepted)
     {
+        if (_geometriDialog->nameLine->text().toStdString() == "") {
+            RW_THROW("Give geometri a name");
+        }
+
         rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
 
         rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
@@ -456,6 +467,10 @@ void EasyInsert::cone()
 
     if (_geometriDialog->result() == QDialog::Accepted)
     {
+        if (_geometriDialog->nameLine->text().toStdString() == "") {
+            RW_THROW("Give geometri a name");
+        }
+
         rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
 
         rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
@@ -513,6 +528,10 @@ void EasyInsert::cylinder()
 
     if (_geometriDialog->result() == QDialog::Accepted)
     {
+        if (_geometriDialog->nameLine->text().toStdString() == "") {
+            RW_THROW("Give geometri a name");
+        }
+
         rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
 
         rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
@@ -570,6 +589,10 @@ void EasyInsert::tube()
 
     if (_geometriDialog->result() == QDialog::Accepted)
     {
+        if (_geometriDialog->nameLine->text().toStdString() == "") {
+            RW_THROW("Give geometri a name");
+        }
+
         rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
 
         rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
@@ -629,6 +652,10 @@ void EasyInsert::fixedFrame()
 
     if (_geometriDialog->result() == QDialog::Accepted)
     {
+        if (_geometriDialog->nameLine->text().toStdString() == "") {
+            RW_THROW("Give frame a name");
+        }
+
         rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
 
         rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
@@ -675,6 +702,10 @@ void EasyInsert::movableFrame()
 
     if (_geometriDialog->result() == QDialog::Accepted)
     {
+        if (_geometriDialog->nameLine->text().toStdString() == "") {
+            RW_THROW("Give frame a name");
+        }
+
         rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
 
         rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
