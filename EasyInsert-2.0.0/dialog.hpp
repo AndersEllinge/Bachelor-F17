@@ -10,6 +10,7 @@
 #include <QScrollArea>
 
 class QCheckBox;
+class QSpacerItem;
 class QVariant;
 class QButtonGroup;
 class QCheckBow;

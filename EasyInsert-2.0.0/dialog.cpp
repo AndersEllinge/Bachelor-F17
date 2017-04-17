@@ -106,15 +106,18 @@ QWidget* dialog::createConfigurationBox()
     for (size_t i = 0; i < 3; i++) {
         layout->addWidget(labels[i], i, 0);
         layout->addWidget(doubleSpinBoxes[i], i, 1);
+        //layout->setAlignment(labels[i], Qt::AlignRight);
+        //layout->setAlignment(doubleSpinBoxes[i], Qt::AlignLeft);
     }
     for (size_t i = 3; i < 6; i++) {
         layout->addWidget(labels[i], i-3, 2);
         layout->addWidget(doubleSpinBoxes[i], i-3, 3);
-        layout->setAlignment(labels[i], Qt::AlignRight);
+        //layout->setAlignment(labels[i], Qt::AlignRight);
+        //layout->setAlignment(doubleSpinBoxes[i], Qt::AlignLeft);
     }
 
     layout->setColumnStretch(1, 10);
-    layout->setColumnStretch(2, 20);
+    layout->setColumnStretch(3, 10);
     configuration->setLayout(layout);
 
     return configuration;
@@ -141,8 +144,8 @@ QWidget* dialog::createConfigurationBoxCube()
         layout->addWidget(doubleSpinBoxesGeometires[i], i, 1);
     }
 
-    layout->setColumnStretch(1, 10);
-    layout->setColumnStretch(2, 20);
+    //layout->setColumnStretch(1, 10);
+    //layout->setColumnStretch(2, 20);
     configurationCube->setLayout(layout);
 
     return configurationCube;
@@ -163,8 +166,8 @@ QWidget* dialog::createConfigurationBoxSphere()
     layout->addWidget(doubleSpinBoxesGeometires[0], 0, 1);
 
 
-    layout->setColumnStretch(1, 10);
-    layout->setColumnStretch(2, 20);
+    //layout->setColumnStretch(1, 10);
+    //layout->setColumnStretch(2, 20);
     configurationSphere->setLayout(layout);
 
     return configurationSphere;
@@ -190,8 +193,8 @@ QWidget* dialog::createConfigurationBoxCone()
     layout->addWidget(doubleSpinBoxesGeometires[1], 1, 1);
 
 
-    layout->setColumnStretch(1, 10);
-    layout->setColumnStretch(2, 20);
+    //layout->setColumnStretch(1, 10);
+    //layout->setColumnStretch(2, 20);
     configurationCone->setLayout(layout);
 
     return configurationCone;
@@ -222,8 +225,8 @@ QWidget* dialog::createConfigurationBoxTube()
     layout->addWidget(doubleSpinBoxesGeometires[2], 2, 1);
 
 
-    layout->setColumnStretch(1, 10);
-    layout->setColumnStretch(2, 20);
+    //layout->setColumnStretch(1, 10);
+    //layout->setColumnStretch(2, 20);
     configurationCone->setLayout(layout);
 
     return configurationCone;
