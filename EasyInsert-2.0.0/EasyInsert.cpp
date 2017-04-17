@@ -291,7 +291,7 @@ void EasyInsert::cube()
     if (_geometriDialog->result() == QDialog::Accepted )
   	{
         if (_geometriDialog->nameLine->text().toStdString() == "") {
-            RW_THROW("Give geometri a name");
+            RW_THROW("Give geometry a name");
         }
 
         rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
@@ -353,7 +353,7 @@ void EasyInsert::plane()
     if (_geometriDialog->result() == QDialog::Accepted)
     {
         if (_geometriDialog->nameLine->text().toStdString() == "") {
-            RW_THROW("Give geometri a name");
+            RW_THROW("Give geometry a name");
         }
         rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
 
@@ -409,7 +409,7 @@ void EasyInsert::sphere()
     if (_geometriDialog->result() == QDialog::Accepted)
     {
         if (_geometriDialog->nameLine->text().toStdString() == "") {
-            RW_THROW("Give geometri a name");
+            RW_THROW("Give geometry a name");
         }
 
         rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
@@ -468,7 +468,7 @@ void EasyInsert::cone()
     if (_geometriDialog->result() == QDialog::Accepted)
     {
         if (_geometriDialog->nameLine->text().toStdString() == "") {
-            RW_THROW("Give geometri a name");
+            RW_THROW("Give geometry a name");
         }
 
         rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
@@ -529,7 +529,7 @@ void EasyInsert::cylinder()
     if (_geometriDialog->result() == QDialog::Accepted)
     {
         if (_geometriDialog->nameLine->text().toStdString() == "") {
-            RW_THROW("Give geometri a name");
+            RW_THROW("Give geometry a name");
         }
 
         rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
@@ -590,7 +590,7 @@ void EasyInsert::tube()
     if (_geometriDialog->result() == QDialog::Accepted)
     {
         if (_geometriDialog->nameLine->text().toStdString() == "") {
-            RW_THROW("Give geometri a name");
+            RW_THROW("Give geometry a name");
         }
 
         rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
