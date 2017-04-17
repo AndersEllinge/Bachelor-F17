@@ -20,7 +20,7 @@ public:
     static rw::models::WorkCell::Ptr load(std::string filename, std::string name = "");
 
 private:
-    void addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, std::string name);
+    std::string addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, std::string name);
 };
 }
 

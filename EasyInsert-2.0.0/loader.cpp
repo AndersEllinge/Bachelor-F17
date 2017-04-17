@@ -771,7 +771,7 @@ CollisionSetup defaultCollisionSetup(const WorkCell& workcell) {
 }
 }
 
-void ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, std::string name) {
+std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, std::string name) {
 	try {
 		std::string filename = IOUtil::getAbsoluteFileName(fname);
 
@@ -920,7 +920,6 @@ void ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, 
 			Frame *frame = setup.frameMap[dframe.getName()];
 			frame->attachTo((*parent).second, defaultState);
 		}
-
 		// and then add devices to their respectfull parent frames
 		/*    for(size_t i=0; i<setup.dwc->_devlist.size(); i++){
 		 std::map<std::string, Frame*>::iterator parent =
@@ -950,7 +949,6 @@ void ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, 
 		if (setup.dwc->_calibration.size() > 0) {
 			wc->setCalibrationFilename(setup.dwc->_calibration.front()._filename);
 		}
-
 		// now initialize state with init actions and remember to add all devices
 		//State state( tree );
 		//State state = tree->getDefaultState();
@@ -999,6 +997,7 @@ void ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, 
         ///////////////////////////////////////////////////////////////////
         /// FIX OF COLSETUP
         if (name != "") {
+
             auto exList = collisionSetup.getExcludeList();
             /*
             for (int i = 0; i < exList.size(); i++) {
@@ -1021,6 +1020,7 @@ void ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, 
 
             collisionSetup.merge(wc->getCollisionSetup()); // MERGE WITH CURRENT SETUP
         }
+
         ///////////////////////////////////////////////////////////////////
 
 		CollisionSetup::set(collisionSetup, wc);
@@ -1057,12 +1057,12 @@ void ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, 
 		// make sure to add the name of the workcell file to the workcell propertymap
 		wc->getPropertyMap().set<std::string>("WorkCellFileName", filename);
 
-		return;
+		return setup.dwc->_devlist[0]._name;
 	} catch (const std::exception& e) {
 		RW_THROW("Could not load WorkCell: " << fname << ". An error occoured:\n " << std::string(e.what()));
 	}
 
-	return;
+	return "";
 }
 
 void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name) {
@@ -1072,11 +1072,14 @@ void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::st
 
 void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name, rw::math::Transform3D<double> transform) {
     ei::loader loader;
-	loader.addToWorkCell(filename, wc, name); // Add device to wc
+
+	std::string newName = loader.addToWorkCell(filename, wc, name); // Add device to wc
+    if (newName == "")
+        return;
 
     rw::kinematics::State state = wc->getDefaultState(); // Get state of wc
 
-    rw::kinematics::Frame* base = wc->findDevice(name)->getBase(); // Get base of device
+    rw::kinematics::Frame* base = wc->findDevice(newName)->getBase(); // Get base of device
 
     rw::kinematics::MovableFrame* mbase = dynamic_cast<rw::kinematics::MovableFrame*>(base); // Test for base is movable frame
     if (mbase != NULL)
