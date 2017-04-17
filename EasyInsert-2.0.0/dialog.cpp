@@ -110,6 +110,7 @@ QWidget* dialog::createConfigurationBox()
     for (size_t i = 3; i < 6; i++) {
         layout->addWidget(labels[i], i-3, 2);
         layout->addWidget(doubleSpinBoxes[i], i-3, 3);
+        layout->setAlignment(labels[i], Qt::AlignRight);
     }
 
     layout->setColumnStretch(1, 10);
