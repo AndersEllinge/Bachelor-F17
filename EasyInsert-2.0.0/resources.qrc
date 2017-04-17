@@ -1,15 +1,15 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
 <file>pa_icon.png</file>
-<file>undo.png</file>
-<file>cube.png</file>
-<file>cone.png</file>
-<file>cylinder.png</file>
-<file>sphere.png</file>
-<file>plane.png</file>
-<file>tube.png</file>
-<file>movable.png</file>
-<file>fixed.png</file>
+<file>icons/undo.png</file>
+<file>icons/cube.png</file>
+<file>icons/cone.png</file>
+<file>icons/cylinder.png</file>
+<file>icons/sphere.png</file>
+<file>icons/plane.png</file>
+<file>icons/tube.png</file>
+<file>icons/movable.png</file>
+<file>icons/fixed.png</file>
 
 
 </qresource>

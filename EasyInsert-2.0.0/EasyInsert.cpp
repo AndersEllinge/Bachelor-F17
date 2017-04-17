@@ -139,49 +139,49 @@ QWidget* EasyInsert::createGeoTab()
     QToolButton *btns[8];
 
     btns[0] = new QToolButton();
-    btns[0]->setIcon(QIcon(":/cube.png"));
+    btns[0]->setIcon(QIcon(":icons/cube.png"));
     btns[0]->setToolTip("Cube");
     btns[0]->setIconSize(QSize(50, 50));
     connect(btns[0], SIGNAL(clicked()), this, SLOT(cube()));
 
     btns[1] = new QToolButton();
-    btns[1]->setIcon(QIcon(":/cylinder.png"));
+    btns[1]->setIcon(QIcon(":icons/cylinder.png"));
     btns[1]->setToolTip("Cylinder");
     btns[1]->setIconSize(QSize(50, 50));
     connect(btns[1], SIGNAL(clicked()), this, SLOT(cylinder()));
 
     btns[2] = new QToolButton();
-    btns[2]->setIcon(QIcon(":/cone.png"));
+    btns[2]->setIcon(QIcon(":icons/cone.png"));
     btns[2]->setToolTip("Cone");
     btns[2]->setIconSize(QSize(50, 50));
     connect(btns[2], SIGNAL(clicked()), this, SLOT(cone()));
 
     btns[3] = new QToolButton();
-    btns[3]->setIcon(QIcon(":/plane.png"));
+    btns[3]->setIcon(QIcon(":icons/plane.png"));
     btns[3]->setToolTip("Plane");
     btns[3]->setIconSize(QSize(50, 50));
     connect(btns[3], SIGNAL(clicked()), this, SLOT(plane()));
 
     btns[4] = new QToolButton();
-    btns[4]->setIcon(QIcon(":/sphere.png"));
+    btns[4]->setIcon(QIcon(":icons/sphere.png"));
     btns[4]->setToolTip("Sphere");
     btns[4]->setIconSize(QSize(50, 50));
     connect(btns[4], SIGNAL(clicked()),this, SLOT(sphere()));
 
     btns[5] = new QToolButton();
-    btns[5]->setIcon(QIcon(":/tube.png"));
+    btns[5]->setIcon(QIcon(":icons/tube.png"));
     btns[5]->setToolTip("Tube");
     btns[5]->setIconSize(QSize(50, 50));
     connect(btns[5], SIGNAL(clicked()),this, SLOT(tube()));
 
     btns[6] = new QToolButton();
-    btns[6]->setIcon(QIcon(":/fixed.png"));
+    btns[6]->setIcon(QIcon(":icons/fixed.png"));
     btns[6]->setToolTip("Fixed Frame");
     btns[6]->setIconSize(QSize(50, 50));
     connect(btns[6], SIGNAL(clicked()),this, SLOT(fixedFrame()));
 
     btns[7] = new QToolButton();
-    btns[7]->setIcon(QIcon(":/movable.png"));
+    btns[7]->setIcon(QIcon(":icons/movable.png"));
     btns[7]->setToolTip("Movable Frame");
     btns[7]->setIconSize(QSize(50, 50));
     connect(btns[7], SIGNAL(clicked()),this, SLOT(movableFrame()));
