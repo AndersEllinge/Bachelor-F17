@@ -29,8 +29,10 @@ EasyInsert::EasyInsert():
     QTabWidget *tabWindow = new QTabWidget(dockWidgetContent);
     _devTab = createDevTab();
     _geoTab = createGeoTab();
+    _deleteTab = createDeleteTab();
     tabWindow->addTab(_devTab, "Devices");
     tabWindow->addTab(_geoTab, "Geometries");
+    tabWindow->addTab(_deleteTab, "Delete");
     verticalLayout->addWidget(tabWindow);
 
     //done with creating all the stuff, now set the layout for the base
@@ -50,12 +52,29 @@ void EasyInsert::initialize()
     getRobWorkStudio()->stateChangedEvent().add(boost::bind(&EasyInsert::stateChangedListener, this, _1), this);
 }
 
+void EasyInsert::workcellChangedListener(int notUsed)
+{
+    QMetaObject::invokeMethod(this, "update", Qt::QueuedConnection);
+}
+
 void EasyInsert::open(WorkCell* workcell)
 {
+    _workcell = workcell;
+    _state = getRobWorkStudio()->getState();
+    _treeWidget->setHeaderLabels(QStringList("WorkCell"));
+
+    showFrameStructure();
+
+    // connect the workcell changed handler
+    _workcell->workCellChangedEvent().add(boost::bind(&EasyInsert::workcellChangedListener, this, _1), this);
 }
 
 void EasyInsert::close()
 {
+    clearTreeContent();
+
+    _workcell = NULL;
+    _treeWidget->setHeaderLabels(QStringList("WorkCell"));
 }
 
 void EasyInsert::setupSettings()
@@ -202,6 +221,106 @@ QWidget* EasyInsert::createGeoTab()
     widg->setWidget(geoTab);
     return widg;
 }
+
+QWidget* EasyInsert::createDeleteTab()
+{
+    QScrollArea *widg = new QScrollArea();
+    widg->setWidgetResizable(true);
+    widg->setFrameShape(QFrame::NoFrame);
+    QWidget *devTab = new QWidget();
+    QVBoxLayout *verticalLayout = new QVBoxLayout(devTab);
+
+    _treeWidget = new QTreeWidget(this);
+    _treeWidget->header()->setStretchLastSection(false);
+    _treeWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    _treeWidget->setColumnCount(1);
+    QTreeWidgetItem* header = _treeWidget->headerItem();
+    _treeWidget->setItemHidden(header, true);
+    //connect(_treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(highlightSlot()));
+
+    QPushButton *delBtn = new QPushButton("Delete",devTab);
+
+    verticalLayout->addWidget(_treeWidget);
+    verticalLayout->addWidget(delBtn);
+
+    devTab->setLayout(verticalLayout);
+    widg->setWidget(devTab);
+    return widg;
+}
+
+void EasyInsert::showFrameStructure()
+{
+    clearTreeContent();
+    _treeWidget->setHeaderLabels(QStringList("Frame Structure"));
+    if (_workcell != NULL) {
+        setupFrame(*_workcell->getWorldFrame(), NULL);
+    }
+}
+
+void EasyInsert::setupFrame(rw::kinematics::Frame& frame, QTreeWidgetItem* parentItem)
+{
+    QTreeWidgetItem* item = new QTreeWidgetItem();
+    if (parentItem != NULL)
+        parentItem->addChild(item); // own item
+    else
+        _treeWidget->addTopLevelItem(item); // own item
+    std::string name = getFrameName(frame);
+    item->setText(0, name.c_str());
+
+    _frameMap.insert(std::make_pair(item, &frame)); //register frame item
+
+    if ( dynamic_cast<rw::models::Joint*>(&frame) )
+        item->setIcon(0,QIcon(":/images/joint.png"));
+    else
+        item->setIcon(0,QIcon(":/images/frame.png"));
+    rw::kinematics::Frame::iterator_pair children = frame.getChildren(_state);
+    for (rw::kinematics::Frame::iterator it = children.first; it != children.second; ++it) {
+        setupFrame(*it, item);
+    }
+    setupDrawables(&frame, item);
+}
+
+void EasyInsert::setupDrawables(rw::kinematics::Frame* frame, QTreeWidgetItem* parent)
+{
+    rw::graphics::WorkCellScene::Ptr scene = getRobWorkStudio()->getView()->getWorkCellScene();
+
+    int drawMask = getRobWorkStudio()->getView()->getDrawMask();
+
+    const std::vector<rw::graphics::DrawableNode::Ptr>& drawables = scene->getDrawables(frame);
+
+    typedef std::vector<rw::graphics::DrawableNode::Ptr>::const_iterator DI;
+    for (DI p = drawables.begin(); p != drawables.end(); ++p) {
+        rw::graphics::DrawableNode::Ptr drawable = *p;
+        if( !(drawable->getMask() & drawMask) )
+            continue;
+
+        RW_ASSERT(drawable);
+        QTreeWidgetItem* item = new QTreeWidgetItem(parent); // owned.
+
+        item->setText(0, drawable->getName().c_str());
+        _drawableMap[item] = drawable;
+        if( drawable->getMask() & rw::graphics::DrawableNode::CollisionObject ){
+            item->setIcon(0, QIcon(":/images/collision.png"));
+        } else {
+            item->setIcon(0, QIcon(":/images/drawable.png"));
+        }
+    }
+}
+
+std::string EasyInsert::getFrameName(const rw::kinematics::Frame& frame)
+{
+    std::string name = frame.getName();
+    size_t index = name.find_last_of('.');
+    if (index == std::string::npos)
+        return frame.getName();
+    else
+        return name.substr(index + 1);
+}
+
+/*void EasyInsert::registerFrameItem(Frame* frame, QTreeWidgetItem* item)
+{
+    _frameMap.insert(make_pair(item, frame));
+}*/
 
 void EasyInsert::settings()
 {
@@ -735,8 +854,38 @@ void EasyInsert::movableFrame()
     }
 }
 
+void EasyInsert::update()
+{
+    _state = getRobWorkStudio()->getState();
+    clearTreeContent();
+    showFrameStructure();
+}
+
+void EasyInsert::clearTreeContent()
+{
+    while (_treeWidget->topLevelItemCount() > 0) {
+        delete _treeWidget->takeTopLevelItem(0);
+    }
+
+    _frameMap.clear();
+    _drawableMap.clear();
+}
+
 void EasyInsert::stateChangedListener(const State& state)
 {
+    _state = getRobWorkStudio()->getState();
+    bool forceUpdate = false;
+    BOOST_FOREACH( EasyInsert::FrameMap::value_type p, _frameMap){
+        if( rw::kinematics::Kinematics::isDAF(p.second) ){
+            // test if parent changed
+            if(p.second->getParent(state)!=p.second->getParent(_state)){
+                forceUpdate = true;
+                break;
+            }
+        }
+    }
+    if(forceUpdate)
+        update();
 }
 
 

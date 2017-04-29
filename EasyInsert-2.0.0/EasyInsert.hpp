@@ -14,6 +14,8 @@
 
 #include <QTableWidget>
 #include <QTableWidgetItem>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
 #include <QtCore>
 #include <QScrollArea>
 #include <QToolBar>
@@ -29,6 +31,8 @@
 
 #include <rw/kinematics/FixedFrame.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
+#include <rw/kinematics/Kinematics.hpp>
+#include <rw/graphics/DrawableNode.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
 
@@ -53,20 +57,43 @@ public:
 
     virtual void initialize();
 
+    void workcellChangedListener(int notUsed);
+
 
 private:
     void setupSettings();
     QToolBar* createToolBar();
     QWidget* createDevTab();
     QWidget* createGeoTab();
+    QWidget* createDeleteTab();
     void updateDeviceTab();
+    void showFrameStructure();
+    void setupFrame(rw::kinematics::Frame& frame, QTreeWidgetItem* parentItem);
+    void setupDrawables(rw::kinematics::Frame* frame, QTreeWidgetItem* parent);
+    std::string getFrameName(const rw::kinematics::Frame& frame);
+    void clearTreeContent();
+    void update();
+    //void registerFrameItem(Frame* frame, QTreeWidgetItem* item);
 
+    rw::kinematics::State _state;
+    rw::models::WorkCell* _workcell;
+
+    QTreeWidget* _treeWidget;
     QToolBar* _toolBar;
     QWidget* _devTab;
     QWidget* _geoTab;
+    QWidget* _deleteTab;
     dialog* _settingsDialog;
     dialog* _loadDialog;
     dialog* _geometriDialog;
+
+
+    typedef std::map<QTreeWidgetItem*, rw::kinematics::Frame*> FrameMap;
+    FrameMap _frameMap;
+
+    typedef std::map<QTreeWidgetItem*, rw::common::Ptr<rw::graphics::DrawableNode> > DrawableMap;
+    // maintains the drawables that are not constructed and added from this plugin
+    DrawableMap _drawableMap;
 
 protected:
 
