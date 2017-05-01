@@ -61,7 +61,7 @@ void EasyInsert::open(WorkCell* workcell)
 {
     _workcell = workcell;
     _state = getRobWorkStudio()->getState();
-    _treeWidget->setHeaderLabels(QStringList("WorkCell"));
+    //_treeWidget->setHeaderLabels(QStringList("WorkCell"));
 
     showFrameStructure();
 
@@ -71,10 +71,10 @@ void EasyInsert::open(WorkCell* workcell)
 
 void EasyInsert::close()
 {
-    clearTreeContent();
+    clearListContent();
 
     _workcell = NULL;
-    _treeWidget->setHeaderLabels(QStringList("WorkCell"));
+    //_treeWidget->setHeaderLabels(QStringList("WorkCell"));
 }
 
 void EasyInsert::setupSettings()
@@ -224,47 +224,217 @@ QWidget* EasyInsert::createGeoTab()
 
 QWidget* EasyInsert::createDeleteTab()
 {
+    //QGridLayout *layout = new QGridLayout();
+
     QScrollArea *widg = new QScrollArea();
     widg->setWidgetResizable(true);
     widg->setFrameShape(QFrame::NoFrame);
     QWidget *devTab = new QWidget();
     QVBoxLayout *verticalLayout = new QVBoxLayout(devTab);
 
-    _treeWidget = new QTreeWidget(this);
-    _treeWidget->header()->setStretchLastSection(false);
-    _treeWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    _treeWidget->setColumnCount(1);
-    QTreeWidgetItem* header = _treeWidget->headerItem();
-    _treeWidget->setItemHidden(header, true);
-    //connect(_treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(highlightSlot()));
+    QGroupBox *delDevBox = new QGroupBox(tr("Devices:"));
+    QGroupBox *delFrameBox = new QGroupBox(tr("Frames:"));
+    QGroupBox *delObjBox = new QGroupBox(tr("Objects:"));
+    QGridLayout *layoutDev = new QGridLayout();
+    QGridLayout *layoutFrame = new QGridLayout();
+    QGridLayout *layoutObj = new QGridLayout();
 
+    _deviceWidget = new QListWidget(this);
+    _frameWidget = new QListWidget(this);
+    _objectWidget = new QListWidget(this);
+
+
+    QPushButton *delDevBtn = new QPushButton("Delete",devTab);
+    connect(delDevBtn, SIGNAL(clicked()), this, SLOT(deleteDev()));
+    QPushButton *delObjBtn = new QPushButton("Delete",devTab);
+    connect(delObjBtn, SIGNAL(clicked()), this, SLOT(deleteObj()));
     QPushButton *delBtn = new QPushButton("Delete",devTab);
+    connect(delBtn, SIGNAL(clicked()), this, SLOT(deleteFrame()));
 
-    verticalLayout->addWidget(_treeWidget);
-    verticalLayout->addWidget(delBtn);
+    layoutDev->addWidget(_deviceWidget,0,0);
+    layoutDev->addWidget(delDevBtn,0,1);
+    delDevBox->setLayout(layoutDev);
+
+    layoutObj->addWidget(_objectWidget,0,0);
+    layoutObj->addWidget(delObjBtn,0,1);
+    delObjBox->setLayout(layoutObj);
+
+    layoutFrame->addWidget(_frameWidget,0,0);
+    layoutFrame->addWidget(delBtn,0,1);
+    delFrameBox->setLayout(layoutFrame);
+
+    verticalLayout->addWidget(delDevBox);
+    verticalLayout->addWidget(delObjBox);
+    verticalLayout->addWidget(delFrameBox);
 
     devTab->setLayout(verticalLayout);
     widg->setWidget(devTab);
     return widg;
 }
 
-void EasyInsert::showFrameStructure()
+/*void EasyInsert::showFrameStructure()
 {
     clearTreeContent();
     _treeWidget->setHeaderLabels(QStringList("Frame Structure"));
+
+    if (_workcell != NULL) {
+		const std::vector<rw::models::Device::Ptr>& devices = _workcell->getDevices();
+		typedef std::vector<rw::models::Device::Ptr>::const_iterator MI;
+        for (MI it = devices.begin(); it != devices.end(); ++it) {
+			rw::models::SerialDevice::Ptr sdevice = (*it).cast<rw::models::SerialDevice>();
+            if (sdevice) {
+                QTreeWidgetItem* deviceItem = new QTreeWidgetItem();
+                _treeWidget->addTopLevelItem(deviceItem); // own deviceItem
+
+                _deviceMap.insert(std::make_pair(deviceItem, sdevice)); // delete this sometime maybe
+                deviceItem->setText(0, sdevice->getName().c_str());
+                deviceItem->setIcon(0, QIcon(":/images/device.png"));
+
+                continue;
+            }
+			rw::models::TreeDevice::Ptr tdevice = (*it).cast<rw::models::TreeDevice>();
+            if(tdevice){
+                QTreeWidgetItem* deviceItem = new QTreeWidgetItem();
+                _treeWidget->addTopLevelItem(deviceItem); // own deviceItem
+
+                _deviceMap.insert(std::make_pair(deviceItem, tdevice));
+                deviceItem->setText(0, tdevice->getName().c_str());
+                deviceItem->setIcon(0, QIcon(":/images/device.png"));
+
+                continue;
+            }
+			rw::models::ParallelDevice::Ptr pdevice = (*it).cast<rw::models::ParallelDevice>();
+            if(pdevice){
+                QTreeWidgetItem* deviceItem = new QTreeWidgetItem();
+                _treeWidget->addTopLevelItem(deviceItem); // own deviceItem
+
+                _deviceMap.insert(std::make_pair(deviceItem, pdevice));
+                deviceItem->setText(0, pdevice->getName().c_str());
+                deviceItem->setIcon(0, QIcon(":/images/device.png"));
+
+                continue;
+            }
+			rw::models::MobileDevice::Ptr mdevice = (*it).cast<rw::models::MobileDevice>();
+            if(mdevice){
+                QTreeWidgetItem* deviceItem = new QTreeWidgetItem();
+                _treeWidget->addTopLevelItem(deviceItem); // own deviceItem
+
+                _deviceMap.insert(std::make_pair(deviceItem, mdevice));
+                deviceItem->setText(0, mdevice->getName().c_str());
+                deviceItem->setIcon(0, QIcon(":/images/device.png"));
+
+                continue;
+            }
+        }
+    }
+
     if (_workcell != NULL) {
         setupFrame(*_workcell->getWorldFrame(), NULL);
     }
+}*/
+
+void EasyInsert::showFrameStructure()
+{
+    clearListContent();
+    if (_workcell != NULL) {
+        const std::vector<rw::models::Device::Ptr>& devices = _workcell->getDevices();
+        typedef std::vector<rw::models::Device::Ptr>::const_iterator MI;
+        for (MI it = devices.begin(); it != devices.end(); ++it) {
+            rw::models::SerialDevice::Ptr sdevice = (*it).cast<rw::models::SerialDevice>();
+            if (sdevice) {
+                QListWidgetItem* deviceItem = new QListWidgetItem();
+                _deviceWidget->addItem(deviceItem); // own deviceItem
+                deviceItem->setText(sdevice->getName().c_str());
+                const std::vector<rw::kinematics::Frame*> frames = sdevice->frames();
+                for (size_t i = 0; i < frames.size(); i++) {
+                    _devFrameList.push_back(frames[i]);
+                }
+                continue;
+            }
+            rw::models::TreeDevice::Ptr tdevice = (*it).cast<rw::models::TreeDevice>();
+            if(tdevice){
+                QListWidgetItem* deviceItem = new QListWidgetItem();
+                _deviceWidget->addItem(deviceItem); // own deviceItem
+                deviceItem->setText(tdevice->getName().c_str());
+                const std::vector<rw::kinematics::Frame*> frames = sdevice->frames();
+                for (size_t i = 0; i < frames.size(); i++) {
+                    _devFrameList.push_back(frames[i]);
+                }
+                continue;
+            }
+        }
+    }
+
+    if (_workcell != NULL) {
+        _frames = _workcell->getFrames();
+
+        for (size_t i = 0; i < _devFrameList.size(); i++) {
+            for (size_t j = 0; j < _frames.size(); j++) {
+                if (_frames[j]->getName() == _devFrameList[i]->getName()){
+                    _frames.erase(_frames.begin()+j);
+                    break;
+                }
+            }
+        }
+        for (size_t i = 0; i < _frames.size(); i++) {
+            QListWidgetItem* deviceItem = new QListWidgetItem();
+            _frameWidget->addItem(deviceItem); // own deviceItem
+            deviceItem->setText(_frames[i]->getName().c_str());
+        }
+    }
+
+    if (_workcell != NULL) {
+        std::vector<rw::models::Object::Ptr> object = _workcell->getObjects();
+        for (size_t i = 0; i < _devFrameList.size(); i++) {
+            bool removeObj = false;
+            for (size_t j = 0; j < object.size() && !removeObj; j++) {
+                const std::vector <rw::kinematics::Frame*>& objectFrames = object[j].get()->getFrames();
+                for (size_t k = 0; k < objectFrames.size() && !removeObj; k++) {
+                    if (objectFrames[k] == _devFrameList[i]) {
+                        object.erase(object.begin()+j);
+                        removeObj = true;
+                    }
+                }
+            }
+        }
+        for (size_t i = 0; i < object.size(); i++) {
+            QListWidgetItem* deviceItem = new QListWidgetItem();
+            _objectWidget->addItem(deviceItem); // own deviceItem
+            deviceItem->setText(object[i].get()->getName().c_str());
+        }
+    }
+
 }
 
-void EasyInsert::setupFrame(rw::kinematics::Frame& frame, QTreeWidgetItem* parentItem)
+/*void EasyInsert::setupFrame(rw::kinematics::Frame& frame, QTreeWidgetItem* parentItem)
 {
     QTreeWidgetItem* item = new QTreeWidgetItem();
+
+    const std::vector<rw::models::Device::Ptr>& devices = _workcell->getDevices();
+    typedef std::vector<rw::models::Device::Ptr>::const_iterator MI;
+    for (MI it = devices.begin(); it != devices.end(); ++it) {
+        rw::models::SerialDevice::Ptr sdevice = (*it).cast<rw::models::SerialDevice>();
+        const std::vector<rw::kinematics::Frame*> frames = sdevice->frames();
+        for (size_t i = 0; i < frames.size(); i++) {
+            //rw::common::Log::log().info() << "device lort " << frames[i]->getName() << std::endl;
+
+            if (frame.getName() == frames[i]->getName()) {
+
+                rw::kinematics::Frame::iterator_pair children = frame.getChildren(_state);
+                for (rw::kinematics::Frame::iterator it = children.first; it != children.second; ++it) {
+                    setupFrame(*it, item);
+                }
+                setupDrawables(&frame, item);
+                return;
+            }
+        }
+    }
     if (parentItem != NULL)
         parentItem->addChild(item); // own item
     else
         _treeWidget->addTopLevelItem(item); // own item
-    std::string name = getFrameName(frame);
+
+    std::string name = frame.getName();
     item->setText(0, name.c_str());
 
     _frameMap.insert(std::make_pair(item, &frame)); //register frame item
@@ -273,14 +443,15 @@ void EasyInsert::setupFrame(rw::kinematics::Frame& frame, QTreeWidgetItem* paren
         item->setIcon(0,QIcon(":/images/joint.png"));
     else
         item->setIcon(0,QIcon(":/images/frame.png"));
+
     rw::kinematics::Frame::iterator_pair children = frame.getChildren(_state);
     for (rw::kinematics::Frame::iterator it = children.first; it != children.second; ++it) {
         setupFrame(*it, item);
     }
     setupDrawables(&frame, item);
-}
+}*/
 
-void EasyInsert::setupDrawables(rw::kinematics::Frame* frame, QTreeWidgetItem* parent)
+/*void EasyInsert::setupDrawables(rw::kinematics::Frame* frame, QTreeWidgetItem* parent)
 {
     rw::graphics::WorkCellScene::Ptr scene = getRobWorkStudio()->getView()->getWorkCellScene();
 
@@ -305,7 +476,7 @@ void EasyInsert::setupDrawables(rw::kinematics::Frame* frame, QTreeWidgetItem* p
             item->setIcon(0, QIcon(":/images/drawable.png"));
         }
     }
-}
+}*/
 
 std::string EasyInsert::getFrameName(const rw::kinematics::Frame& frame)
 {
@@ -854,14 +1025,89 @@ void EasyInsert::movableFrame()
     }
 }
 
+void EasyInsert::deleteFrame()
+{
+    if (_frameWidget->currentItem() != NULL) {
+        QListWidgetItem* item = _frameWidget->currentItem();
+
+        rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+        rw::kinematics::Frame* frame = wc->findFrame(item->text().toStdString());
+        std::vector<rw::models::Object::Ptr> object = wc->getObjects();
+
+        rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
+        getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
+
+        for (size_t i = 0; i < object.size(); i++) {
+            const std::vector <rw::kinematics::Frame*>& objectFrames = object[i].get()->getFrames();
+
+            for (size_t j = 0; j < objectFrames.size(); j++) {
+                if (objectFrames[j] == frame) {
+                    wc->removeObject(object[i].get());
+                    break;
+                }
+            }
+        }
+
+        if (frame->getName() != "WORLD") {
+            wc->remove(frame);
+        }
+
+        getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+    }
+    else
+        rw::common::Log::log().info() << "select something " << std::endl;
+
+}
+
+void EasyInsert::deleteDev()
+{
+    if (_deviceWidget->currentItem() != NULL) {
+        QListWidgetItem* item = _deviceWidget->currentItem();
+
+        rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell(); // please corret sometime
+        rw::common::Ptr <rw::models::Device> device = wc->findDevice(item->text().toStdString());
+        //std::vector<rw::models::Object::Ptr> object = wc->getObjects();
+
+        rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
+        getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
+
+        wc->remove(device.get());
+
+
+        getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+    }
+    else
+        rw::common::Log::log().info() << "select something " << std::endl;
+}
+
+void EasyInsert::deleteObj()
+{
+    if (_objectWidget->currentItem() != NULL) {
+        QListWidgetItem* item = _objectWidget->currentItem();
+
+        rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell(); // please corret sometime
+        rw::common::Ptr <rw::models::Object> object = wc->findObject(item->text().toStdString());
+        //std::vector<rw::models::Object::Ptr> object = wc->getObjects();
+
+        rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
+        getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
+
+        wc->removeObject(object.get());
+
+
+        getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+    }
+    else
+        rw::common::Log::log().info() << "select something " << std::endl;
+}
+
 void EasyInsert::update()
 {
     _state = getRobWorkStudio()->getState();
-    clearTreeContent();
     showFrameStructure();
 }
 
-void EasyInsert::clearTreeContent()
+/*void EasyInsert::clearTreeContent()
 {
     while (_treeWidget->topLevelItemCount() > 0) {
         delete _treeWidget->takeTopLevelItem(0);
@@ -869,6 +1115,15 @@ void EasyInsert::clearTreeContent()
 
     _frameMap.clear();
     _drawableMap.clear();
+}*/
+
+void EasyInsert::clearListContent()
+{
+    _deviceWidget->clear();
+    _devFrameList.clear();
+    _frameWidget->clear();
+    _frames.clear();
+    _objectWidget->clear();
 }
 
 void EasyInsert::stateChangedListener(const State& state)

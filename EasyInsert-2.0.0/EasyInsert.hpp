@@ -15,6 +15,8 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QTreeWidget>
+#include <QListWidget>
+#include <QListWidgetItem>
 #include <QTreeWidgetItem>
 #include <QtCore>
 #include <QScrollArea>
@@ -35,6 +37,12 @@
 #include <rw/graphics/DrawableNode.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
+
+#include <rw/models/Device.hpp>
+#include <rw/models/ParallelDevice.hpp>
+#include <rw/models/SerialDevice.hpp>
+#include <rw/models/MobileDevice.hpp>
+#include <rw/models/TreeDevice.hpp>
 
 namespace rw { namespace models { class Device; } }
 
@@ -69,16 +77,22 @@ private:
     void updateDeviceTab();
     void showFrameStructure();
     void setupFrame(rw::kinematics::Frame& frame, QTreeWidgetItem* parentItem);
+    //void setupDevice(rw::kinematics::Frame& frame, QTreeWidgetItem* parentItem)
     void setupDrawables(rw::kinematics::Frame* frame, QTreeWidgetItem* parent);
     std::string getFrameName(const rw::kinematics::Frame& frame);
-    void clearTreeContent();
+    //void clearTreeContent();
+    void clearListContent();
     void update();
     //void registerFrameItem(Frame* frame, QTreeWidgetItem* item);
 
     rw::kinematics::State _state;
     rw::models::WorkCell* _workcell;
 
-    QTreeWidget* _treeWidget;
+    //QTreeWidget* _treeWidget;
+    QListWidget* _deviceWidget;
+    QListWidget* _frameWidget;
+    QListWidget* _objectWidget;
+
     QToolBar* _toolBar;
     QWidget* _devTab;
     QWidget* _geoTab;
@@ -87,6 +101,10 @@ private:
     dialog* _loadDialog;
     dialog* _geometriDialog;
 
+    std::vector<rw::kinematics::Frame*> _devFrameList;
+    std::vector<rw::kinematics::Frame*> _frames;
+
+
 
     typedef std::map<QTreeWidgetItem*, rw::kinematics::Frame*> FrameMap;
     FrameMap _frameMap;
@@ -94,6 +112,9 @@ private:
     typedef std::map<QTreeWidgetItem*, rw::common::Ptr<rw::graphics::DrawableNode> > DrawableMap;
     // maintains the drawables that are not constructed and added from this plugin
     DrawableMap _drawableMap;
+
+    typedef std::map<QTreeWidgetItem*, rw::common::Ptr<rw::models::Device> > DeviceMap;
+    DeviceMap _deviceMap; //not using this anyway it seems
 
 protected:
 
@@ -115,6 +136,9 @@ private slots:
     void tube();
     void fixedFrame();
     void movableFrame();
+    void deleteFrame();
+    void deleteDev();
+    void deleteObj();
 
 
 };
