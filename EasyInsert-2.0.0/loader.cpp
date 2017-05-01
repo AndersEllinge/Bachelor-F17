@@ -188,6 +188,7 @@ void addToStateStructure(Frame *parent, DummySetup &setup) {
 void addToStateStructure(const std::string& name, DummySetup &setup) {
 	DummyFrame *dframe = setup.dummyFrameMap[name];
 	RW_DEBUGS("RefFrame : " << dframe->getRefFrame());
+    //std::cout << dframe->getRefFrame() << std::endl;
 	Frame *parent = setup.frameMap[dframe->getRefFrame()];
 	if (parent == NULL)
 		RW_THROW("PARENT IS NULL");
@@ -848,7 +849,7 @@ std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::P
         ///////////////////////////////////////////////////////////////////
 
         /// Redefine starting frame
-        setup.dwc->_framelist[0]._refframe = startFrame;
+        setup.dwc->_devlist[0]._frames[0]._refframe = startFrame;
 
 		// 1. check that all parent frames are valid frames
 		std::map<std::string, DummyFrame*> strToFrame;
@@ -874,6 +875,8 @@ std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::P
 		//setup.world = setup.tree->getRoot(); // THIS LINE CHANGED
         setup.world = wc->getWorldFrame();
 		setup.frameMap[setup.world->getName()] = setup.world;
+        rw::kinematics::Frame* start = wc->findFrame(startFrame);
+        setup.frameMap[startFrame] = start;
 
 		// Create WorkCell
 		//WorkCell::Ptr wc = ownedPtr(new WorkCell(ownedPtr(setup.tree), setup.dwc->_name, fname)); // THIS LINE CHANGED
@@ -1073,7 +1076,7 @@ void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::st
 	loader.addToWorkCell(filename, wc, name, startFrame);
 }
 
-void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name, std:.string startFrame, rw::math::Transform3D<double> transform) {
+void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name, std::string startFrame, rw::math::Transform3D<double> transform) {
     ei::loader loader;
 
 	std::string newName = loader.addToWorkCell(filename, wc, name, startFrame); // Add device to wc
@@ -1113,6 +1116,6 @@ void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::st
 rw::models::WorkCell::Ptr ei::loader::load(std::string filename, std::string name) {
     ei::loader loader;
     rw::models::WorkCell::Ptr wc = rw::common::ownedPtr(new rw::models::WorkCell(name));
-    loader.addToWorkCell(filename, wc, name);
+    loader.addToWorkCell(filename, wc, name, "WORLD");
     return wc;
 }

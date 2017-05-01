@@ -3,6 +3,7 @@
 
 // Transform
 rw::math::Transform3D<double> ei::creator::getTransform3D(double x, double y, double z, double R, double P, double Y) {
+    ei::creator creator;
     rw::math::RPY<double> rpy(R, P, Y);
     rw::math::Vector3D<double> displacement(x, y, z);
     rw::math::Transform3D<double> tmpTransform(displacement, rpy.toRotation3D());

@@ -264,7 +264,7 @@ void EasyInsert::setupFrame(rw::kinematics::Frame& frame, QTreeWidgetItem* paren
         parentItem->addChild(item); // own item
     else
         _treeWidget->addTopLevelItem(item); // own item
-    std::string name = getFrameName(frame);
+    std::string name = frame.getName();
     item->setText(0, name.c_str());
 
     _frameMap.insert(std::make_pair(item, &frame)); //register frame item
@@ -352,33 +352,36 @@ void EasyInsert::settings()
 void EasyInsert::loadDevice()
 {
     QString st = "Load";
+    rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
 	QModelIndex index = view->currentIndex();
 	QString itemText = dirmodel->filePath(index);
 
-	_loadDialog = new dialog(st, this);
+	_loadDialog = new dialog(wc, st, this);
 
 	_loadDialog->addToDialog(_loadDialog->createNameBox());
+    _loadDialog->addToDialog(_loadDialog->createFrameSelection());
 	_loadDialog->addToDialog(_loadDialog->createConfigurationBox());
 	_loadDialog->addToDialog(_loadDialog->createButtonBox());
 	_loadDialog->exec();
 
-
     if (_loadDialog->result() == QDialog::Accepted)
   	{
-    	rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
-
         rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
         getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
 
         try
         {
-            ei::loader::add(itemText.toStdString(),wc,_loadDialog->nameLine->text().toStdString(),
-                _loadDialog->doubleSpinBoxes[0]->value(),
-                _loadDialog->doubleSpinBoxes[1]->value(),
-                _loadDialog->doubleSpinBoxes[2]->value(),
-                _loadDialog->doubleSpinBoxes[3]->value(),
-                _loadDialog->doubleSpinBoxes[4]->value(),
-                _loadDialog->doubleSpinBoxes[5]->value());
+
+            ei::creator creator;
+            ei::loader::add(itemText.toStdString(), wc, _loadDialog->nameLine->text().toStdString(), _loadDialog->comboFrames->currentText().toStdString(),
+                creator.getTransform3D( _loadDialog->doubleSpinBoxes[0]->value(),
+                                        _loadDialog->doubleSpinBoxes[1]->value(),
+                                        _loadDialog->doubleSpinBoxes[2]->value(),
+                                        _loadDialog->doubleSpinBoxes[3]->value(),
+                                        _loadDialog->doubleSpinBoxes[4]->value(),
+                                        _loadDialog->doubleSpinBoxes[5]->value()
+                                        )
+            );
 
             getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
         }
