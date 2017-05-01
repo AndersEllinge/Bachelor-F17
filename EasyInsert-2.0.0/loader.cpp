@@ -771,7 +771,7 @@ CollisionSetup defaultCollisionSetup(const WorkCell& workcell) {
 }
 }
 
-std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, std::string name) {
+std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, std::string name, std::string startFrame) {
 	try {
 		std::string filename = IOUtil::getAbsoluteFileName(fname);
 
@@ -846,6 +846,9 @@ std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::P
             }
         }
         ///////////////////////////////////////////////////////////////////
+
+        /// Redefine starting frame
+        setup.dwc->_framelist[0]._refframe = startFrame;
 
 		// 1. check that all parent frames are valid frames
 		std::map<std::string, DummyFrame*> strToFrame;
@@ -1065,15 +1068,15 @@ std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::P
 	return "";
 }
 
-void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name) {
+void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name, std::string startFrame) {
 	ei::loader loader;
-	loader.addToWorkCell(filename, wc, name);
+	loader.addToWorkCell(filename, wc, name, startFrame);
 }
 
-void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name, rw::math::Transform3D<double> transform) {
+void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name, std:.string startFrame, rw::math::Transform3D<double> transform) {
     ei::loader loader;
 
-	std::string newName = loader.addToWorkCell(filename, wc, name); // Add device to wc
+	std::string newName = loader.addToWorkCell(filename, wc, name, startFrame); // Add device to wc
     if (newName == "")
         return;
 
@@ -1093,7 +1096,7 @@ void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::st
     wc->getStateStructure()->setDefaultState(state); // Update state
 }
 
-void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name, double x, double y, double z, double R, double P, double Y) {
+void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name, std::string startFrame, double x, double y, double z, double R, double P, double Y) {
     rw::math::Vector3D<double> displacement(x/100, y/100, z/100);
 
     rw::math::Rotation3D<double> rotationR(cos(R), sin(R), 0, -sin(R), cos(R), 0, 0, 0, 1);
@@ -1104,7 +1107,7 @@ void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::st
 
     rw::math::Transform3D<double> transform(displacement, combinedRotation);
 
-    ei::loader::add(filename, wc, name, transform);
+    ei::loader::add(filename, wc, name, startFrame, transform);
 }
 
 rw::models::WorkCell::Ptr ei::loader::load(std::string filename, std::string name) {
