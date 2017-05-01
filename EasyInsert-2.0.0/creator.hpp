@@ -10,6 +10,7 @@
 #include <rw/kinematics/FixedFrame.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/math/Transform3D.hpp>
+#include <rw/math/RPY.hpp>
 
 #include <rw/loaders/Model3DFactory.hpp>
 #include <rw/loaders/GeometryFactory.hpp>
@@ -20,6 +21,8 @@ class creator {
 public:
     creator(){}
     virtual ~creator(){}
+
+    rw::math::Transform3D<double> getTransform3D(double x, double y, double z, double R, double P, double Y);
 
     static rw::kinematics::FixedFrame* createFixedFrame(std::string name, rw::math::Transform3D<double> transform = rw::math::Transform3D<double>());
     static rw::kinematics::MovableFrame* createMovableFrame(std::string name);

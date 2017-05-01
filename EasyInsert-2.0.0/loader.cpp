@@ -188,6 +188,7 @@ void addToStateStructure(Frame *parent, DummySetup &setup) {
 void addToStateStructure(const std::string& name, DummySetup &setup) {
 	DummyFrame *dframe = setup.dummyFrameMap[name];
 	RW_DEBUGS("RefFrame : " << dframe->getRefFrame());
+    //std::cout << dframe->getRefFrame() << std::endl;
 	Frame *parent = setup.frameMap[dframe->getRefFrame()];
 	if (parent == NULL)
 		RW_THROW("PARENT IS NULL");
@@ -771,7 +772,7 @@ CollisionSetup defaultCollisionSetup(const WorkCell& workcell) {
 }
 }
 
-std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, std::string name) {
+std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::Ptr wc, std::string name, std::string startFrame) {
 	try {
 		std::string filename = IOUtil::getAbsoluteFileName(fname);
 
@@ -847,6 +848,9 @@ std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::P
         }
         ///////////////////////////////////////////////////////////////////
 
+        /// Redefine starting frame
+        setup.dwc->_devlist[0]._frames[0]._refframe = startFrame;
+
 		// 1. check that all parent frames are valid frames
 		std::map<std::string, DummyFrame*> strToFrame;
 		BOOST_FOREACH(DummyFrame &df, setup.dwc->_framelist) {
@@ -871,6 +875,8 @@ std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::P
 		//setup.world = setup.tree->getRoot(); // THIS LINE CHANGED
         setup.world = wc->getWorldFrame();
 		setup.frameMap[setup.world->getName()] = setup.world;
+        rw::kinematics::Frame* start = wc->findFrame(startFrame);
+        setup.frameMap[startFrame] = start;
 
 		// Create WorkCell
 		//WorkCell::Ptr wc = ownedPtr(new WorkCell(ownedPtr(setup.tree), setup.dwc->_name, fname)); // THIS LINE CHANGED
@@ -1065,15 +1071,15 @@ std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::P
 	return "";
 }
 
-void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name) {
+void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name, std::string startFrame) {
 	ei::loader loader;
-	loader.addToWorkCell(filename, wc, name);
+	loader.addToWorkCell(filename, wc, name, startFrame);
 }
 
-void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name, rw::math::Transform3D<double> transform) {
+void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name, std::string startFrame, rw::math::Transform3D<double> transform) {
     ei::loader loader;
 
-	std::string newName = loader.addToWorkCell(filename, wc, name); // Add device to wc
+	std::string newName = loader.addToWorkCell(filename, wc, name, startFrame); // Add device to wc
     if (newName == "")
         return;
 
@@ -1093,7 +1099,7 @@ void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::st
     wc->getStateStructure()->setDefaultState(state); // Update state
 }
 
-void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name, double x, double y, double z, double R, double P, double Y) {
+void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name, std::string startFrame, double x, double y, double z, double R, double P, double Y) {
     rw::math::Vector3D<double> displacement(x/100, y/100, z/100);
 
     rw::math::Rotation3D<double> rotationR(cos(R), sin(R), 0, -sin(R), cos(R), 0, 0, 0, 1);
@@ -1104,12 +1110,12 @@ void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::st
 
     rw::math::Transform3D<double> transform(displacement, combinedRotation);
 
-    ei::loader::add(filename, wc, name, transform);
+    ei::loader::add(filename, wc, name, startFrame, transform);
 }
 
 rw::models::WorkCell::Ptr ei::loader::load(std::string filename, std::string name) {
     ei::loader loader;
     rw::models::WorkCell::Ptr wc = rw::common::ownedPtr(new rw::models::WorkCell(name));
-    loader.addToWorkCell(filename, wc, name);
+    loader.addToWorkCell(filename, wc, name, "WORLD");
     return wc;
 }

@@ -224,8 +224,6 @@ QWidget* EasyInsert::createGeoTab()
 
 QWidget* EasyInsert::createDeleteTab()
 {
-    //QGridLayout *layout = new QGridLayout();
-
     QScrollArea *widg = new QScrollArea();
     widg->setWidgetResizable(true);
     widg->setFrameShape(QFrame::NoFrame);
@@ -523,12 +521,14 @@ void EasyInsert::settings()
 void EasyInsert::loadDevice()
 {
     QString st = "Load";
+    rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
 	QModelIndex index = view->currentIndex();
 	QString itemText = dirmodel->filePath(index);
 
-	_loadDialog = new dialog(st, this);
+	_loadDialog = new dialog(wc, st, this);
 
 	_loadDialog->addToDialog(_loadDialog->createNameBox());
+    _loadDialog->addToDialog(_loadDialog->createFrameSelection());
 	_loadDialog->addToDialog(_loadDialog->createConfigurationBox());
 	_loadDialog->addToDialog(_loadDialog->createButtonBox());
 	_loadDialog->exec();
@@ -543,13 +543,17 @@ void EasyInsert::loadDevice()
 
         try
         {
-            ei::loader::add(itemText.toStdString(),wc,_loadDialog->nameLine->text().toStdString(),
-                _loadDialog->doubleSpinBoxes[0]->value(),
-                _loadDialog->doubleSpinBoxes[1]->value(),
-                _loadDialog->doubleSpinBoxes[2]->value(),
-                _loadDialog->doubleSpinBoxes[3]->value(),
-                _loadDialog->doubleSpinBoxes[4]->value(),
-                _loadDialog->doubleSpinBoxes[5]->value());
+
+            ei::creator creator;
+            ei::loader::add(itemText.toStdString(), wc, _loadDialog->nameLine->text().toStdString(), _loadDialog->comboFrames->currentText().toStdString(),
+                creator.getTransform3D( _loadDialog->doubleSpinBoxes[0]->value(),
+                                        _loadDialog->doubleSpinBoxes[1]->value(),
+                                        _loadDialog->doubleSpinBoxes[2]->value(),
+                                        _loadDialog->doubleSpinBoxes[3]->value(),
+                                        _loadDialog->doubleSpinBoxes[4]->value(),
+                                        _loadDialog->doubleSpinBoxes[5]->value()
+                                        )
+            );
 
             getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
         }
@@ -1104,6 +1108,7 @@ void EasyInsert::deleteObj()
 void EasyInsert::update()
 {
     _state = getRobWorkStudio()->getState();
+   
     showFrameStructure();
 }
 

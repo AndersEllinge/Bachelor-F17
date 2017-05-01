@@ -1,6 +1,14 @@
 #include "creator.hpp"
 #include <RobWorkStudio.hpp>
 
+// Transform
+rw::math::Transform3D<double> ei::creator::getTransform3D(double x, double y, double z, double R, double P, double Y) {
+    ei::creator creator;
+    rw::math::RPY<double> rpy(R, P, Y);
+    rw::math::Vector3D<double> displacement(x, y, z);
+    rw::math::Transform3D<double> tmpTransform(displacement, rpy.toRotation3D());
+    return tmpTransform;
+}
 
 // Frames
 rw::kinematics::FixedFrame* ei::creator::createFixedFrame(std::string name, rw::math::Transform3D<double> transform) {
@@ -153,12 +161,6 @@ void ei::creator::addTube(std::string name, rw::kinematics::Frame* frame, rw::mo
     val << "#Tube " << radius << " " << thickness << " " << height << " " << 20;
     creator.addObject(name, frame, wc, val.str(), transform);
 }
-
-
-
-
-
-
 
 
 
