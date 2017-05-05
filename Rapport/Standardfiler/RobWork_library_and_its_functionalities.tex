@@ -1,0 +1,23 @@
+\section{RobWork library and its functionalities}
+This chapter is a general introduction to the RobWork library and the most commonly used data structures and functionalities within.
+
+\subsection{Frames}
+One of the most common data structures from the RobWork library is a frame. A frame is the basic building block in the RobWork library, representing (in the case of RobWork) a local 3D cartesian coordinate system.\\
+
+In RobWork frames come in 3 different types: fixed frames, moveable frames and joints.\\
+Fixed frames are frames that have a constant transform relative to the parent frame.\\
+Movable frames are frames which transform can be freely changed.\\
+Joints are frames that can be assigned values for position, velocity limits and acceleration limits. This type of frame is usually used for devices. Joints can be further divided into 4 subtypes: prismatic joint, revolute joint, dependent joint and virtual joint.\\
+
+Prismatic joints are joints which motion is linear along a constant direction. Thinking of a pneumatic piston can be an intuitive way of thinking about prismatic joints.\\
+
+Revolute joints are joints which motion is based on a rotation around a single axis. Thinking of hinges can be an intuitive way of understanding revolute frames.\\
+
+Dependent joins refer to joints which transform depends on on or multiple other joints. Dependant joins can also be divided into 2 subtypes, dependent prismatic joints and dependent revolute joints, adding the motion specification of the prismatic joint and revolute joint previously mentioned.\\
+
+Virtual joints \colorbox{red}{BLAH BLAH BLAH}.\\
+
+Frames in a WorkCell are required to have a parent and are given a unique name so that no frames can be confused for another. Only one frame in the WorkCell has no parent. This frame is called WORLD and is created when the WorkCell is constructed. The WORLD frame can be seen as the global 3D cartesian coordinate system for the WorkCell.\\
+
+\subsection{WorkCells}
+A WorkCell is the basis data structure of RobWork. The WorkCell can be thought of as a box containing all of the other structures and information needed. The WorkCell most commonly contains Frames, Objects, Devices and more which are used to represent the different items in the environment. However just having the 
