@@ -595,12 +595,15 @@ void EasyInsert::cube()
 
         try
         {
-            rw::math::Vector3D<double> displacement(
-                    _geometriDialog->doubleSpinBoxes[1]->value(),
-                    _geometriDialog->doubleSpinBoxes[2]->value(),
-                    _geometriDialog->doubleSpinBoxes[3]->value());
 
-            rw::math::Transform3D<double> transform(displacement);
+            ei::creator creator;
+            rw::math::Transform3D<double> transform = creator.getTransform3D(
+                                    _geometriDialog->doubleSpinBoxes[0]->value(),
+                                    _geometriDialog->doubleSpinBoxes[1]->value(),
+                                    _geometriDialog->doubleSpinBoxes[2]->value(),
+                                    _geometriDialog->doubleSpinBoxes[3]->value(),
+                                    _geometriDialog->doubleSpinBoxes[4]->value(),
+                                    _geometriDialog->doubleSpinBoxes[5]->value());
 
             if (_geometriDialog->checkFrames[0]->isChecked()) // moveable frame
                 ei::creator::addBox(_geometriDialog->nameLine->text().toStdString(),
@@ -656,12 +659,14 @@ void EasyInsert::plane()
 
         try
         {
-            rw::math::Vector3D<double> displacement(
-                    _geometriDialog->doubleSpinBoxes[1]->value(),
-                    _geometriDialog->doubleSpinBoxes[2]->value(),
-                    _geometriDialog->doubleSpinBoxes[3]->value());
-
-            rw::math::Transform3D<double> transform(displacement);
+            ei::creator creator;
+            rw::math::Transform3D<double> transform = creator.getTransform3D(
+                                    _geometriDialog->doubleSpinBoxes[0]->value(),
+                                    _geometriDialog->doubleSpinBoxes[1]->value(),
+                                    _geometriDialog->doubleSpinBoxes[2]->value(),
+                                    _geometriDialog->doubleSpinBoxes[3]->value(),
+                                    _geometriDialog->doubleSpinBoxes[4]->value(),
+                                    _geometriDialog->doubleSpinBoxes[5]->value());
 
             if (_geometriDialog->checkFrames[0]->isChecked()) // check for new moveable
                 ei::creator::addPlane(_geometriDialog->nameLine->text().toStdString(),
@@ -713,12 +718,14 @@ void EasyInsert::sphere()
 
         try
         {
-            rw::math::Vector3D<double> displacement(
-                    _geometriDialog->doubleSpinBoxes[1]->value(),
-                    _geometriDialog->doubleSpinBoxes[2]->value(),
-                    _geometriDialog->doubleSpinBoxes[3]->value());
-
-            rw::math::Transform3D<double> transform(displacement);
+            ei::creator creator;
+            rw::math::Transform3D<double> transform = creator.getTransform3D(
+                                    _geometriDialog->doubleSpinBoxes[0]->value(),
+                                    _geometriDialog->doubleSpinBoxes[1]->value(),
+                                    _geometriDialog->doubleSpinBoxes[2]->value(),
+                                    _geometriDialog->doubleSpinBoxes[3]->value(),
+                                    _geometriDialog->doubleSpinBoxes[4]->value(),
+                                    _geometriDialog->doubleSpinBoxes[5]->value());
 
             if (_geometriDialog->checkFrames[0]->isChecked()) // check for new moveable
                 ei::creator::addSphere(_geometriDialog->nameLine->text().toStdString(),
@@ -772,12 +779,14 @@ void EasyInsert::cone()
 
         try
         {
-            rw::math::Vector3D<double> displacement(
-                    _geometriDialog->doubleSpinBoxes[1]->value(),
-                    _geometriDialog->doubleSpinBoxes[2]->value(),
-                    _geometriDialog->doubleSpinBoxes[3]->value());
-
-            rw::math::Transform3D<double> transform(displacement);
+            ei::creator creator;
+            rw::math::Transform3D<double> transform = creator.getTransform3D(
+                                    _geometriDialog->doubleSpinBoxes[0]->value(),
+                                    _geometriDialog->doubleSpinBoxes[1]->value(),
+                                    _geometriDialog->doubleSpinBoxes[2]->value(),
+                                    _geometriDialog->doubleSpinBoxes[3]->value(),
+                                    _geometriDialog->doubleSpinBoxes[4]->value(),
+                                    _geometriDialog->doubleSpinBoxes[5]->value());
 
             if (_geometriDialog->checkFrames[0]->isChecked()) // check for new moveable
                 ei::creator::addCone(_geometriDialog->nameLine->text().toStdString(),
@@ -833,12 +842,14 @@ void EasyInsert::cylinder()
 
         try
         {
-            rw::math::Vector3D<double> displacement(
-                    _geometriDialog->doubleSpinBoxes[1]->value(),
-                    _geometriDialog->doubleSpinBoxes[2]->value(),
-                    _geometriDialog->doubleSpinBoxes[3]->value());
-
-            rw::math::Transform3D<double> transform(displacement);
+            ei::creator creator;
+            rw::math::Transform3D<double> transform = creator.getTransform3D(
+                                    _geometriDialog->doubleSpinBoxes[0]->value(),
+                                    _geometriDialog->doubleSpinBoxes[1]->value(),
+                                    _geometriDialog->doubleSpinBoxes[2]->value(),
+                                    _geometriDialog->doubleSpinBoxes[3]->value(),
+                                    _geometriDialog->doubleSpinBoxes[4]->value(),
+                                    _geometriDialog->doubleSpinBoxes[5]->value());
 
             if (_geometriDialog->checkFrames[0]->isChecked()) // check for new moveable
                 ei::creator::addCylinder(_geometriDialog->nameLine->text().toStdString(),
@@ -894,12 +905,14 @@ void EasyInsert::tube()
 
         try
         {
-            rw::math::Vector3D<double> displacement(
-                    _geometriDialog->doubleSpinBoxes[1]->value(),
-                    _geometriDialog->doubleSpinBoxes[2]->value(),
-                    _geometriDialog->doubleSpinBoxes[3]->value());
-
-            rw::math::Transform3D<double> transform(displacement);
+            ei::creator creator;
+            rw::math::Transform3D<double> transform = creator.getTransform3D(
+                                    _geometriDialog->doubleSpinBoxes[0]->value(),
+                                    _geometriDialog->doubleSpinBoxes[1]->value(),
+                                    _geometriDialog->doubleSpinBoxes[2]->value(),
+                                    _geometriDialog->doubleSpinBoxes[3]->value(),
+                                    _geometriDialog->doubleSpinBoxes[4]->value(),
+                                    _geometriDialog->doubleSpinBoxes[5]->value());
 
             if (_geometriDialog->checkFrames[0]->isChecked()) // check for new moveable
                 ei::creator::addTube(_geometriDialog->nameLine->text().toStdString(),
@@ -957,12 +970,14 @@ void EasyInsert::fixedFrame()
 
         try
         {
-            rw::math::Vector3D<double> displacement(
-                    _geometriDialog->doubleSpinBoxes[1]->value(),
-                    _geometriDialog->doubleSpinBoxes[2]->value(),
-                    _geometriDialog->doubleSpinBoxes[3]->value());
-
-            rw::math::Transform3D<double> transform(displacement);
+            ei::creator creator;
+            rw::math::Transform3D<double> transform = creator.getTransform3D(
+                                    _geometriDialog->doubleSpinBoxes[0]->value(),
+                                    _geometriDialog->doubleSpinBoxes[1]->value(),
+                                    _geometriDialog->doubleSpinBoxes[2]->value(),
+                                    _geometriDialog->doubleSpinBoxes[3]->value(),
+                                    _geometriDialog->doubleSpinBoxes[4]->value(),
+                                    _geometriDialog->doubleSpinBoxes[5]->value());
 
             ei::creator::addFixedFrame(wc,
                                 _geometriDialog->nameLine->text().toStdString(),
@@ -1007,12 +1022,14 @@ void EasyInsert::movableFrame()
 
         try
         {
-            rw::math::Vector3D<double> displacement(
-                    _geometriDialog->doubleSpinBoxes[1]->value(),
-                    _geometriDialog->doubleSpinBoxes[2]->value(),
-                    _geometriDialog->doubleSpinBoxes[3]->value());
-
-            rw::math::Transform3D<double> transform(displacement);
+            ei::creator creator;
+            rw::math::Transform3D<double> transform = creator.getTransform3D(
+                                    _geometriDialog->doubleSpinBoxes[0]->value(),
+                                    _geometriDialog->doubleSpinBoxes[1]->value(),
+                                    _geometriDialog->doubleSpinBoxes[2]->value(),
+                                    _geometriDialog->doubleSpinBoxes[3]->value(),
+                                    _geometriDialog->doubleSpinBoxes[4]->value(),
+                                    _geometriDialog->doubleSpinBoxes[5]->value());
 
             ei::creator::addMovableFrame(wc,
                                 _geometriDialog->nameLine->text().toStdString(),
@@ -1032,35 +1049,85 @@ void EasyInsert::movableFrame()
 void EasyInsert::deleteFrame()
 {
     if (_frameWidget->currentItem() != NULL) {
+
         QListWidgetItem* item = _frameWidget->currentItem();
 
         rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
         rw::kinematics::Frame* frame = wc->findFrame(item->text().toStdString());
-        std::vector<rw::models::Object::Ptr> object = wc->getObjects();
 
         rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
         getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
 
-        for (size_t i = 0; i < object.size(); i++) {
-            const std::vector <rw::kinematics::Frame*>& objectFrames = object[i].get()->getFrames();
-
-            for (size_t j = 0; j < objectFrames.size(); j++) {
-                if (objectFrames[j] == frame) {
-                    wc->removeObject(object[i].get());
-                    break;
-                }
-            }
-        }
-
-        if (frame->getName() != "WORLD") {
-            wc->remove(frame);
-        }
+        deleteChildren(frame, wc); // find and delete children
 
         getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+
+
+        //_frameWidget->clear();
+        //showFrameStructure();
     }
     else
         rw::common::Log::log().info() << "select something " << std::endl;
 
+}
+
+void EasyInsert::deleteChildren(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc)
+{
+    std::vector<rw::kinematics::Frame*> frames = wc->getFrames();
+    rw::kinematics::State state = wc->getDefaultState();
+
+    for (size_t i = 0; i < frames.size(); i++)
+        if (frames[i]->getParent(state) == frame)
+            deleteChildren(frames[i],wc);
+            //if (frames[i]->getParent(state)->getName() =! "WORLD")
+
+
+    std::vector<rw::models::Object::Ptr> object = wc->getObjects();
+
+    for (size_t i = 0; i < object.size(); i++) {
+        const std::vector <rw::kinematics::Frame*>& objectFrames = object[i].get()->getFrames();
+
+        for (size_t j = 0; j < objectFrames.size(); j++) {
+            if (objectFrames[j] == frame) {
+                wc->removeObject(object[i].get());
+                break;
+            }
+        }
+    }
+
+    if (frame->getName() != "WORLD") {
+        wc->remove(frame);
+    }
+}
+
+void EasyInsert::findChildren(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc)
+{
+    rw::kinematics::Frame::iterator_pair children = frame->getChildren(wc->getDefaultState());
+    for (; children.first!=children.second; ++children.first) {
+        rw::kinematics::Frame* f = &(*(children.first));
+        std::cout << "found child " << std::endl;
+        //rw::kinematics::Frame* deleteFrame = wc->findFrame(frame.getName());
+
+        findChildren(f, wc);
+    }
+    if (frame == NULL) {
+        return;
+    }
+
+    std::vector<rw::models::Object::Ptr> object = wc->getObjects();
+
+    for (size_t i = 0; i < object.size(); i++) {
+        const std::vector <rw::kinematics::Frame*>& objectFrames = object[i].get()->getFrames();
+
+        for (size_t j = 0; j < objectFrames.size(); j++) {
+            if (objectFrames[j] == frame) {
+                wc->removeObject(object[i].get());
+                break;
+            }
+        }
+    }
+    std::cout << "about to delete " << frame->getName() << std::endl;
+    wc->remove(frame);
 }
 
 void EasyInsert::deleteDev()
@@ -1107,8 +1174,6 @@ void EasyInsert::deleteObj()
 
 void EasyInsert::update()
 {
-    _state = getRobWorkStudio()->getState();
-   
     showFrameStructure();
 }
 
@@ -1133,19 +1198,8 @@ void EasyInsert::clearListContent()
 
 void EasyInsert::stateChangedListener(const State& state)
 {
-    _state = getRobWorkStudio()->getState();
-    bool forceUpdate = false;
-    BOOST_FOREACH( EasyInsert::FrameMap::value_type p, _frameMap){
-        if( rw::kinematics::Kinematics::isDAF(p.second) ){
-            // test if parent changed
-            if(p.second->getParent(state)!=p.second->getParent(_state)){
-                forceUpdate = true;
-                break;
-            }
-        }
-    }
-    if(forceUpdate)
-        update();
+    _state = state;
+    update();
 }
 
 

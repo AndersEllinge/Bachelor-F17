@@ -137,6 +137,8 @@ private slots:
     void fixedFrame();
     void movableFrame();
     void deleteFrame();
+    void deleteChildren(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc);
+    void findChildren(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc);
     void deleteDev();
     void deleteObj();
 
