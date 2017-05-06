@@ -1,0 +1,54 @@
+\section{QT}
+%short introduction to the chapter
+Qt, pronounced "cute", is an open source cross-platform framework, mostly used for GUI(graphical user interface) programming. Qt has an easy to (re)use API(application programming interface), which in return gives high developer productivity. QT is C++ class library, hence new developers using Qt should have some understanding of C++.
+This chapter introduces terminologies used in Qt, and tries to give some insight to how Qt operates and works regarding GUI development.  
+
+%Maybe something about licencing and version used.
+
+
+%somewhere here should the "simple" inheritance diagram be.
+
+\subsection{Qt Class Hierarchy}
+Qt broadly uses inheritance to create subclasses of instances in a natural way. QObject is the most basic class in Qt, see FIGURE. Alot of classes inherit from QObject, like QWidget, which is the base of all user interface objects. 
+QObject -> The Qt Object Model -> features like below.
+QObject -> Communication -> signals and slots. 
+QObject -> object trees -> parenting system.
+
+\subsection{The Meta-Object System}
+QObject -> provides -> meta-object system
+Extends c++ features
+Q_OBJECT macro->mandatory->signal and slots.
+The Meta-Object Compiler (moc) -> build process
+
+\subsection{QWidgets}
+events from system
+widget -> parents
+widget in a parent -> clipped how?
+no parent -> top-level else child
+composite widget -> many children
+events -> QEvent eventhandling -> mousePressEvent() e.g.
+
+\subsection{QMainWindow}
+QMainWindow -> framework for application's user interface. REF TO FIGURE
+QMenuBar -> pulldown menu items
+QToolBar -> moveable panels
+QDock -> docked or top-level window
+Central Widget -> RWStudioView3D -> openGL
+
+\subsection{QLayout}
+Arrange child widgets within a widget
+Updates when contents change
+QHBoxLayout example. CODE AND PICTURE OF LAYOUT
+
+\subsection{Signal and Slots}
+Communication -> objects
+Alternative to callback -> explain callback
+Signal and slots -> connect() RET TO FIGURE
+Signal -> 
+Slot -> normal function (only special thing is it can be connected to a signal) -> found by moc
+
+
+\subsection{Subclassing}
+
+\subsection{Plug-in}
+
