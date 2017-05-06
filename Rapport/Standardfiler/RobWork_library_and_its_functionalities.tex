@@ -1,6 +1,11 @@
 \section{RobWork library and its functionalities}
 This chapter is a general introduction to the RobWork library and the most commonly used data structures and functionalities within.
 
+
+\subsection{WorkCells}
+A WorkCell is the basis structure in RobWork. The WorkCell can be thought of as a box containing all of the other building blocks and information needed to represent an environment. The WorkCell most commonly contains Frames, Objects, Devices which are used to represent the different items in the environment. The WorkCell also contains a State Structure used to describe how the items in the environment are related.
+
+
 \subsection{Frames}
 One of the most common data structures from the RobWork library is a frame. A frame is the basic building block in the RobWork library, representing (in the case of RobWork) a local 3D cartesian coordinate system.\\
 
@@ -17,7 +22,42 @@ Dependent joins refer to joints which transform depends on on or multiple other 
 
 Virtual joints \colorbox{red}{BLAH BLAH BLAH}.\\
 
-Frames in a WorkCell are required to have a parent and are given a unique name so that no frames can be confused for another. Only one frame in the WorkCell has no parent. This frame is called WORLD and is created when the WorkCell is constructed. The WORLD frame can be seen as the global 3D cartesian coordinate system for the WorkCell.\\
+Frames in a WorkCell are required to have a parent and are given a unique name so that no frames can be confused for another. Only one frame in the WorkCell has no parent. This frame is called WORLD and is created when the WorkCell is constructed. The WORLD frame can be seen as the global 3D cartesian coordinate system for the WorkCell.
 
-\subsection{WorkCells}
-A WorkCell is the basis data structure of RobWork. The WorkCell can be thought of as a box containing all of the other structures and information needed. The WorkCell most commonly contains Frames, Objects, Devices and more which are used to represent the different items in the environment. However just having the 
+
+\subsection{Objects}
+Contrary to frames which represents the relationships in the environment, objects represents physical things in the scene. Also contrary to frames is that the name of an object does not have to be unique.\\
+
+In order for objects to get a relationship to the environment it is placed in, it has to be associated to a frame. This frame is called the base frame of the object. An object can be associated to multiple frames but only have one base frame.\\
+
+An object consists of two important elements, a geometry and a model.\\
+A geometry is used to represent the actual geometry of the object. The geometry can be scaled and transformed to allow for modifications. In order to perform the transform the geometry need a reference frame, hence the geometry is attached to a frame. RobWork is capable of creating simple geometries like spheres, boxes and cylinders, however it is also possible to import complex geometries. Geometries are also being used for the collision detection provided in RobWork.\\
+A model is a graphical representation of the object. Models consists of geometries, materials, colors and texture information as well. It is also possible to apply a transform to and get the transform of a model.\\
+Usually when an object is created, a geometry is created for collision detection and a model is created to visually represent the object in a viewer(RobWorkStudio etc.).\\
+
+There are two types of objects in RobWork, rigid objects and deformable objects. Rigid objects are objects which  geometry does not change. Rigid objects can also posses information about inertia and mass. A deformable object however has the ability to alter its geometry via control nodes.
+
+
+\subsection{Devices}
+A device can be considered (in the case of a joint device) to be a collection of joints and objects denoting the setup of a device e.g. the FANUC LRM200 robotic arm. The device also contains the configurations for the joints contained in the device. these configurations are contained in a single configuration vector, making it easy to control the device. it is also possible to get and set the bounds, velocity limits and acceleration limits for the joints.\\
+
+Devices can be of 3 different types: joint device, mobile device and SE3 device. Mobile devices are devices that  is differentially controlled e.g. a robot rover. SE3 devices are devices that \colorbox{red}{BLAH BLAH BLAH}. Joint devices are that consists of moving joints much like the previously mentioned FANUC LRM200 robotic arm.\\
+
+Joint devices can be of 5 types: Composite device, composite joint device, parallel device, serial device and tree device.\\
+Serial devices are the simplest form of device since it consist of joints set in serial to each other. Many simple robotic arms like the before mentioned FANUC LRM200 are serial devices.\\
+Tree devices are devices which joints follow a tree structure, meaning that a joint can have multiple children but only one parent joint. This also means that a tree device must have more than one end effectors. This type of device is typically seen in dexterous hands.\\
+Parallel devices are devices that at some point in the structure of the is created a circle e.g. a joint goes to two joints that then both go to the same joint. The two middle joints are said to be in parallel to each other and are called parallel legs in RobWork. Parallel legs can consist of multiple joints as well as just one.\\
+Composite devices and composite joint devices are devices that are constructed from a series of other devices. The devices in the composite device may not share joints. Just like tree devices, composite devices can have multiple end effectors. However unlike the tree devices, composite devices does not require the path to the end effectors to have a common base.
+
+
+\subsection{States and State Structures}
+In RobWork the structure of the frames are represented in trough the State Structure. The State Structure also holds the state of the individual frames. The State object is a collection of the states of all the frames contained in the State Structure. This is done as a kinematic tree.
+
+
+\subsection{Namespacing in RobWork}
+
+
+\subsection{Typical use of RobWorkStudio and WorkCell-files}
+
+
+
