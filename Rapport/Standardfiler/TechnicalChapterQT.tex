@@ -1,7 +1,7 @@
 \section{Qt}
 %short introduction to the chapter
 Qt, pronounced "cute", is an open source cross-platform framework, mostly used for GUI(graphical user interface) programming. Qt has an easy to (re)use API(application programming interface), which in return gives high developer productivity. QT is C++ class library, hence new developers using Qt should have some understanding of C++.
-This chapter introduces terminologies used in Qt, and tries to give some general insight to how Qt operates and works regarding GUI development.  
+This chapter introduces terminologies used in Qt, and tries to give some general insight to how Qt operates and works regarding GUI development. For more information please refer to \citep{Qt Documentation}.
 
 %Maybe something about licencing and version used.
 
@@ -55,7 +55,7 @@ QMainWindow is a subclass of QWidget, and is very essential to a Qt GUI applicat
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.55]{Figures/QMainWindowExample.png}
-	\caption{}
+	\caption{This figure shows how a QMainWindow object looks like. RWS uses QMainWindow as the main application widget.}
 	\label{fig:QMainWindowExample}
 \end{figure}
 
@@ -63,9 +63,31 @@ QMainWindow is usually a good class to use as the framework for an GUI applicati
 
 \subsubsection{QLayout}
 \label{sec:QLayout}
-Arrange child widgets within a widget
-Updates when contents change
-QHBoxLayout example. CODE AND PICTURE OF LAYOUT
+QLayout is a subclass of QObject and QLayoutItem and is the base class of geometry managers. QLaoyt and it's subclasses are managers for the layout of a group of widget laid out in an application. All QWidget subclasses can use layouts to manage it's children e.g. figure~\ref{fig:QWidgetExample} uses the parent widget as composite widget with two composite children. The parent on figure~\ref{fig:QWidgetExample} use a QHBoxLayout, which lines the child widgets horizontally and makes each child fill one box. The children then has their own QVBoxLayout, which lines their children (grand children) vertically and assign each of those their own box as well. Figure~\ref{fig:QLayoutCode} shows how an implementation of five arbitrary widgets laid in the layout as in figure~\ref{fig:QWidgetExample}.
+
+\begin{figure}[h]
+\centering
+\lstset{language=C++} 
+\begin{lstlisting}[frame=single]  
+QWidget* parent = new QWidget();  			//Parent widget
+QHBoxLayout* pL = new QHBoxLayout();		//Layout of the parent widget
+QWidget* cL = new QWidget(parent); 			//Left child widget
+QVBoxLayout* cLL = new QHBoxLayout();		//Layout of left child widget
+QWidget* cR = new QWidget(parent); 			//Right child widget
+QVBoxLayout* cRL = new QHBoxLayout();		//Layout of right child widget
+pL->addWidget(cR); pL->addWidget(cR);		//add children to layout
+parent->setLayout(pL);						//set layout
+QWidget* b1 = new QWidget(cL), b2 = new QWidget(cL), b3 = new QWidget(cR),
+		 b4 = new QWidget(cR), b5 = new QWidget(cR); //create grandchildren
+cLL->addWidget(b1), cLL->addWidget(b2);	//grand children added to layout
+cL->setLayout(cLL);					//set layout
+cRL->addWidget(b3), cRL->addWidget(b3), cRL->addWidget(b5);				 
+cR->setLayout(cRL);			 
+\end{lstlisting}
+\caption{write stuff}
+\label{fig:QLayoutCode} 	
+\end{figure}
+
 
 \subsection{Signal and Slots}
 \label{sec:signalandslots}
@@ -75,9 +97,6 @@ Signal and slots -> connect() RET TO FIGURE
 Signal -> 
 Slot -> normal function (only special thing is it can be connected to a signal) -> found by moc
 \subsubsection{Difference between events and Signal/Slots}
-
-
-\subsection{Subclassing}
 
 \subsection{Plug-in}
 \label{sec:plugin}
