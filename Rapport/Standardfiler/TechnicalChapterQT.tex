@@ -37,6 +37,7 @@ Each QObject or subclass of QObject has an instance of QMetaObject created to ho
 \subsection{QWidgets}
 \label{sec:qwidgets}
 QWidget is the base of all user interface objects(buttons, menus etc.). QWidget handles all events from the system the application is running on, i.e. In Qt, events are QEvent objects which is created upon outside activity (like a click on a mouse). Subclasses of QEvent involve more parameters to characterize a certain event, e.g. mousePressEvent(QMouseEvent* event). The event object is then sent to a specific QWidget object (maybe a button) and the QWidget handles the event with the according event handler.\\
+
 As mentioned in~\ref{sec:QtClassHierarchyAndObjectModel} ownership of objects is structured in a tree, this means that a QWidget can have QWidget's within it self, see figure~\ref{fig:QWidgetExample}. A QWidget with no parent is called a top-level widget, which means the QWidget is an independent window. An instance like QWidget subclass QDialog(a pop up dialog window) is a top-level widget. QDialog can be instantiated with a parent, but the QDialog is still a top-level widget in this case, though the position of the dialog window is now centred relative to the parent.
 
 \begin{figure}[h]
@@ -48,20 +49,19 @@ As mentioned in~\ref{sec:QtClassHierarchyAndObjectModel} ownership of objects is
 
 When a QWidget is used as a container to hold and group children, the QWidget is called a composite widget. A parent widget is clipped to the size that it children requires, though this can be changed in the widget's size policy. 
 
+\subsubsection{QMainWindow}
+QMainWindow is a subclass of QWidget, and is very essential to a Qt GUI application, since the QMainWindow is a framework for the application user interface. As seen on figure~\ref{fig:QMainWindowExample} a QMainWindow can have a menu bar widget, toolbar bar widgets, docked widgets and a status bar widget, though a QMainWindow must have a central widget, even if that widget is only a empty placeholder. 
 
-Subclasses of QEvent involve more parameters to characterize a certain event.
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.55]{Figures/QMainWindowExample.png}
+	\caption{}
+	\label{fig:QMainWindowExample}
+\end{figure}
 
-events -> QEvent eventhandling -> mousePressEvent() e.g.
-%events vs signal and slots
+QMainWindow is usually a good class to use as the framework for an GUI application, though it is optional whether to use it or not. In the case of RWS, QMainWindow is used, and figure~\ref{fig:QMainWindowExample} nicely reflect the structure of RWS' GUI, where the central widget is a custom subclassed QWidget using Qt GUI modules providing classes for OpenGL integration for graphic rendering. Various plug-ins to RWS are available to be docked in the docking area, or to be top-level windows (more on plug-ins in section~\ref{sec:plugin}) and tool bars and a menu bar are present as well for use.
 
-\subsection{QMainWindow}
-QMainWindow -> framework for application's user interface. REF TO FIGURE
-QMenuBar -> pulldown menu items
-QToolBar -> moveable panels
-QDock -> docked or top-level window
-Central Widget -> RWStudioView3D -> openGL
-
-\subsection{QLayout}
+\subsubsection{QLayout}
 \label{sec:QLayout}
 Arrange child widgets within a widget
 Updates when contents change
@@ -80,4 +80,5 @@ Slot -> normal function (only special thing is it can be connected to a signal) 
 \subsection{Subclassing}
 
 \subsection{Plug-in}
+\label{sec:plugin}
 
