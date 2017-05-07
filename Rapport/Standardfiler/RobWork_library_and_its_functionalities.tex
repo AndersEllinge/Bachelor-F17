@@ -3,7 +3,7 @@ This chapter is a general introduction to the RobWork library and the most commo
 
 
 \subsection{WorkCells}
-A WorkCell is the basis structure in RobWork. The WorkCell can be thought of as a box containing all of the other building blocks and information needed to represent an environment (See figure \colorbox{pink}{FIGURE_NR}). The WorkCell most commonly contains Frames, Objects, Devices which are used to represent the different items in the environment. The WorkCell also contains a State Structure used to describe how the items in the environment are related. The WorkCell also contains the collision information for the environment.
+A WorkCell is the basis structure in RobWork. The WorkCell can be thought of as a box containing all of the other building blocks and information needed to represent an environment (See figure !!!!!). The WorkCell most commonly contains Frames, Objects, Devices which are used to represent the different items in the environment. The WorkCell also contains a State Structure used to describe how the items in the environment are related. The WorkCell also contains the collision information for the environment.
 
 
 \subsection{Frames}
@@ -35,7 +35,7 @@ There are two types of objects in RobWork, rigid objects and deformable objects.
 
 
 \subsection{Devices}
-A device can be considered (in the case of a joint device) to be a collection of joints and objects denoting the setup of a device e.g. the FANUC LRM200 robotic arm (Seen on figure \colorbox{pink}{FIGURE_NR}). The device also contains the configurations for the joints contained in the device. these configurations are contained in a single configuration vector, making it easy to control the device. it is also possible to get and set the bounds, velocity limits and acceleration limits for the joints.\\
+A device can be considered (in the case of a joint device) to be a collection of joints and objects denoting the setup of a device e.g. the FANUC LRM200 robotic arm (Seen on figure !!!!!). The device also contains the configurations for the joints contained in the device. these configurations are contained in a single configuration vector, making it easy to control the device. it is also possible to get and set the bounds, velocity limits and acceleration limits for the joints.\\
 
 Devices can be of 3 different types: joint device, mobile device and SE3 device. Mobile devices are devices that  is differentially controlled e.g. a robot rover. SE3 devices are devices that \colorbox{red}{BLAH BLAH BLAH}. Joint devices are that consists of moving joints much like the previously mentioned FANUC LRM200 robotic arm.\\
 
