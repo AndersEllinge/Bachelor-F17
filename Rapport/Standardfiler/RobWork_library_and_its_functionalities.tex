@@ -14,18 +14,17 @@ A WorkCell is the basis structure in RobWork. The WorkCell can be thought of as 
 
 
 \subsection{Frames}
-One of the most common data structures from the RobWork library is a frame. A frame is the basic building block in the RobWork library, representing (in the case of RobWork) a local 3D cartesian coordinate system.\\
+One of the most common data structures from the RobWork library is a frame. A frame is the basic building block in the RobWork library, representing (in the case of RobWork) a local 3D euclidean space. In RobWork frames are built in sequence to each other to form the environment. This means that all frames have a parent and potentially children.\\
 
 In RobWork frames come in 3 different types: fixed frames, moveable frames and joints.\\
 Fixed frames are frames that have a constant transform relative to the parent frame.\\
 Movable frames are frames which transform can be freely changed.\\
-Joints are frames that can be assigned values for position, velocity limits and acceleration limits. This type of frame is usually used for devices. Joints can be further divided into 4 subtypes: prismatic joint, revolute joint, dependent joint and virtual joint.\\
+Joints are frames that can be assigned values for position, velocity limits and acceleration limits. This type of frame is usually used for devices. Joints can be further divided into 3 subtypes: prismatic joint, revolute joint and dependent joint.\\
 Prismatic joints are joints which motion is linear along a constant direction. Thinking of a pneumatic piston can be an intuitive way of thinking about prismatic joints.\\
 Revolute joints are joints which motion is based on a rotation around a single axis. Thinking of hinges can be an intuitive way of understanding revolute frames.\\
 Dependent joins refer to joints which transform depends on on or multiple other joints. Dependant joins can also be divided into 2 subtypes, dependent prismatic joints and dependent revolute joints, adding the motion specification of the prismatic joint and revolute joint previously mentioned.\\
-Virtual joints \colorbox{red}{BLAH BLAH BLAH}.\\
 
-Frames in a WorkCell are required to have a parent and are given a unique name so that no frames can be confused for another. Only one frame in the WorkCell has no parent. This frame is called WORLD and is created when the WorkCell is constructed. The WORLD frame can be seen as the global 3D cartesian coordinate system for the WorkCell.
+Frames in a WorkCell are required to have a parent and are given a unique name so that no frames can be confused for another. Only one frame in the WorkCell has no parent. This frame is called WORLD and is created when the WorkCell is constructed. The WORLD frame can be seen as the global 3D euclidean space for the WorkCell.
 
 
 \subsection{Objects}
@@ -42,7 +41,7 @@ There are two types of objects in RobWork, rigid objects and deformable objects.
 
 
 \subsection{Devices}
-A device can be considered (in the case of a joint device) to be a collection of joints and objects denoting the setup of a device e.g. the FANUC LRM200 robotic arm (Seen on figure~\ref{fig:FANUCLRM200}). The device also contains the configurations for the joints contained in the device. these configurations are contained in a single configuration vector, making it easy to control the device. it is also possible to get and set the bounds, velocity limits and acceleration limits for the joints.\\
+An device can be considered description a arbitrary device e.g. the FANUC LRM200 robotic arm (Seen on figure~\ref{fig:FANUCLRM200}). The device also contains the configurations for the device it represents. These configurations are contained in a single configuration vector, making it easy to control the device. In case of a joint device (like the FANUC LRM200), it is also possible to get and set the bounds, velocity limits and acceleration limits for the joints.\\
 
 \begin{figure}[h]
 	\centering
@@ -51,14 +50,14 @@ A device can be considered (in the case of a joint device) to be a collection of
 	\label{fig:FANUCLRM200}
 \end{figure}
 
-Devices can be of 3 different types: joint device, mobile device and SE3 device. Mobile devices are devices that  is differentially controlled e.g. a robot rover. SE3 devices are devices that \colorbox{red}{BLAH BLAH BLAH}. Joint devices are that consists of moving joints much like the previously mentioned FANUC LRM200 robotic arm.\\
+Devices can be of 3 different types: joint device, mobile device and SE3 device. Mobile devices are devices that  is differentially controlled e.g. a robot rover. Joint devices are that consists of moving joints much like the previously mentioned FANUC LRM200 robotic arm. SE3 devices are devices that are not can move in a 3D euclidean space and is not consisting of joints e.g. a drone.\\
 
 Joint devices can be of 5 types: Serial devices, tree devices, parallel devices, composite devices and composite joint devices.\\
 Serial devices are the simplest form of device since it consist of joints set in serial to each other. Many simple robotic arms like the before mentioned FANUC LRM200 are serial devices.\\
 Tree devices are devices which joints follow a tree structure, meaning that a joint can have multiple children but only one parent joint. This also means that a tree device must have more than one end effectors. This type of device is typically seen in dexterous hands.\\
 Parallel devices are devices that at some point in the structure of the is created a circle e.g. a joint goes to two joints that then both go to the same joint. The two middle joints are said to be in parallel to each other and are called parallel legs in RobWork. Parallel legs can consist of multiple joints as well as just one.\\
-Composite devices and composite joint devices are devices that are constructed from a series of other devices. The devices in the composite device may not share joints. Just like tree devices, composite devices can have multiple end effectors. However unlike the tree devices, composite devices does not require the path to the end effectors to have a common base.\\
-Illustrations of the device types can be seen on figure~\ref{fig:DeviceTypes}.
+Composite devices and composite joint devices are devices that are constructed from a series of other devices. The devices in the composite device may not share joints. Just like tree devices, composite devices can have multiple end effectors. However unlike the tree devices, composite devices does not require the path to the end effectors to have a common base. The difference between composite devices and composite joint device is that the devices used in a composite joint device needs to by of the joint device type, whereas in a composite device this is not a requirement.\\
+Illustrations of the joint device types can be seen on figure~\ref{fig:DeviceTypes}.
 
 \begin{figure}[h]
 	\centering
