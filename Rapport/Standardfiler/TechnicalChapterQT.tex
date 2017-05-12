@@ -47,7 +47,7 @@ Each QObject or subclass of QObject has an instance of QMetaObject created to ho
 \label{sec:qwidgets}
 QWidget is the base of all user interface objects(buttons, menus etc.). QWidget handles all events from the system the application is running on. In Qt, events are QEvent objects which is created upon outside activity (like a click on a mouse). Subclasses of QEvent involve more parameters to characterize a certain event, e.g. mousePressEvent(QMouseEvent* event). The event object is then sent to a specific QWidget object (maybe a button) and the QWidget handles the event with the according event handler.\\
 
-As mentioned in~\ref{sec:QtClassHierarchyAndObjectModel} ownership of objects is structured in a tree, this means that a QWidget can have QWidget's within it self, see figure~\ref{fig:QWidgetExample}. A QWidget with no parent is called a top-level widget, which means the QWidget is an independent window. An instance like QWidget subclass QDialog(a pop up dialog window) is a top-level widget. QDialog can be instantiated with a parent, but the QDialog is still a top-level widget in this case, though the position of the dialog window is now centred relative to the parent.
+As mentioned in~\ref{sec:QtClassHierarchyAndObjectModel} ownership of objects is structured in a tree, this means that a QWidget can have QWidget's within it self, see figure~\ref{fig:QWidgetExample}. It is the parent's responsibility to delete all it's children, if the parent instance is deleted. A QWidget with no parent is called a top-level widget, which means the QWidget is an independent window. An instance like QWidget subclass QDialog(a pop up dialog window) is a top-level widget. QDialog can be instantiated with a parent, but the QDialog is still a top-level widget in this case, though the position of the dialog window is now centred relative to the parent.
 
 \begin{figure}[h]
 	\centering
@@ -68,7 +68,7 @@ QMainWindow is a subclass of QWidget, and is very essential to a Qt GUI applicat
 	\label{fig:QMainWindowExample}
 \end{figure}
 
-QMainWindow is usually a good class to use as the framework for an GUI application, though it is optional whether to use it or not. In the case of RWS, QMainWindow is used, and figure~\ref{fig:QMainWindowExample} nicely reflect the structure of RWS' GUI, where the central widget is a custom subclassed QWidget using Qt GUI modules providing classes for OpenGL integration for graphic rendering. Various plug-ins to RWS are available to be docked in the docking area, or to be top-level windows (more on plug-ins in section~\ref{sec:plugin}) and tool bars and a menu bar are present as well for use.
+QMainWindow is usually a good class to use as the framework for an GUI application, though it is optional whether to use it or not. In the case of RWS, QMainWindow is used, and figure~\ref{fig:QMainWindowExample} nicely reflect the structure of RWS' GUI, where the central widget is a custom subclassed QWidget using Qt GUI modules providing classes for OpenGL integration for graphic rendering. The central widget of RWS will also be referred to as the 3D View. Various plug-ins to RWS are available to be docked in the docking area, or to be top-level windows (more on plug-ins in section~\ref{sec:plugin}) and tool bars and a menu bar are present as well for use.
 
 \subsubsection{QLayout}
 \label{sec:QLayout}

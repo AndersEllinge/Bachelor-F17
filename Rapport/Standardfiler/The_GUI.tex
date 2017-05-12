@@ -12,9 +12,9 @@ Introduction to the chapter.
 \subsection{Dialog Windows}
 Something about what dialogs does, and why we use em.
 
-The dialogs of EasyInsert has been implemented in it's own class dialog.hpp, i.e. a subclass of QDialog, see figure~\ref{fig:subClassQWidget} for an example of a Qt subclass. This was done to keep it independent and self-contained from the rest of the plug-in. Since the dialog class is a subclass of QDialog, the position of the dialog window (opposed to a normal QDialog object) is always centred to the main application, even though a parent is passed as a parameter.
+The dialogs of EasyInsert has been implemented in it's own class dialog.hpp, i.e. a subclass of QDialog, see figure~\ref{fig:subClassQWidget} for an example of a Qt subclass. This was done to keep it independent and self-contained from the rest of the plug-in. 
 
-The constructor for the dialog class is very simple, see figure~\ref{fig:dialogConstructor}. A constructor with no WorkCell parameter is also available, though a name and parent must always be given to the constructor. 
+The constructor for the dialog class is very simple, see figure~\ref{fig:dialogConstructor}. A constructor with no WorkCell parameter is also available and passing a parent is optional, though a name must always be given to the constructor. 
 
 \begin{figure}[h]
 \centering
@@ -32,7 +32,7 @@ dialog::dialog(rw::models::WorkCell::Ptr wc, QString dialog, QWidget *parent)
 \label{fig:dialogConstructor} 	
 \end{figure}
 
-The dialog class is fairly simple to use and extend. A dialog is made of blocks in a vertical layout of QWidget's, i.e. a dialog instance is a composite widget containing composite widgets. Figure~\ref{fig:dialogclassblocks} shows a dialog window with four blocks initialised. These blocks are just member functions of the dialog class which returns their parent widget. So to create a dialog window as shown on figure~\ref{fig:dialogclassblocks}, a dialog instance should be constructed (in this case with a WorkCell pointer) and then simply add the widgets to the layout with the utility member function addToDialog(). See figure~\ref{fig:dialogWindowCode} which shows how to use the dialog class to make the dialog window as shown on figure~\ref{fig:dialogclassblocks}. 
+The dialog class is fairly simple to use and extend. A dialog is made of blocks in a vertical layout of QWidget's, i.e. a dialog instance is a composite widget containing composite widgets. Figure~\ref{fig:dialogclassblocks} shows a dialog window with four blocks initialised. These blocks are just member functions of the dialog class which returns their parent widget. So to create a dialog window as shown on figure~\ref{fig:dialogclassblocks}, a dialog instance should be constructed (in this case with a WorkCell pointer) and then simply add the widgets to the layout with the utility member function addToDialog(). See figure~\ref{fig:dialogWindowCode} which shows how to use the dialog class to make the dialog window as shown on figure~\ref{fig:dialogclassblocks}. Since the dialog class is a subclass of QDialog, the position of the dialog window (opposed to a normal QDialog object) is always centred to the main application (RWS), even though a parent is passed as a parameter.
 
 \begin{figure}[h]
 	\centering
@@ -47,18 +47,27 @@ The dialog class is fairly simple to use and extend. A dialog is made of blocks 
 \begin{lstlisting}[frame=single]  
 QString st = "Fixed Frame";
 rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
-_geometriDialog = new dialog(wc,st,this);
-_geometriDialog->addToDialog(_geometriDialog->createNameBox());
-_geometriDialog->addToDialog(_geometriDialog->createFrameSelection());
-_geometriDialog->addToDialog(_geometriDialog->createConfigurationBox());
-_geometriDialog->addToDialog(_geometriDialog->createButtonBox());		 
+dialog* geometriDialog = new dialog(wc,st,this);
+geometriDialog->addToDialog(geometriDialog->createNameBox());
+geometriDialog->addToDialog(geometriDialog->createFrameSelection());
+geometriDialog->addToDialog(geometriDialog->createConfigurationBox());
+geometriDialog->addToDialog(geometriDialog->createButtonBox());	
+geometriDialog->exec();	 
 \end{lstlisting}
 \caption{A sample code to illustrate how to construct the dialog window from figure~\ref{fig:dialogclassblocks}.}
 \label{fig:dialogWindowCode} 	
 \end{figure}
 
 
+List of available blocks to use and description?
 
+widgets in the blocks has no parents? Why is this not a problem for memory management? setLayout() re-parents widgets!
+
+Dialog is alive until parent is dead, therefore delete it when done.
+
+Accessing the information entered into the dialog. An example ?
+
+Always need a button box or similar block, because of the accepted() and rejected() signals.
 
 
 

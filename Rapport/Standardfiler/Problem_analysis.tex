@@ -1,42 +1,42 @@
 \section{Problem Analysis}
-The introduction to the chapter
+Gaining a better understanding of a problem, before a development process begins, is crucial to almost any project. Therefore this chapter goes through the process of understanding the problem at hand, to help specify a solution.  
+
+Since we (the authors) had never worked with RWS before. We had no personal experience regarding the problem and had to gather information about how RWS is used before implementing a solution (i.e a plug-in). The primary method to gather this information has been through interviews, to learn about the difficulties and limitations of the current solution/system.
+
+The interviews conducted were largely semi-structured interviews (maybe references??), i.e. an open interview with a template for the interviewer to direct the interview in a proper direction. See appendix for the template used, however this template does not truly reflect what was learned from the interview. The reason for this type of interview, was to keep an open mind and try to get as many creative suggestions and inputs on how the interviewees uses RWS and how they alternatively would like to use it. The interviews lasted from 15 minutes to 30 minutes depending on the interviewee.
+
+The people interviewed are as follows:
+
+\begin{labeling}{Thomas Fridolin Iversen}
+\item [Lars-Peter Ellekilde] Lektor at The Mærsk Mc-Kinney Møller Institute, SDU Robotics
+\item [Thomas Nicky Thuelsen] Engineer, Research Assistant at The Mærsk Mc-Kinney Møller Institute, SDU Robotics
+\item [Thomas Fridolin Iversen] Ph.d student at The Mærsk Mc-Kinney Møller Institute, SDU Robotics
+\item [Michael Kjær Schmidt] Student at The Mærsk Mc-Kinney Møller Institute, SDU Robotics
+\item [Kristian Møller Hansen] Student at The Mærsk Mc-Kinney Møller Institute, SDU Robotics
+\end{labeling}
+
+There were a general interest for the problem at hand, since writing XML files and adjusting a WorkCell is a tedious process. For new users of RWS the problem was clearly recognized as simplifying working with RWS, since learning the syntax for the XML files can be quite daunting and slow to get started with. The potential of also being able to show something fast in RWS without having to do much work on setting anything up, was seen as a great asset.
+
+Functionalities and ideas, as was discussed in the interviews, are summarized in the following bullet points.
+
+\begin{itemize}
+\item There should be some overview of which elements the user can insert. Maybe in categories or in some other intuitive way.
+\item When inserting anything, a pop-up window with adjustable parameters regarding the element, should appear, so the user can specify how the element should be inserted.
+\item Insertion of a device, read from an XML.file, onto another device as the end-effector should be possible.
+\item Insertion of a device should snap, in a graphical drag and drop fashion, onto another device.
+\item When browsing the available devices, a description box with pictures and specification about the device should be shown.
+\item There should be some way to define a library of devices, which are then available to be loaded into the WorkCell.
+\item Insertion of an element into the WorkCell should happen in a drag and drop fashion.
+\item Static primitives and frames should be available as something to be inserted.
+\item Deletion of elements in the WorkCell should be possible.
+\item A undo button for the last insertion/deletion should be available for use.
+\end{itemize}
 
 
-How did we analyse the problem?
-	With user interviews
-		what kind of interview?
-		Who did we interview?
-			Why these people?
-		How long were the interviews?
-			How were they structured?
-
-	talk about how these interviews enlightened the problem.
-		What did we learn?
-			Nice to have's.
-			Need to have's.
-		Some figures of some layouts and ideas ?
-	
-
-How did we find the requirements of this project?
-	We defined them from the interview with use cases - 
-		Define use cases.
-			Black box, what the plug-in must do (not how).
-				Maybe in casual form? Breif might be preferred.
-	
-	Some sort of summery of the requirements gathered?
-	Does this involve some sort of acquiring a new set of skills?
-		Yes!
-			3d transforms, rw lib, qt, rws plug-in
-
-Discussion about why some ideas was discarded?
-	Future requirements? Maybe this should be in the perspectivation chapter?
 
 
-%Loading objects into the WC, this does not necessarily mean with a drag and drop-like motion, but rather as a proof of concept without regards to the GUI.
 
-%Simple browser for objects with a load button.
 
-%Improvement of the GUI, this means adding a drag and drop-like feature to the GUI, where the user would drag an object from the object browser window into the WC.
 
 
 
