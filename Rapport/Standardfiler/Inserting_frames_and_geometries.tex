@@ -4,7 +4,7 @@ This section contains the description of the implementation of inserting frames 
 \subsection{Intuitive explanation of the solution}
 
 \subsection{Using the creator}
-The creator follows the same namespacing technique as RobWork employ in order to make it more intuitive to use beside RobWork. However instead of using rw as the first namespace, ei (for EasyInsert) is used. This could be changed to rw in order make the blend perfect, however it was chosen not to in order to make the user aware that the creator is not part of the RobWork library.\\
+The creator follows the same namespacing technique as RobWork employ in order to make it more intuitive to use besides RobWork. However instead of using rw as the first namespace, ei (for EasyInsert) is used. This could be changed to rw in order make the blend perfect, however it was chosen not to in order to make the user aware that the creator is not part of the RobWork library.\\
 
 In the case of frames the creator is capable of creating fixed frames and movable frames. The creator is also able to add them to a supplied WorkCell and in the case of the movable frame, give it an initial transform in the WorkCell. The fixed frame should be supplied with a transform 
 Both functionalities returns a handle to the newly created frame which the user can user instead of being forced to search the WorkCell for the pointer after creating the frame.\\
@@ -52,6 +52,13 @@ The creator was implemented with the purpose of using the most upper layers of t
 
 The implementation of the getTransform3D function is rather simple since it utilises some conversions in the RobWork library. The inputs for the function are 6 doubles representing the x, y, z displacement and the R, P, Y values representing the rotation. In order to create a Transform3D object, a vector representing the displacement and a matrix representing the rotation is needed. The displacement vector is easy to create since it is just a vector containing the values directly from the input. The rotation matrix however is more difficult to get since the input for the rotation is represented in R, P, Y values. The R, P, Y values needs to be converted to a rotation matrix. Instead of doing the calculations manually, RobWork, albeit a little hidden, can do this for us through the RPY class in the math namespace. First an RPY object is created with the values from the input. Then the member function toRotation3D from the RPY class is called returning the rotation matrix of the given R, P, Y values. The displacement vector and rotation matrix is then used to create a Transform3D object that is returned to the user. It would be possible to just implement the same functionality that the toRotation3D RPY class, eliminating the creation of an RPY object. This would increase the computation speed, but not significantly unless the function is used a lot.
 
-\subsubsection{Implementation of creating frames}
+\subsubsection{Implementation of creating and adding frames}
+There are a total of 4 functions in the creator that are related to creating and adding frames to a WorkCell. The first 2, one for each type of frame, are functions related to creating frames. The implementation of creating frames in the creator is rather simple, since the process of creating frames in RobWork is simple in itself. The 2 functions are called createFixedFrame and createMovableFrame. The createFixedFrame function take the name of the frame and a transform as input, whereas the createMovableFrame only takes the name as input. The functions simply call the constructor for the given frame with the provided parameters. The reasoning behind having these rather simple functionalities is in the context that the creator should be consistent in the functionality it embodies. Another good reason was that this was some of the first functionalities implemented for the creator. At the time the idea was that there would also be a function, atleast for the fixed frame, that took in the x, y, z and R, P, Y values instead of a transform. The function would then calculate the transform by itself and use this transform when creating the frame. This was however deemed unnecessary to implement when the getTransform3D function was implemented.
+
+WRITE STUFF ABOUT ADDING
+
+INCLUDE EXAMPLE OF ADDING TO WC
+
+MAYBE MORE EXAMPLES?
 
 \subsubsection{Implementation of creating geometries}
