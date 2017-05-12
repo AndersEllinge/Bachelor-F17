@@ -25,8 +25,6 @@ dialog::dialog(rw::models::WorkCell::Ptr wc, QString dialog, QWidget *parent)
 
     mainLayout = new QVBoxLayout();
 
-    //setLayout(mainLayout);
-
     setWindowTitle(dialog);
 
 }
@@ -39,7 +37,7 @@ void dialog::addToDialog(QWidget *widget)
 
 QWidget* dialog::createButtonBox()
 {
-    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
@@ -48,7 +46,7 @@ QWidget* dialog::createButtonBox()
 
 QWidget* dialog::createNameBox()
 {
-    nameBox = new QGroupBox(tr("Name"));
+    QGroupBox* nameBox = new QGroupBox(tr("Name"));
     QHBoxLayout *layout = new QHBoxLayout;
 
     nameLine = new QLineEdit();
@@ -61,7 +59,7 @@ QWidget* dialog::createNameBox()
 
 QWidget* dialog::createCheckFramesBox()
 {
-    checkBox = new QGroupBox(tr("Configurations:"));
+    QGroupBox* checkBox = new QGroupBox(tr("Configurations:"));
     QGridLayout *layout = new QGridLayout();
     QButtonGroup *group = new QButtonGroup();
 
@@ -84,7 +82,7 @@ QWidget* dialog::createCheckFramesBox()
 
 QWidget* dialog::createConfigurationBox()
 {
-    configuration = new QGroupBox(tr("Configurations:"));
+    QGroupBox* configuration = new QGroupBox(tr("Configurations:"));
     QGridLayout *layout = new QGridLayout();
 
     QLabel *labels[6];
@@ -125,7 +123,7 @@ QWidget* dialog::createConfigurationBox()
 
 QWidget* dialog::createConfigurationBoxCube()
 {
-    configurationCube = new QGroupBox(tr("Dimension sizes:"));
+    QGroupBox* configurationCube = new QGroupBox(tr("Dimension sizes:"));
     QGridLayout *layout = new QGridLayout();
 
     QLabel *labels[3];
@@ -153,7 +151,7 @@ QWidget* dialog::createConfigurationBoxCube()
 
 QWidget* dialog::createConfigurationBoxSphere()
 {
-    configurationSphere = new QGroupBox(tr("Dimension sizes:"));
+    QGroupBox* configurationSphere = new QGroupBox(tr("Dimension sizes:"));
     QGridLayout *layout = new QGridLayout();
 
     QLabel *labels;
@@ -175,7 +173,7 @@ QWidget* dialog::createConfigurationBoxSphere()
 
 QWidget* dialog::createConfigurationBoxCone()
 {
-    configurationCone = new QGroupBox(tr("Dimension sizes:"));
+    QGroupBox* configurationCone = new QGroupBox(tr("Dimension sizes:"));
     QGridLayout *layout = new QGridLayout();
 
     QLabel *labels[2];
@@ -202,7 +200,7 @@ QWidget* dialog::createConfigurationBoxCone()
 
 QWidget* dialog::createConfigurationBoxTube()
 {
-    configurationCone = new QGroupBox(tr("Dimension sizes:"));
+    QGroupBox* configurationCone = new QGroupBox(tr("Dimension sizes:"));
     QGridLayout *layout = new QGridLayout();
 
     QLabel *labels[2];
@@ -274,7 +272,7 @@ QWidget* dialog::createLibSettingsBox()
 
 QWidget* dialog::createFrameSelection()
 {
-    selectFrame = new QGroupBox(tr("Select Frame:"));
+    QGroupBox* selectFrame = new QGroupBox(tr("Select Frame:"));
     QGridLayout *layout = new QGridLayout();
 
     comboFrames = new QComboBox();
@@ -290,6 +288,66 @@ QWidget* dialog::createFrameSelection()
 
     return selectFrame;
 
+}
+
+std::string dialog::getNameBox()
+{
+    return nameLine->text().toStdString();
+}
+
+std::string dialog::getFrameSelection()
+{
+    return comboFrames->currentText().toStdString();
+}
+
+double dialog::getDisplacementX()
+{
+    return doubleSpinBoxes[0]->value();
+}
+
+double dialog::getDisplacementY()
+{
+    return doubleSpinBoxes[1]->value();
+}
+
+double dialog::getDisplacementZ()
+{
+    return doubleSpinBoxes[2]->value();
+}
+
+double dialog::getRotationR()
+{
+    return doubleSpinBoxes[3]->value();
+}
+
+double dialog::getRotationP()
+{
+    return doubleSpinBoxes[4]->value();
+}
+
+double dialog::getRotationY()
+{
+    return doubleSpinBoxes[5]->value();
+}
+
+double dialog::getGeometriX()
+{
+    return doubleSpinBoxesGeometires[0]->value();
+}
+
+double dialog::getGeometriY()
+{
+    return doubleSpinBoxesGeometires[1]->value();
+}
+
+double dialog::getGeometriZ()
+{
+    return doubleSpinBoxesGeometires[2]->value();
+}
+
+bool dialog::getCheckFrameMoveable()
+{
+    return checkFrames[0]->isChecked();
 }
 
 void dialog::reject()

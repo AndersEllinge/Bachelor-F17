@@ -97,15 +97,11 @@ private:
     QWidget* _devTab;
     QWidget* _geoTab;
     QWidget* _deleteTab;
-    dialog* _settingsDialog;
-    dialog* _loadDialog;
-    dialog* _geometriDialog;
 
     std::vector<rw::kinematics::Frame*> _devFrameList;
     std::vector<rw::kinematics::Frame*> _frames;
 
-
-
+    /*
     typedef std::map<QTreeWidgetItem*, rw::kinematics::Frame*> FrameMap;
     FrameMap _frameMap;
 
@@ -115,6 +111,7 @@ private:
 
     typedef std::map<QTreeWidgetItem*, rw::common::Ptr<rw::models::Device> > DeviceMap;
     DeviceMap _deviceMap; //not using this anyway it seems
+    */
 
 protected:
 
@@ -122,7 +119,6 @@ protected:
     QFileSystemModel *dirmodel;
     rw::common::PropertyMap _propMap;
     rw::common::PropertyMap *_settingsMap;
-
 
 private slots:
     void stateChangedListener(const rw::kinematics::State& state);
@@ -141,7 +137,6 @@ private slots:
     void findChildren(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc);
     void deleteDev();
     void deleteObj();
-
 
 };
 

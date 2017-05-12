@@ -495,17 +495,17 @@ void EasyInsert::settings()
 {
     QString st = "Settings";
 
-	_settingsDialog = new dialog(st, this);
+	dialog* settingsDialog = new dialog(st, this);
 
-	_settingsDialog->addToDialog(_settingsDialog->createLibSettingsBox());
-	_settingsDialog->addToDialog(_settingsDialog->createButtonBox());
-	_settingsDialog->exec();
+	settingsDialog->addToDialog(settingsDialog->createLibSettingsBox());
+	settingsDialog->addToDialog(settingsDialog->createButtonBox());
+	settingsDialog->exec();
 
-	if (_settingsDialog->result() == QDialog::Accepted)
+	if (settingsDialog->result() == QDialog::Accepted)
   	{
-    	_settingsMap->set<std::string>("Devices", _settingsDialog->_settingsMap->get<std::string>("Devices", "/"));
-		//_settingsMap->set<std::string>("Geometries", _settingsDialog->_settingsMap->get<std::string>("Geometries", "/"));
-		//_settingsMap->set<std::string>("Frames", _settingsDialog->_settingsMap->get<std::string>("Frames", "/"));
+    	_settingsMap->set<std::string>("Devices", settingsDialog->_settingsMap->get<std::string>("Devices", "/"));
+		//_settingsMap->set<std::string>("Geometries", settingsDialog->_settingsMap->get<std::string>("Geometries", "/"));
+		//_settingsMap->set<std::string>("Frames", settingsDialog->_settingsMap->get<std::string>("Frames", "/"));
   	}
 
 	try {
@@ -525,16 +525,16 @@ void EasyInsert::loadDevice()
 	QModelIndex index = view->currentIndex();
 	QString itemText = dirmodel->filePath(index);
 
-	_loadDialog = new dialog(wc, st, this);
+	dialog* loadDialog = new dialog(wc, st, this);
 
-	_loadDialog->addToDialog(_loadDialog->createNameBox());
-    _loadDialog->addToDialog(_loadDialog->createFrameSelection());
-	_loadDialog->addToDialog(_loadDialog->createConfigurationBox());
-	_loadDialog->addToDialog(_loadDialog->createButtonBox());
-	_loadDialog->exec();
+	loadDialog->addToDialog(loadDialog->createNameBox());
+    loadDialog->addToDialog(loadDialog->createFrameSelection());
+	loadDialog->addToDialog(loadDialog->createConfigurationBox());
+	loadDialog->addToDialog(loadDialog->createButtonBox());
+	loadDialog->exec();
 
 
-    if (_loadDialog->result() == QDialog::Accepted)
+    if (loadDialog->result() == QDialog::Accepted)
   	{
     	rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
 
@@ -545,13 +545,13 @@ void EasyInsert::loadDevice()
         {
 
             ei::creator creator;
-            ei::loader::add(itemText.toStdString(), wc, _loadDialog->nameLine->text().toStdString(), _loadDialog->comboFrames->currentText().toStdString(),
-                creator.getTransform3D( _loadDialog->doubleSpinBoxes[0]->value(),
-                                        _loadDialog->doubleSpinBoxes[1]->value(),
-                                        _loadDialog->doubleSpinBoxes[2]->value(),
-                                        _loadDialog->doubleSpinBoxes[3]->value(),
-                                        _loadDialog->doubleSpinBoxes[4]->value(),
-                                        _loadDialog->doubleSpinBoxes[5]->value()
+            ei::loader::add(itemText.toStdString(), wc, loadDialog->getNameBox(), loadDialog->getFrameSelection(),
+                creator.getTransform3D( loadDialog->getDisplacementX(),
+                                        loadDialog->getDisplacementY(),
+                                        loadDialog->getDisplacementZ(),
+                                        loadDialog->getRotationR(),
+                                        loadDialog->getRotationP(),
+                                        loadDialog->getRotationY()
                                         )
             );
 
@@ -563,6 +563,7 @@ void EasyInsert::loadDevice()
             RW_THROW("Name of device allready in use");
         }
   	}
+    delete loadDialog;
 
 }
 
@@ -570,21 +571,21 @@ void EasyInsert::cube()
 {
     QString st = "Cube";
     rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
-    _geometriDialog = new dialog(wc,st,this);
+    dialog* geometriDialog = new dialog(wc,st,this);
 
-    _geometriDialog->addToDialog(_geometriDialog->createNameBox());
-    _geometriDialog->addToDialog(_geometriDialog->createCheckFramesBox());
-    _geometriDialog->addToDialog(_geometriDialog->createFrameSelection());
-    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBoxCube());
-    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBox());
+    geometriDialog->addToDialog(geometriDialog->createNameBox());
+    geometriDialog->addToDialog(geometriDialog->createCheckFramesBox());
+    geometriDialog->addToDialog(geometriDialog->createFrameSelection());
+    geometriDialog->addToDialog(geometriDialog->createConfigurationBoxCube());
+    geometriDialog->addToDialog(geometriDialog->createConfigurationBox());
 
-    _geometriDialog->addToDialog(_geometriDialog->createButtonBox());
+    geometriDialog->addToDialog(geometriDialog->createButtonBox());
 
-    _geometriDialog->exec();
+    geometriDialog->exec();
 
-    if (_geometriDialog->result() == QDialog::Accepted )
+    if (geometriDialog->result() == QDialog::Accepted )
   	{
-        if (_geometriDialog->nameLine->text().toStdString() == "") {
+        if (geometriDialog->getNameBox() == "") {
             RW_THROW("Give geometry a name");
         }
 
@@ -598,28 +599,28 @@ void EasyInsert::cube()
 
             ei::creator creator;
             rw::math::Transform3D<double> transform = creator.getTransform3D(
-                                    _geometriDialog->doubleSpinBoxes[0]->value(),
-                                    _geometriDialog->doubleSpinBoxes[1]->value(),
-                                    _geometriDialog->doubleSpinBoxes[2]->value(),
-                                    _geometriDialog->doubleSpinBoxes[3]->value(),
-                                    _geometriDialog->doubleSpinBoxes[4]->value(),
-                                    _geometriDialog->doubleSpinBoxes[5]->value());
+                                    geometriDialog->getDisplacementX(),
+                                    geometriDialog->getDisplacementY(),
+                                    geometriDialog->getDisplacementZ(),
+                                    geometriDialog->getRotationR(),
+                                    geometriDialog->getRotationP(),
+                                    geometriDialog->getRotationY());
 
-            if (_geometriDialog->checkFrames[0]->isChecked()) // moveable frame
-                ei::creator::addBox(_geometriDialog->nameLine->text().toStdString(),
-                                    _geometriDialog->comboFrames->currentText().toStdString(),
+            if (geometriDialog->getCheckFrameMoveable()) // moveable frame
+                ei::creator::addBox(geometriDialog->getNameBox(),
+                                    geometriDialog->getFrameSelection(),
                                     wc,
-                                    (float)_geometriDialog->doubleSpinBoxesGeometires[0]->value(),
-                                    (float)_geometriDialog->doubleSpinBoxesGeometires[1]->value(),
-                                    (float)_geometriDialog->doubleSpinBoxesGeometires[2]->value(),
+                                    (float)geometriDialog->getGeometriX(),
+                                    (float)geometriDialog->getGeometriY(),
+                                    (float)geometriDialog->getGeometriZ(),
                                     transform);
             else // fixed frame
-                ei::creator::addBox(_geometriDialog->nameLine->text().toStdString(),
-                                    wc->findFrame(_geometriDialog->comboFrames->currentText().toStdString()),
+                ei::creator::addBox(geometriDialog->getNameBox(),
+                                    wc->findFrame(geometriDialog->getFrameSelection()),
                                     wc,
-                                    (float)_geometriDialog->doubleSpinBoxesGeometires[0]->value(),
-                                    (float)_geometriDialog->doubleSpinBoxesGeometires[1]->value(),
-                                    (float)_geometriDialog->doubleSpinBoxesGeometires[2]->value(),
+                                    (float)geometriDialog->getGeometriX(),
+                                    (float)geometriDialog->getGeometriY(),
+                                    (float)geometriDialog->getGeometriZ(),
                                     transform);
 
             getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
@@ -630,26 +631,27 @@ void EasyInsert::cube()
             RW_THROW("Name of geometri allready in use");
         }
   	}
+    delete geometriDialog;
 }
 
 void EasyInsert::plane()
 {
     QString st = "Plane";
     rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
-    _geometriDialog = new dialog(wc,st,this);
+    dialog* geometriDialog = new dialog(wc,st,this);
 
-    _geometriDialog->addToDialog(_geometriDialog->createNameBox());
-    _geometriDialog->addToDialog(_geometriDialog->createCheckFramesBox());
-    _geometriDialog->addToDialog(_geometriDialog->createFrameSelection());
-    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBox());
+    geometriDialog->addToDialog(geometriDialog->createNameBox());
+    geometriDialog->addToDialog(geometriDialog->createCheckFramesBox());
+    geometriDialog->addToDialog(geometriDialog->createFrameSelection());
+    geometriDialog->addToDialog(geometriDialog->createConfigurationBox());
 
-    _geometriDialog->addToDialog(_geometriDialog->createButtonBox());
+    geometriDialog->addToDialog(geometriDialog->createButtonBox());
 
-    _geometriDialog->exec();
+    geometriDialog->exec();
 
-    if (_geometriDialog->result() == QDialog::Accepted)
+    if (geometriDialog->result() == QDialog::Accepted)
     {
-        if (_geometriDialog->nameLine->text().toStdString() == "") {
+        if (geometriDialog->getNameBox() == "") {
             RW_THROW("Give geometry a name");
         }
         rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
@@ -661,21 +663,21 @@ void EasyInsert::plane()
         {
             ei::creator creator;
             rw::math::Transform3D<double> transform = creator.getTransform3D(
-                                    _geometriDialog->doubleSpinBoxes[0]->value(),
-                                    _geometriDialog->doubleSpinBoxes[1]->value(),
-                                    _geometriDialog->doubleSpinBoxes[2]->value(),
-                                    _geometriDialog->doubleSpinBoxes[3]->value(),
-                                    _geometriDialog->doubleSpinBoxes[4]->value(),
-                                    _geometriDialog->doubleSpinBoxes[5]->value());
+                                    geometriDialog->getDisplacementX(),
+                                    geometriDialog->getDisplacementY(),
+                                    geometriDialog->getDisplacementZ(),
+                                    geometriDialog->getRotationR(),
+                                    geometriDialog->getRotationP(),
+                                    geometriDialog->getRotationY());
 
-            if (_geometriDialog->checkFrames[0]->isChecked()) // check for new moveable
-                ei::creator::addPlane(_geometriDialog->nameLine->text().toStdString(),
-                                    _geometriDialog->comboFrames->currentText().toStdString(),
+            if (geometriDialog->getCheckFrameMoveable()) // check for new moveable
+                ei::creator::addPlane(geometriDialog->getNameBox(),
+                                    geometriDialog->getFrameSelection(),
                                     wc,
                                     transform);
             else // else fixed frame
-                ei::creator::addPlane(_geometriDialog->nameLine->text().toStdString(),
-                                    wc->findFrame(_geometriDialog->comboFrames->currentText().toStdString()),
+                ei::creator::addPlane(geometriDialog->getNameBox(),
+                                    wc->findFrame(geometriDialog->getFrameSelection()),
                                     wc,
                                     transform);
 
@@ -687,27 +689,28 @@ void EasyInsert::plane()
             RW_THROW("Name of device allready in use");
         }
     }
+    delete geometriDialog;
 }
 
 void EasyInsert::sphere()
 {
     QString st = "Sphere";
     rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
-    _geometriDialog = new dialog(wc,st,this);
+    dialog* geometriDialog = new dialog(wc,st,this);
 
-    _geometriDialog->addToDialog(_geometriDialog->createNameBox());
-    _geometriDialog->addToDialog(_geometriDialog->createCheckFramesBox());
-    _geometriDialog->addToDialog(_geometriDialog->createFrameSelection());
-    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBoxSphere());
-    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBox());
+    geometriDialog->addToDialog(geometriDialog->createNameBox());
+    geometriDialog->addToDialog(geometriDialog->createCheckFramesBox());
+    geometriDialog->addToDialog(geometriDialog->createFrameSelection());
+    geometriDialog->addToDialog(geometriDialog->createConfigurationBoxSphere());
+    geometriDialog->addToDialog(geometriDialog->createConfigurationBox());
 
-    _geometriDialog->addToDialog(_geometriDialog->createButtonBox());
+    geometriDialog->addToDialog(geometriDialog->createButtonBox());
 
-    _geometriDialog->exec();
+    geometriDialog->exec();
 
-    if (_geometriDialog->result() == QDialog::Accepted)
+    if (geometriDialog->result() == QDialog::Accepted)
     {
-        if (_geometriDialog->nameLine->text().toStdString() == "") {
+        if (geometriDialog->getNameBox() == "") {
             RW_THROW("Give geometry a name");
         }
 
@@ -720,24 +723,24 @@ void EasyInsert::sphere()
         {
             ei::creator creator;
             rw::math::Transform3D<double> transform = creator.getTransform3D(
-                                    _geometriDialog->doubleSpinBoxes[0]->value(),
-                                    _geometriDialog->doubleSpinBoxes[1]->value(),
-                                    _geometriDialog->doubleSpinBoxes[2]->value(),
-                                    _geometriDialog->doubleSpinBoxes[3]->value(),
-                                    _geometriDialog->doubleSpinBoxes[4]->value(),
-                                    _geometriDialog->doubleSpinBoxes[5]->value());
+                                    geometriDialog->getDisplacementX(),
+                                    geometriDialog->getDisplacementY(),
+                                    geometriDialog->getDisplacementZ(),
+                                    geometriDialog->getRotationR(),
+                                    geometriDialog->getRotationP(),
+                                    geometriDialog->getRotationY());
 
-            if (_geometriDialog->checkFrames[0]->isChecked()) // check for new moveable
-                ei::creator::addSphere(_geometriDialog->nameLine->text().toStdString(),
-                                    _geometriDialog->comboFrames->currentText().toStdString(),
+            if (geometriDialog->getCheckFrameMoveable()) // check for new moveable
+                ei::creator::addSphere(geometriDialog->getNameBox(),
+                                    geometriDialog->getFrameSelection(),
                                     wc,
-                                    _geometriDialog->doubleSpinBoxesGeometires[0]->value(),
+                                    geometriDialog->getGeometriX(), //Radius
                                     transform);
             else
-                ei::creator::addSphere(_geometriDialog->nameLine->text().toStdString(),
-                                    wc->findFrame(_geometriDialog->comboFrames->currentText().toStdString()),
+                ei::creator::addSphere(geometriDialog->getNameBox(),
+                                    wc->findFrame(geometriDialog->getFrameSelection()),
                                     wc,
-                                    _geometriDialog->doubleSpinBoxesGeometires[0]->value(),
+                                    geometriDialog->getGeometriX(), //Radius
                                     transform);
 
             getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
@@ -748,27 +751,28 @@ void EasyInsert::sphere()
             RW_THROW("Name of device allready in use");
         }
     }
+    delete geometriDialog;
 }
 
 void EasyInsert::cone()
 {
     QString st = "Cone";
     rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
-    _geometriDialog = new dialog(wc,st,this);
+    dialog* geometriDialog = new dialog(wc,st,this);
 
-    _geometriDialog->addToDialog(_geometriDialog->createNameBox());
-    _geometriDialog->addToDialog(_geometriDialog->createCheckFramesBox());
-    _geometriDialog->addToDialog(_geometriDialog->createFrameSelection());
-    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBoxCone());
-    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBox());
+    geometriDialog->addToDialog(geometriDialog->createNameBox());
+    geometriDialog->addToDialog(geometriDialog->createCheckFramesBox());
+    geometriDialog->addToDialog(geometriDialog->createFrameSelection());
+    geometriDialog->addToDialog(geometriDialog->createConfigurationBoxCone());
+    geometriDialog->addToDialog(geometriDialog->createConfigurationBox());
 
-    _geometriDialog->addToDialog(_geometriDialog->createButtonBox());
+    geometriDialog->addToDialog(geometriDialog->createButtonBox());
 
-    _geometriDialog->exec();
+    geometriDialog->exec();
 
-    if (_geometriDialog->result() == QDialog::Accepted)
+    if (geometriDialog->result() == QDialog::Accepted)
     {
-        if (_geometriDialog->nameLine->text().toStdString() == "") {
+        if (geometriDialog->getNameBox() == "") {
             RW_THROW("Give geometry a name");
         }
 
@@ -781,26 +785,26 @@ void EasyInsert::cone()
         {
             ei::creator creator;
             rw::math::Transform3D<double> transform = creator.getTransform3D(
-                                    _geometriDialog->doubleSpinBoxes[0]->value(),
-                                    _geometriDialog->doubleSpinBoxes[1]->value(),
-                                    _geometriDialog->doubleSpinBoxes[2]->value(),
-                                    _geometriDialog->doubleSpinBoxes[3]->value(),
-                                    _geometriDialog->doubleSpinBoxes[4]->value(),
-                                    _geometriDialog->doubleSpinBoxes[5]->value());
+                                    geometriDialog->getDisplacementX(),
+                                    geometriDialog->getDisplacementY(),
+                                    geometriDialog->getDisplacementZ(),
+                                    geometriDialog->getRotationR(),
+                                    geometriDialog->getRotationP(),
+                                    geometriDialog->getRotationY());
 
-            if (_geometriDialog->checkFrames[0]->isChecked()) // check for new moveable
-                ei::creator::addCone(_geometriDialog->nameLine->text().toStdString(),
-                                    _geometriDialog->comboFrames->currentText().toStdString(),
+            if (geometriDialog->getCheckFrameMoveable()) // check for new moveable
+                ei::creator::addCone(geometriDialog->getNameBox(),
+                                    geometriDialog->getFrameSelection(),
                                     wc,
-                                    _geometriDialog->doubleSpinBoxesGeometires[0]->value(),
-                                    _geometriDialog->doubleSpinBoxesGeometires[1]->value(),
+                                    geometriDialog->getGeometriX(), //Radius
+                                    geometriDialog->getGeometriY(), //Height
                                     transform);
             else
-                ei::creator::addCone(_geometriDialog->nameLine->text().toStdString(),
-                                    wc->findFrame(_geometriDialog->comboFrames->currentText().toStdString()),
+                ei::creator::addCone(geometriDialog->getNameBox(),
+                                    wc->findFrame(geometriDialog->getFrameSelection()),
                                     wc,
-                                    _geometriDialog->doubleSpinBoxesGeometires[0]->value(),
-                                    _geometriDialog->doubleSpinBoxesGeometires[1]->value(),
+                                    geometriDialog->getGeometriX(), //Radius
+                                    geometriDialog->getGeometriY(), //Height
                                     transform);
 
             getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
@@ -811,27 +815,28 @@ void EasyInsert::cone()
             RW_THROW("Name of device allready in use");
         }
     }
+    delete geometriDialog;
 }
 
 void EasyInsert::cylinder()
 {
     QString st = "Cylinder";
     rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
-    _geometriDialog = new dialog(wc,st,this);
+    dialog* geometriDialog = new dialog(wc,st,this);
 
-    _geometriDialog->addToDialog(_geometriDialog->createNameBox());
-    _geometriDialog->addToDialog(_geometriDialog->createCheckFramesBox());
-    _geometriDialog->addToDialog(_geometriDialog->createFrameSelection());
-    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBoxCone()); //cylinder and cone uses the same parameters
-    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBox());
+    geometriDialog->addToDialog(geometriDialog->createNameBox());
+    geometriDialog->addToDialog(geometriDialog->createCheckFramesBox());
+    geometriDialog->addToDialog(geometriDialog->createFrameSelection());
+    geometriDialog->addToDialog(geometriDialog->createConfigurationBoxCone()); //cylinder and cone uses the same parameters
+    geometriDialog->addToDialog(geometriDialog->createConfigurationBox());
 
-    _geometriDialog->addToDialog(_geometriDialog->createButtonBox());
+    geometriDialog->addToDialog(geometriDialog->createButtonBox());
 
-    _geometriDialog->exec();
+    geometriDialog->exec();
 
-    if (_geometriDialog->result() == QDialog::Accepted)
+    if (geometriDialog->result() == QDialog::Accepted)
     {
-        if (_geometriDialog->nameLine->text().toStdString() == "") {
+        if (geometriDialog->getNameBox() == "") {
             RW_THROW("Give geometry a name");
         }
 
@@ -844,26 +849,26 @@ void EasyInsert::cylinder()
         {
             ei::creator creator;
             rw::math::Transform3D<double> transform = creator.getTransform3D(
-                                    _geometriDialog->doubleSpinBoxes[0]->value(),
-                                    _geometriDialog->doubleSpinBoxes[1]->value(),
-                                    _geometriDialog->doubleSpinBoxes[2]->value(),
-                                    _geometriDialog->doubleSpinBoxes[3]->value(),
-                                    _geometriDialog->doubleSpinBoxes[4]->value(),
-                                    _geometriDialog->doubleSpinBoxes[5]->value());
+                                    geometriDialog->getDisplacementX(),
+                                    geometriDialog->getDisplacementY(),
+                                    geometriDialog->getDisplacementZ(),
+                                    geometriDialog->getRotationR(),
+                                    geometriDialog->getRotationP(),
+                                    geometriDialog->getRotationY());
 
-            if (_geometriDialog->checkFrames[0]->isChecked()) // check for new moveable
-                ei::creator::addCylinder(_geometriDialog->nameLine->text().toStdString(),
-                                    _geometriDialog->comboFrames->currentText().toStdString(),
+            if (geometriDialog->getCheckFrameMoveable()) // check for new moveable
+                ei::creator::addCylinder(geometriDialog->getNameBox(),
+                                    geometriDialog->getFrameSelection(),
                                     wc,
-                                    _geometriDialog->doubleSpinBoxesGeometires[0]->value(),
-                                    _geometriDialog->doubleSpinBoxesGeometires[1]->value(),
+                                    geometriDialog->getGeometriX(), //Radius
+                                    geometriDialog->getGeometriY(), //Height
                                     transform);
             else
-                ei::creator::addCylinder(_geometriDialog->nameLine->text().toStdString(),
-                                    wc->findFrame(_geometriDialog->comboFrames->currentText().toStdString()),
+                ei::creator::addCylinder(geometriDialog->getNameBox(),
+                                    wc->findFrame(geometriDialog->getFrameSelection()),
                                     wc,
-                                    _geometriDialog->doubleSpinBoxesGeometires[0]->value(),
-                                    _geometriDialog->doubleSpinBoxesGeometires[1]->value(),
+                                    geometriDialog->getGeometriX(), //Radius
+                                    geometriDialog->getGeometriY(), //Height
                                     transform);
 
             getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
@@ -874,27 +879,28 @@ void EasyInsert::cylinder()
             RW_THROW("Name of device allready in use");
         }
     }
+    delete geometriDialog;
 }
 
 void EasyInsert::tube()
 {
     QString st = "Tube";
     rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
-    _geometriDialog = new dialog(wc,st,this);
+    dialog* geometriDialog = new dialog(wc,st,this);
 
-    _geometriDialog->addToDialog(_geometriDialog->createNameBox());
-    _geometriDialog->addToDialog(_geometriDialog->createCheckFramesBox());
-    _geometriDialog->addToDialog(_geometriDialog->createFrameSelection());
-    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBoxTube());
-    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBox());
+    geometriDialog->addToDialog(geometriDialog->createNameBox());
+    geometriDialog->addToDialog(geometriDialog->createCheckFramesBox());
+    geometriDialog->addToDialog(geometriDialog->createFrameSelection());
+    geometriDialog->addToDialog(geometriDialog->createConfigurationBoxTube());
+    geometriDialog->addToDialog(geometriDialog->createConfigurationBox());
 
-    _geometriDialog->addToDialog(_geometriDialog->createButtonBox());
+    geometriDialog->addToDialog(geometriDialog->createButtonBox());
 
-    _geometriDialog->exec();
+    geometriDialog->exec();
 
-    if (_geometriDialog->result() == QDialog::Accepted)
+    if (geometriDialog->result() == QDialog::Accepted)
     {
-        if (_geometriDialog->nameLine->text().toStdString() == "") {
+        if (geometriDialog->getNameBox() == "") {
             RW_THROW("Give geometry a name");
         }
 
@@ -907,28 +913,28 @@ void EasyInsert::tube()
         {
             ei::creator creator;
             rw::math::Transform3D<double> transform = creator.getTransform3D(
-                                    _geometriDialog->doubleSpinBoxes[0]->value(),
-                                    _geometriDialog->doubleSpinBoxes[1]->value(),
-                                    _geometriDialog->doubleSpinBoxes[2]->value(),
-                                    _geometriDialog->doubleSpinBoxes[3]->value(),
-                                    _geometriDialog->doubleSpinBoxes[4]->value(),
-                                    _geometriDialog->doubleSpinBoxes[5]->value());
+                                    geometriDialog->getDisplacementX(),
+                                    geometriDialog->getDisplacementY(),
+                                    geometriDialog->getDisplacementZ(),
+                                    geometriDialog->getRotationR(),
+                                    geometriDialog->getRotationP(),
+                                    geometriDialog->getRotationY());
 
-            if (_geometriDialog->checkFrames[0]->isChecked()) // check for new moveable
-                ei::creator::addTube(_geometriDialog->nameLine->text().toStdString(),
-                                    _geometriDialog->comboFrames->currentText().toStdString(),
+            if (geometriDialog->getCheckFrameMoveable()) // check for new moveable
+                ei::creator::addTube(geometriDialog->getNameBox(),
+                                    geometriDialog->getFrameSelection(),
                                     wc,
-                                    _geometriDialog->doubleSpinBoxesGeometires[0]->value(),
-                                    _geometriDialog->doubleSpinBoxesGeometires[1]->value(),
-                                    _geometriDialog->doubleSpinBoxesGeometires[2]->value(),
+                                    geometriDialog->getGeometriX(), //Radius
+                                    geometriDialog->getGeometriY(), //Thickness
+                                    geometriDialog->getGeometriZ(), //Height
                                     transform);
             else
-                ei::creator::addTube(_geometriDialog->nameLine->text().toStdString(),
-                                    wc->findFrame(_geometriDialog->comboFrames->currentText().toStdString()),
+                ei::creator::addTube(geometriDialog->getNameBox(),
+                                    wc->findFrame(geometriDialog->getFrameSelection()),
                                     wc,
-                                    _geometriDialog->doubleSpinBoxesGeometires[0]->value(),
-                                    _geometriDialog->doubleSpinBoxesGeometires[1]->value(),
-                                    _geometriDialog->doubleSpinBoxesGeometires[2]->value(),
+                                    geometriDialog->getGeometriX(), //Raidus
+                                    geometriDialog->getGeometriY(), //Thickness
+                                    geometriDialog->getGeometriZ(), //Height
                                     transform);
 
 
@@ -940,26 +946,27 @@ void EasyInsert::tube()
             RW_THROW("Name of device allready in use");
         }
     }
+    delete geometriDialog;
 }
 
 void EasyInsert::fixedFrame()
 {
     QString st = "Fixed Frame";
     rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
-    _geometriDialog = new dialog(wc,st,this);
+    dialog* geometriDialog = new dialog(wc,st,this);
 
-    _geometriDialog->addToDialog(_geometriDialog->createNameBox());
-    //_geometriDialog->addToDialog(_geometriDialog->createCheckFramesBox());
-    _geometriDialog->addToDialog(_geometriDialog->createFrameSelection());
-    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBox());
+    geometriDialog->addToDialog(geometriDialog->createNameBox());
+    //geometriDialog->addToDialog(geometriDialog->createCheckFramesBox());
+    geometriDialog->addToDialog(geometriDialog->createFrameSelection());
+    geometriDialog->addToDialog(geometriDialog->createConfigurationBox());
 
-    _geometriDialog->addToDialog(_geometriDialog->createButtonBox());
+    geometriDialog->addToDialog(geometriDialog->createButtonBox());
 
-    _geometriDialog->exec();
+    geometriDialog->exec();
 
-    if (_geometriDialog->result() == QDialog::Accepted)
+    if (geometriDialog->result() == QDialog::Accepted)
     {
-        if (_geometriDialog->nameLine->text().toStdString() == "") {
+        if (geometriDialog->getNameBox() == "") {
             RW_THROW("Give frame a name");
         }
 
@@ -972,16 +979,16 @@ void EasyInsert::fixedFrame()
         {
             ei::creator creator;
             rw::math::Transform3D<double> transform = creator.getTransform3D(
-                                    _geometriDialog->doubleSpinBoxes[0]->value(),
-                                    _geometriDialog->doubleSpinBoxes[1]->value(),
-                                    _geometriDialog->doubleSpinBoxes[2]->value(),
-                                    _geometriDialog->doubleSpinBoxes[3]->value(),
-                                    _geometriDialog->doubleSpinBoxes[4]->value(),
-                                    _geometriDialog->doubleSpinBoxes[5]->value());
+                                    geometriDialog->getDisplacementX(),
+                                    geometriDialog->getDisplacementY(),
+                                    geometriDialog->getDisplacementZ(),
+                                    geometriDialog->getRotationR(),
+                                    geometriDialog->getRotationP(),
+                                    geometriDialog->getRotationY());
 
             ei::creator::addFixedFrame(wc,
-                                _geometriDialog->nameLine->text().toStdString(),
-                                _geometriDialog->comboFrames->currentText().toStdString(),
+                                geometriDialog->getNameBox(),
+                                geometriDialog->getFrameSelection(),
                                 transform);
 
             getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
@@ -992,26 +999,27 @@ void EasyInsert::fixedFrame()
             RW_THROW("Name of frame allready in use");
         }
     }
+    delete geometriDialog;
 }
 
 void EasyInsert::movableFrame()
 {
     QString st = "Movable Frame";
     rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
-    _geometriDialog = new dialog(wc,st,this);
+    dialog* geometriDialog = new dialog(wc,st,this);
 
-    _geometriDialog->addToDialog(_geometriDialog->createNameBox());
-    //_geometriDialog->addToDialog(_geometriDialog->createCheckFramesBox());
-    _geometriDialog->addToDialog(_geometriDialog->createFrameSelection());
-    _geometriDialog->addToDialog(_geometriDialog->createConfigurationBox());
+    geometriDialog->addToDialog(geometriDialog->createNameBox());
+    //geometriDialog->addToDialog(geometriDialog->createCheckFramesBox());
+    geometriDialog->addToDialog(geometriDialog->createFrameSelection());
+    geometriDialog->addToDialog(geometriDialog->createConfigurationBox());
 
-    _geometriDialog->addToDialog(_geometriDialog->createButtonBox());
+    geometriDialog->addToDialog(geometriDialog->createButtonBox());
 
-    _geometriDialog->exec();
+    geometriDialog->exec();
 
-    if (_geometriDialog->result() == QDialog::Accepted)
+    if (geometriDialog->result() == QDialog::Accepted)
     {
-        if (_geometriDialog->nameLine->text().toStdString() == "") {
+        if (geometriDialog->getNameBox() == "") {
             RW_THROW("Give frame a name");
         }
 
@@ -1024,16 +1032,16 @@ void EasyInsert::movableFrame()
         {
             ei::creator creator;
             rw::math::Transform3D<double> transform = creator.getTransform3D(
-                                    _geometriDialog->doubleSpinBoxes[0]->value(),
-                                    _geometriDialog->doubleSpinBoxes[1]->value(),
-                                    _geometriDialog->doubleSpinBoxes[2]->value(),
-                                    _geometriDialog->doubleSpinBoxes[3]->value(),
-                                    _geometriDialog->doubleSpinBoxes[4]->value(),
-                                    _geometriDialog->doubleSpinBoxes[5]->value());
+                                    geometriDialog->getDisplacementX(),
+                                    geometriDialog->getDisplacementY(),
+                                    geometriDialog->getDisplacementZ(),
+                                    geometriDialog->getRotationR(),
+                                    geometriDialog->getRotationP(),
+                                    geometriDialog->getRotationY());
 
             ei::creator::addMovableFrame(wc,
-                                _geometriDialog->nameLine->text().toStdString(),
-                                _geometriDialog->comboFrames->currentText().toStdString(),
+                                geometriDialog->getNameBox(),
+                                geometriDialog->getFrameSelection(),
                                 transform);
 
             getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
@@ -1044,6 +1052,7 @@ void EasyInsert::movableFrame()
             RW_THROW("Name of frame allready in use");
         }
     }
+    delete geometriDialog;
 }
 
 void EasyInsert::deleteFrame()

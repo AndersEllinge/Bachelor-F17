@@ -48,27 +48,33 @@ public:
     rw::common::PropertyMap _propMap;
     rw::common::PropertyMap *_settingsMap;
 
-    QDoubleSpinBox *doubleSpinBoxes[6];
-    QDoubleSpinBox *doubleSpinBoxesGeometires[3];
-    QLineEdit *nameLine;
-    QComboBox *comboFrames;
-    QCheckBox *checkFrames[2];
+    std::string getNameBox();
+    std::string getFrameSelection();
+    double getDisplacementX();
+    double getDisplacementY();
+    double getDisplacementZ();
+    double getRotationR();
+    double getRotationP();
+    double getRotationY();
+    double getGeometriX();
+    double getGeometriY();
+    double getGeometriZ();
+    bool getCheckFrameMoveable();
+
+
 
 private:
     void reject();
     void setupSettings();
     QDoubleSpinBox* makeDoubleSpinBox();
 
-    QGroupBox *nameBox;
-    QGroupBox *configuration;
-    QGroupBox *configurationCube;
-    QGroupBox *configurationSphere;
-    QGroupBox *configurationCone;
-    QGroupBox *selectFrame;
-    QGroupBox *checkBox;
-
-
     QVBoxLayout *mainLayout;
+
+    QLineEdit *nameLine;
+    QComboBox *comboFrames;
+    QDoubleSpinBox *doubleSpinBoxes[6];
+    QDoubleSpinBox *doubleSpinBoxesGeometires[3];
+    QCheckBox *checkFrames[2];
 
     QLineEdit *pathLine;
 
