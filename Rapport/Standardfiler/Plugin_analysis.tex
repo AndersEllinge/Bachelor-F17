@@ -1,0 +1,71 @@
+\section{Plugin Analysis}
+Gaining a better understanding of the design of the plugin based on the user needs and wants, before a development process begins, is crucial to almost any software project. This chapter goes through the process of understanding the problem that is the basis of the plugin and help specify a generalization of how the solution should look. In the end a specified list of requirements is acquired. These requirements are used to guide the solution and in the end test the solution.
+
+\subsection{Using RobWorkStudio}
+Since we (the authors) had never worked with RWS before. We had no personal experience regarding the problem and had to gather information about how RWS is used before implementing a solution (i.e a plug-in). The primary method to gather this information has been through interviews, to learn about the difficulties and limitations of the current solution/system.
+
+The interviews conducted were largely semi-structured interviews, i.e. an open interview with a template for the interviewer to direct the interview in a proper direction. See appendix for the template used, however this template does not truly reflect what was learned from the interview. The reason for this type of interview, was to keep an open mind and try to get as many creative suggestions and inputs on how the interviewees uses RWS and how they alternatively would like to use it. The interviews lasted from 15 minutes to 30 minutes depending on the interviewee.
+
+The people interviewed are as follows:
+
+\begin{labeling}{Thomas Fridolin Iversen}
+\item [Lars-Peter Ellekilde] Lektor at The Mærsk Mc-Kinney Møller Institute, SDU Robotics
+\item [Thomas Nicky Thuelsen] Engineer, Research Assistant at The Mærsk Mc-Kinney Møller Institute, SDU Robotics
+\item [Thomas Fridolin Iversen] Ph.d student at The Mærsk Mc-Kinney Møller Institute, SDU Robotics
+\item [Michael Kjær Schmidt] Student at The Mærsk Mc-Kinney Møller Institute, SDU Robotics
+\item [Kristian Møller Hansen] Student at The Mærsk Mc-Kinney Møller Institute, SDU Robotics
+\end{labeling}
+
+There were a general interest for the problem at hand, since writing XML files and adjusting a WorkCell can be a tedious process. For new users of RWS the problem was clearly recognized, since learning the syntax for the XML files can be quite daunting and slow to get started with. The potential of also being able to show something fast in RWS without having to do much work on setting anything up, was seen as a great asset.
+
+Some of the more concrete functionalities and ideas, that was discussed in the interviews, are summarized in the following bullet points.
+
+\begin{itemize}
+\item There should be some overview of which elements the user can insert. Maybe in categories or in some other intuitive way.
+\item When inserting anything, a pop-up window with adjustable parameters regarding the element, should appear, so the user can specify how the element should be inserted.
+\item Insertion of a device, read from an XML file, onto another device as the end-effector should be possible.
+\item Insertion of a device should snap, in a graphical drag and drop fashion, onto another device.
+\item When browsing the available devices, a description box with pictures and specification about the device should be shown.
+\item There should be some way to define a library of devices, which are then available to be loaded into the WorkCell.
+\item Insertion of an element into the WorkCell should happen in a drag and drop fashion.
+\item Static primitives and frames should be available as something to be inserted.
+\item Deletion of elements in the WorkCell should be possible.
+\item A undo button for the last insertion/deletion should be available for use.
+\end{itemize}
+
+\subsection{Defining use cases}
+From the interviews a clearer understanding of the use of RobWorkStudio and some general pointers towards the design of the solution. From this information, some general use cases where made describing the use of RWS (with XML files). The use case made where for adding a frame/geometry, adding a device and deleting an element. The use case for adding a frame/geometry can be seen on figure !!!!!.
+
+based on these use cases an additional set of use cases where made describing the potential use of the plugin. This set of use cases combined with the first set of use cases was used to verify that a solution like this would actually be beneficial for the user. The use case for adding a frame/geometry for the potential use of the plugin can be seen on figure !!!!!.
+
+\subsection{Requirement specification}
+The requirements are used to specify the solution. The requirements for the project is based on the interviews and the use cases. The requirements have been divided into 2 sections, “need to have” and “nice to have”. The “need to have” requirements are requirements that needs to be fulfilled by the solution and should be verifiable , whereas the “nice to have” requirements should not necessarily be fulfilled and can be more subjective. It was decided that devices should be described via a XML-file as it is the standard already in use. It also makes it possible to use the parsers from RobWork to get the information from the device. It was also decided that the ideas revolving use of the 3D view since it would require a lot of research contra the progress towards a solution.\\
+
+Need to have requirements:
+\begin{enumerate}
+	\item The user should be able to create fixed frames and movable frames through the plugin.
+	\begin{enumerate}
+		\item The user should be able to supply the parent frame for the new frame.
+	\end{enumerate}
+	\item The user should be able to create simple geometries through the plugin.
+	\begin{enumerate}
+		\item The geometries are: Boxes, Planes, Spheres, Cones, Cylinders and Tubes.
+	\end{enumerate}
+	\item The user should be able to insert a device described in a XML-file.
+	\begin{enumerate}
+		\item It should be possible for the user to supply a path to a XML-file containing the description of a device.
+		\item It should be possible for the user to define the parent frame of the device.
+		\item It should be possible for the user to give the device an initial placement and rotation.
+	\end{enumerate}
+	\item It should be possible to remove frames, geometries and devices through the plugin.
+\end{enumerate}
+
+Nice to have requirements:
+\begin{enumerate}
+	\item The GUI of the plugin should be intuitive to use.
+	\begin{enumerate}
+		\item Overview of potential parent frames when inserting a new frame, device.
+	\end{enumerate}
+	\item The user should be able to define a library of devices for easier insertion.
+	\item The user should be able undo an action via a button or a pressing a key sequence (like ctrl + z).
+\end{enumerate}
