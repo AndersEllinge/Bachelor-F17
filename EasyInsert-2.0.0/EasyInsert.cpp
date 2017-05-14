@@ -71,7 +71,13 @@ void EasyInsert::open(WorkCell* workcell)
 void EasyInsert::close()
 {
     clearListContent();
-
+    try {
+		rw::loaders::XMLPropertySaver::save(_propMap, "eisettings.xml");
+	} catch(const rw::common::Exception& e) {
+		RW_WARN("Error saving settings file: " << e);
+	} catch(...) {
+		RW_WARN("Error saving settings file due to unknown exception!");
+	}
     //_settingsMap->set<std::string>("Devices", dirmodel->rootPath().toStdString()); //
 
     _workcell = NULL;
