@@ -368,23 +368,28 @@ void dialog::setDirectoryDialog()
     QString dir = QFileDialog::getExistingDirectory(
 		this,
 		tr("Open Directory"),
-       	"/",
+       	pathLine->text(),
 	    QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     //if (i == 0) {
-        _settingsMap->set<std::string>("Devices", dir.toStdString());
+        //_settingsMap->set<std::string>("Devices", dir.toStdString());
     //} else if (i == 1) {
     //    _settingsMap->set<std::string>("Geometries", dir.toStdString());
     //} else {
     //    _settingsMap->set<std::string>("Frames", dir.toStdString());
     //}
 
-    QString str1 = _settingsMap->get<std::string>("Devices", "/").c_str();
+    //QString str1 = _settingsMap->get<std::string>("Devices", "/").c_str();
     //QString str2 = _settingsMap->get<std::string>("Geometries", "/").c_str();
     //QString str3 = _settingsMap->get<std::string>("Frames", "/").c_str();
 
-    pathLine->setText(str1);
+    //pathLine->setText(str1);
     //pathLine[1]->setText(str2);
     //pathLine[2]->setText(str3);
+
+    if (dir != "") {
+        _settingsMap->set<std::string>("Devices", dir.toStdString());
+        pathLine->setText(dir);
+    }
 
 }
 

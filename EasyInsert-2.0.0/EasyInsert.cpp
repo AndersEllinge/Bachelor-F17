@@ -511,16 +511,15 @@ void EasyInsert::settings()
     	_settingsMap->set<std::string>("Devices", settingsDialog->getSettingsMap());
 		//_settingsMap->set<std::string>("Geometries", settingsDialog->_settingsMap->get<std::string>("Geometries", "/"));
 		//_settingsMap->set<std::string>("Frames", settingsDialog->_settingsMap->get<std::string>("Frames", "/"));
+        try {
+    		rw::loaders::XMLPropertySaver::save(_propMap, "eisettings.xml");
+    	} catch(const rw::common::Exception& e) {
+    		RW_WARN("Error saving settings file: " << e);
+    	} catch(...) {
+    		RW_WARN("Error saving settings file due to unknown exception!");
+    	}
+        view->setRootIndex(dirmodel->setRootPath(_settingsMap->get<std::string>("Devices", "/").c_str()));
   	}
-
-	try {
-		rw::loaders::XMLPropertySaver::save(_propMap, "eisettings.xml");
-	} catch(const rw::common::Exception& e) {
-		RW_WARN("Error saving settings file: " << e);
-	} catch(...) {
-		RW_WARN("Error saving settings file due to unknown exception!");
-	}
-    view->setRootIndex(dirmodel->setRootPath(_settingsMap->get<std::string>("Devices", "/").c_str()));
 }
 
 void EasyInsert::loadDevice()
