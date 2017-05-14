@@ -14,7 +14,6 @@ EasyInsert::EasyInsert():
 {
     //load settings from eisettings.xml
     setupSettings();
-
     //Creating the base of the plugin, everything is put "onto" this.
     QScrollArea *widg = new QScrollArea(this);
 	widg->setWidgetResizable(true);
@@ -72,6 +71,8 @@ void EasyInsert::open(WorkCell* workcell)
 void EasyInsert::close()
 {
     clearListContent();
+
+    //_settingsMap->set<std::string>("Devices", dirmodel->rootPath().toStdString()); //
 
     _workcell = NULL;
     //_treeWidget->setHeaderLabels(QStringList("WorkCell"));
@@ -497,7 +498,7 @@ void EasyInsert::settings()
 
 	dialog* settingsDialog = new dialog(st, this);
 
-	settingsDialog->addToDialog(settingsDialog->createLibSettingsBox());
+	settingsDialog->addToDialog(settingsDialog->createLibSettingsBox(_settingsMap));
 	settingsDialog->addToDialog(settingsDialog->createButtonBox());
 	settingsDialog->exec();
 

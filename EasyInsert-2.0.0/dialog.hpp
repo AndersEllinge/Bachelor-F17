@@ -42,7 +42,7 @@ public:
     QWidget* createConfigurationBoxSphere();
     QWidget* createConfigurationBoxCone();
     QWidget* createConfigurationBoxTube();
-    QWidget* createLibSettingsBox();
+    QWidget* createLibSettingsBox(rw::common::PropertyMap *map);
     QWidget* createFrameSelection();
 
     rw::common::PropertyMap _propMap;
@@ -65,7 +65,7 @@ public:
 
 private:
     void reject();
-    void setupSettings();
+    void setupSettings(); //Not required anymore
     QDoubleSpinBox* makeDoubleSpinBox();
 
     QVBoxLayout *mainLayout;

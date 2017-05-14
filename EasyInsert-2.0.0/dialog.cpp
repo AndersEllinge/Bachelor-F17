@@ -230,9 +230,10 @@ QWidget* dialog::createConfigurationBoxTube()
     return configurationCone;
 }
 
-QWidget* dialog::createLibSettingsBox()
+QWidget* dialog::createLibSettingsBox(rw::common::PropertyMap *map)
 {
-    setupSettings();
+    //setupSettings();
+    _settingsMap = map;
     //QSignalMapper *signalMapper = new QSignalMapper(this);
 
     //QLineEdit *pathLine[3];
