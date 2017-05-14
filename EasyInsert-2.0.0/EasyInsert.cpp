@@ -502,7 +502,7 @@ void EasyInsert::settings()
 
 	if (settingsDialog->result() == QDialog::Accepted)
   	{
-    	_settingsMap->set<std::string>("Devices", settingsDialog->_settingsMap->get<std::string>("Devices", "/"));
+    	_settingsMap->set<std::string>("Devices", settingsDialog->getSettingsMap());
 		//_settingsMap->set<std::string>("Geometries", settingsDialog->_settingsMap->get<std::string>("Geometries", "/"));
 		//_settingsMap->set<std::string>("Frames", settingsDialog->_settingsMap->get<std::string>("Frames", "/"));
   	}

@@ -45,9 +45,6 @@ public:
     QWidget* createLibSettingsBox(rw::common::PropertyMap *map);
     QWidget* createFrameSelection();
 
-    rw::common::PropertyMap _propMap;
-    rw::common::PropertyMap *_settingsMap;
-
     std::string getNameBox();
     std::string getFrameSelection();
     double getDisplacementX();
@@ -60,12 +57,12 @@ public:
     double getGeometriY();
     double getGeometriZ();
     bool getCheckFrameMoveable();
+    std::string getSettingsMap();
 
 
 
 private:
     void reject();
-    void setupSettings(); //Not required anymore
     QDoubleSpinBox* makeDoubleSpinBox();
 
     QVBoxLayout *mainLayout;
@@ -75,7 +72,7 @@ private:
     QDoubleSpinBox *doubleSpinBoxes[6];
     QDoubleSpinBox *doubleSpinBoxesGeometires[3];
     QCheckBox *checkFrames[2];
-
+    rw::common::PropertyMap *_settingsMap;
     QLineEdit *pathLine;
 
     QDialogButtonBox *buttonBox;
@@ -88,7 +85,6 @@ private slots:
 
 signals:
     void clicked(int);
-
 
 };
 

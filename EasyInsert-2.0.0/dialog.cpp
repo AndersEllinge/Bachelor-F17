@@ -351,35 +351,16 @@ bool dialog::getCheckFrameMoveable()
     return checkFrames[0]->isChecked();
 }
 
+std::string dialog::getSettingsMap()
+{
+    return _settingsMap->get<std::string>("Devices", "/");
+}
+
 void dialog::reject()
 {
     if (1) {
         QDialog::reject();
     }
-}
-
-void dialog::setupSettings()
-{
-    boost::filesystem::path settingsPath("eisettings.xml");
-	rw::common::PropertyMap settings;
-    if( exists(settingsPath) ){
-        try {
-            //settings = XMLPropertyLoader::load("rwsettings.xml");
-            //_propMap.set<std::string>("SettingsFileName", "rwsettings.xml");
-            _propMap = rw::loaders::XMLPropertyLoader::load("eisettings.xml");
-        } catch(rw::common::Exception &e){
-            RW_WARN("Could not load settings from 'rwsettings.xml': " << e.getMessage().getText() << "\n Using default settings!");
-        } catch(std::exception &e){
-            RW_WARN("Could not load settings from 'rwsettings.xml': " << e.what() << "\n Using default settings!");
-            // loading failed so we just go on with an empty map
-        }
-    }
-	rw::common::PropertyMap *currentSettings = _propMap.getPtr<rw::common::PropertyMap>("EasyInsertSettings");
-	if(currentSettings==NULL){
-        _propMap.add("EasyInsertSettings", "Settings for EasyInsert", settings);
-        currentSettings = _propMap.getPtr<rw::common::PropertyMap>("EasyInsertSettings");
-    }
-	_settingsMap = _propMap.getPtr<rw::common::PropertyMap>("EasyInsertSettings");
 }
 
 void dialog::setDirectoryDialog()
