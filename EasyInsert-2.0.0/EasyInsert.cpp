@@ -81,7 +81,6 @@ void EasyInsert::close()
 void EasyInsert::setupSettings()
 {
     boost::filesystem::path settingsPath("eisettings.xml");
-	rw::common::PropertyMap settings;
     if( exists(settingsPath) ){
         try {
             //settings = XMLPropertyLoader::load("rwsettings.xml");
@@ -94,12 +93,11 @@ void EasyInsert::setupSettings()
             // loading failed so we just go on with an empty map
         }
     }
-	rw::common::PropertyMap *currentSettings = _propMap.getPtr<rw::common::PropertyMap>("EasyInsertSettings");
-	if(currentSettings==NULL){
-        _propMap.add("EasyInsertSettings", "Settings for EasyInsert", settings);
-        currentSettings = _propMap.getPtr<rw::common::PropertyMap>("EasyInsertSettings");
-    }
 	_settingsMap = _propMap.getPtr<rw::common::PropertyMap>("EasyInsertSettings");
+	if(_settingsMap==NULL){
+        _propMap.add("EasyInsertSettings", "Settings for EasyInsert", rw::common::PropertyMap());
+        _settingsMap = _propMap.getPtr<rw::common::PropertyMap>("EasyInsertSettings");
+    }
 }
 
 QToolBar* EasyInsert::createToolBar()
