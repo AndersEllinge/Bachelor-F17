@@ -1,7 +1,12 @@
 \section{Inserting frames and geometries}
 This section contains the description of the implementation of inserting frames and geometries. This is done trough a class called creator made specifically for creating RobWork specific objects without a XML-file description.
 
-\subsection{Intuitive explanation of the solution}
+\subsection{General explanation of the solution}
+\label{subsec:iFramesAGeomsGE}
+The solution to the requirements related to insertion of frames and geometries was condensed into two parts, an interface for the information needed (GUI) and the actions needed to insert he frames with the informations gotten from the GUI. In order to simplify the process of inserting frames and geometries, with the information given, this was separated into a kind of extension to the RobWork library. The name chosen for this extension was creator since its focus was on creating and adding elements from the RobWork library.\\
+
+Separating the problem into the GUI and creator have several benefits. First of all, it has the benefit of modularity. The creator is not dependant on a the GUI and is written in a way that allows use in other applications than this one.\\
+Another reason is that it makes it easier to divide the task as long as the interface to the GUI is agreed on.
 
 \subsection{Using the creator}
 The creator follows the same namespacing technique as RobWork employ in order to make it more intuitive to use besides RobWork. However instead of using rw as the first namespace, ei (for EasyInsert) is used. This could be changed to rw in order make the blend perfect, however it was chosen not to in order to make the user aware that the creator is not part of the RobWork library.\\
@@ -108,7 +113,7 @@ Since in RobWork a geometry, like a box, is called an object, a way to create a 
 
 In order to understand process of add e.g. a box it is easiest to start from the bottom with what the factories need i order to produce the geometry and the model. From the GeometryFactory a function called load(...) is used. This function takes in a string containing the information about the geometry it needs to produce and a bool that signifies whether or not the user wishes to use cached geometries. As an example, the syntax for the string when creating a box is "\#Box dx dy dz", where dx, dy and dz are the dimensions of the box. The syntaxes for the rest of the geometries can be seen on figure~\ref{fig:SyntaxTable}.\\
 
-\begin{figure}[]
+\begin{figure}[h]
 \centering
 \begin{tabular}{|l|l|l|}
 \hline
@@ -134,3 +139,6 @@ The addObject(...) function now needs to be interfaced to the geometries. It is 
 	\caption{Function flow of the creator using addSphere as example}
 	\label{fig:CreatorFlow}
 \end{figure}
+
+\subsection{The future of the creator}
+Most of the functionalities that where implemented with the purpose to fulfil the requirements of the solution. The possibilities for the creator is however almost limitless. This is mostly due to the fact that the creator is written like a library extension to the RobWork library. One of the more immediate expansions to the creator that could be made, would be to extend the geometry functions with the possibility to only create the geometry or model. This extension would make it possible to create visible objects with no collision or invisible objects with collision. Another good addition would be to create a functionality capable of loading geometries from a geometry file. This is already possible in RobWork, so it would make sense to also simplify this process in the creator.
