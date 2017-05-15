@@ -5,7 +5,6 @@
 #include <RobWorkStudioConfig.hpp>
 #include <rws/RobWorkStudioPlugin.hpp>
 #include "ui_EasyInsert.h"
-#include "listView.hpp"
 #include "dialog.hpp"
 #include "loader.hpp"
 #include "creator.hpp"
@@ -115,7 +114,7 @@ private:
 
 protected:
 
-    listView *view;
+    QListView *view;
     QFileSystemModel *dirmodel;
     rw::common::PropertyMap _propMap;
     rw::common::PropertyMap *_settingsMap;

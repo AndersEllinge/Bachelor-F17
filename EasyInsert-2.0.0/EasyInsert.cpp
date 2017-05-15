@@ -135,7 +135,7 @@ QWidget* EasyInsert::createDevTab()
     widg->setFrameShape(QFrame::NoFrame);
     QWidget *devTab = new QWidget();
     QVBoxLayout *verticalLayout = new QVBoxLayout(devTab);
-    view = new listView(devTab);
+    view = new QListView(devTab);
 	dirmodel = new QFileSystemModel(view);
     view->setModel(dirmodel);
 	view->setRootIndex(dirmodel->setRootPath(QString::fromStdString(_settingsMap->get<std::string>("Devices", "/"))));
