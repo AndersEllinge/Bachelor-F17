@@ -5,9 +5,64 @@ This section contains the description of the solution regarding adding devices t
 The solution for the requirements related to insertion of devices (See need to have requirement 3) was, just like with inserting frames and geometries, divided into two parts. The first part is the interface to the user required for the user to be able to supply the necessary information needed. The second part is the process of creating and inserting the device defined by the user. The reason for this separation is the same as the one given in inserting frames and geometries section (\ref{subsec:iFramesAGeomsGE} General explanation of the solution).
 
 \subsection{Using the loader}
-The loader contains two functionalities the user should be aware of. The first functionality is a function called add. This is the function that 
+The loader contains two functionalities the user should be aware of. The first functionality is a function called add. This functions adds the device described in a XML file to a given WorkCell. The function add takes in a string representing the path to the, the WorkCell which the information should be added to, a string representing the custom name of the device and a string containing the name of the frame on which the device should be placed. The user can also supply a transform which is applied to the base frame of the device, giving it an initial placement. The transform can be supplied in two different ways, the user can supply the function with a transform object or the x, y, z and R, P, Y values.\\
+
+The loader also contains the functionality to load a WorkCell from an XML-file, just like the XMLRWLoader. This functionality was made solely to give the loader more consistency in its functionalities.\\
+
+An example of using the loader can be seen on figure !!!!!.
+
+
+\subsection{Understanding the XMLRWLoader}
+In order to understand what it takes to load information from an XML-file into the format used in RobWork, it is worth the time to study the XMLRWLoader. Another good reason to study the XMLRWLoader is that it solves a problem very similar to the problem of interest in this chapter. There are only two differences, the XMLRWLoader loads not only devices and it creates a new WorkCell to put the items in.\\
+
+The function of interest from the XMLRWLoader is the loadWorkcell function. This function takes in a single input which is a string containing the path to the XML file describing the WorkCell.\\
+A good place to start is to analyse the flow that the loadWorkCell function have. The function can be seen as a sequence of actions:
+
+\begin{enumerate}
+	\item Parse the XML file using parseWorkCell from XMLRWParser contained in the loaders section. This takes in the provided path.
+	\begin{enumerate}
+		\item The information is parsed into a struct called DummyWorkCell that arranges the information neatly for when it should be used.
+	\end{enumerate}
+	\item Do sanity check on all the frames
+	\begin{enumerate}
+		\item Each frame needs to have a valid parent frame
+	\end{enumerate}
+	\item Create a new WorkCell object
+	\item Create and add all the frames, defined in the DummyWorkCell, to the WorkCell
+	\item Add all frame properties to the WorkCell
+	\item Create all devices defined in the DummyWorkCell
+	\item Create and add models, belonging to the added frames, to the WorkCell
+	\item Create and add all DAF (dynamically attachable) frames to the WorkCell
+	\item Create and add collision models to the WorkCell
+	\item Initialize state with initial actions
+	\item Add devices to the WorkCell
+	\item Add objects to the scene
+	\item create and add collision and proximity setup from corresponding files
+	\begin{enumerate}
+		\item This only applies if the files are defined in the XML file
+	\end{enumerate}
+	\item Add name of the WorkCell XML file and the path to the property map of the WorkCell
+	\item Return the WorkCell
+\end{enumerate}
+
+It should be advised that this sequence is a intuitive understanding of the loadWorkCell function. The function does much more than this, however this is the bread and butter of the function. A more in depth illustration of how the XMLRWLoader functions can be seen on the flowchart contained in figure !!!!!.
 
 \subsection{Implementation of the loader}
+The implementation of the loader can be explained in the different capabilities that were added as time went on. The first capability of the loader was to add a device to the WorkCell. The second capability was to be able to give the device a name. The third capability was to be able to apply a transform to the device. The last capability added was the ability to define the parent frame of the device. After all of these capabilities were implemented, the loader now complies with requirements for inserting a device (See need to have requirement 3).
 
+\subsubsection{Adding a device to a WorkCell}
+
+
+\subsubsection{Custom naming the device}
+
+
+\subsubsection{Adding a transform to the device}
+
+
+\subsubsection{Defining the parent for the device}
+
+
+
+In the case that the x, y, z and R, P, Y values are supplied, the loader calculates the transform from these values using the 
 
 \subsection{The future of the loader}
