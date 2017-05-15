@@ -387,7 +387,7 @@ void dialog::setDirectoryDialog()
     //pathLine[2]->setText(str3);
 
     if (dir != "") {
-        _settingsMap->set<std::string>("Devices", dir.toStdString());
+        _settingsMap->set("Devices", dir.toStdString());
         pathLine->setText(dir);
     }
 
