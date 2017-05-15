@@ -138,7 +138,7 @@ QWidget* EasyInsert::createDevTab()
     view = new listView(devTab);
 	dirmodel = new QFileSystemModel(view);
     view->setModel(dirmodel);
-	view->setRootIndex(dirmodel->setRootPath(_settingsMap->get<std::string>("Devices", "/").c_str()));
+	view->setRootIndex(dirmodel->setRootPath(QString::fromStdString(_settingsMap->get<std::string>("Devices", "/"))));
 
     QPushButton *loadBtn = new QPushButton("Load",devTab);
     connect(loadBtn, SIGNAL(clicked()), this, SLOT(loadDevice()));
@@ -518,7 +518,7 @@ void EasyInsert::settings()
     	} catch(...) {
     		RW_WARN("Error saving settings file due to unknown exception!");
     	}
-        view->setRootIndex(dirmodel->setRootPath(_settingsMap->get<std::string>("Devices", "/").c_str()));
+        view->setRootIndex(dirmodel->setRootPath(QString::fromStdString(_settingsMap->get<std::string>("Devices", "/"))));
   	}
 }
 
