@@ -1,4 +1,5 @@
 \section{Inserting frames and geometries}
+\label{sec:iframAGeom}
 This section contains the description of the implementation of inserting frames and geometries. This is done trough a class called creator made specifically for creating RobWork specific objects without a XML-file description.
 
 \subsection{General explanation of the solution}
@@ -9,6 +10,7 @@ Separating the problem into the GUI and creator have several benefits. First of 
 Another reason is that it makes it easier to divide the task as long as the interface to the GUI is agreed on.
 
 \subsection{Using the creator}
+\label{subsec:iframAGeomUsing}
 The creator follows the same namespacing technique as RobWork employ in order to make it more intuitive to use besides RobWork. However instead of using rw as the first namespace, ei (for EasyInsert) is used. This could be changed to rw in order make the blend perfect, however it was chosen not to in order to make the user aware that the creator is not part of the RobWork library.\\
 
 In the case of frames the creator is capable of creating fixed frames and movable frames. The creator is also able to add them to a supplied WorkCell and in the case of the movable frame, give it an initial transform in the WorkCell. The fixed frame should always be supplied with a transform. 
