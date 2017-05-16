@@ -11,11 +11,14 @@ Something about we first explore the user interface of the plugin, and then we l
 		Dialogs
 		Settings		
 		Device tab
+			mention something in the introduction about how the tabs will be gone through
 		Geo tab
 		Delete tab
+		EasyInsert Construction - Bringing it all together.
 
 \subsection{User Interface}
-This section explores the user interface of the plugin. When the plugin is loaded and opened, the user is met with figure~\ref{fig:EasyInsertDevice}. This is the Device tab of EasyInsert and from here it is possible to select a device listed and load it into the WorkCell by pressing the Load button. Upon pressing load, the user is prompted with a dialog window where the user can specify options about the loaded device. Figure~\ref{fig:loadDialog} is the exact dialog window the user would see after selecting a device and pressing the load button. The user can now give the device a unique name, select a frame that the device should be on and specify the configurations such as displacement and rotation. A user can now select e.g. a fanuc robot arm, as the one on figure~\ref{fig:FANUCLRM200}, and insert it. Afterwards the user can then select another device, let's say some kind of hand device, and now insert that device on the end frame of the fanuc. The hand device now acts as the end effector of the fanuc, which only took a few clicks to set up. 
+\label{sec:UserInterface}
+This section explores the user interface of the plugin. When the plugin is loaded and opened, the user is met with figure~\ref{fig:EasyInsertDevice}. This is the Device tab of EasyInsert and from here it is possible to select a device listed and load it into the WorkCell by pressing the Load button. Upon pressing Load, the user is prompted with a dialog window where the user can specify options about the loaded device. Figure~\ref{fig:loadDialog} is the exact dialog window the user would see after selecting a device and pressing the load button. The user can now give the device a unique name, select a frame that the device should be on and specify the configurations such as displacement and rotation. A user can now select e.g. a fanuc robot arm, as the one on figure~\ref{fig:FANUCLRM200}, and insert it. Afterwards the user can then select another device, let's say some kind of hand device, and now insert that device on the end frame of the fanuc. The hand device now acts as the end effector of the fanuc, which only took a few clicks to set up. 
 
 \begin{figure}[h] % 3 figures of the tabs
         \begin{subfigure}[b]{0.32\textwidth}
@@ -39,7 +42,7 @@ This section explores the user interface of the plugin. When the plugin is loade
         \caption{The three tabs a user can interact with in the plugin. In Devices it is possible to select and load a device. In Geometries the user can click an icon (representing a geometry) which then prompts a dialog window with options regarding the insertion of said geometry. In Delete a user can select either a Device, Object or Frame to delete it.}\label{fig:EasyInsertTabs}
 \end{figure}
 
-It should be noted, that the first time EasyInsert is loaded and opened, the list shows the root content of the operating system. Thus the user need to change the path of the list shown in the Device tab to a path containing any desired devices. In the right top corner of the plugin is a settings button(a orange wrench and screwdriver), clicking this button and choosing Libraries will prompt the user with dialog window on Figure~\ref{fig:settingsDialog}. The user can here see what path is used and change it with the [...] button. The [...] button shows a new dialog window where the user can navigate his OS and specify the path that should be shown in the device tab.
+It should be noted, that the first time EasyInsert is loaded and opened, the device tab shows the root content of the operating system. Thus the user needs to change the path of the list shown in the Device tab to a path containing any desired devices. In the right top corner of the plugin is a tool bar button (the only button in the tool bar so far) called settings. Clicking this button and choosing Libraries will prompt the user with the dialog window on Figure~\ref{fig:settingsDialog}. The user can here see what path is used and change it with the [...] button. The [...] button shows a new dialog window where the user can navigate his/her OS and specify the path that should be shown in the device tab.\\
 
 \begin{figure}[h] % 3 figures of dialog windows
      \centering
@@ -72,10 +75,14 @@ The Geometries tab shows a grid of icons, see figure~\ref{fig:EasyInsertGeo}. Th
 \item Fixed frame.
 \item Movable frame.
 \end{enumerate*}
-These icons are all buttons the user can click, and after a click has occurred a dialog window appears with options regarding the insertion of said geometry. When the user hovers over a button, a small box identifying the icon appears, telling the user what sort of object it is. Figure~\ref{fig:cubeDialog} is the dialog window prompted when clicking the cube icon, and as seen, the user can specify a name for the geometry, select a reference frame and set the displacement and rotation configurations, just like when inserting a device. Though for a geometric primitive, like the cube, the user can also specify the dimensions of the geometric figure. The user can also specify whether the primitive should create a movable frame to associate the object with, or if the user want to use an existing frame.
+These icons are all buttons the user can click, and after a click has occurred a dialog window appears with options regarding the insertion of said geometry. When the user hovers over a button, a small box identifying the icon appears, telling the user what sort of object it is. Figure~\ref{fig:cubeDialog} is the dialog window prompted when clicking the cube icon, and as seen, the user can specify a name for the geometry, select a reference frame and set the displacement and rotation configurations, just like when inserting a device. Though for a geometric primitive, like the cube, the user can also specify the dimensions of the geometric figure. The user can also specify whether the primitive should create a movable frame to associate the object with, or if the user want to use an existing frame.\\
+
+The delete tab, as seen on figure~\ref{fig:EasyInsertDelete}, is a tab where the user can select a device, object or a frame and press the Delete button to remove said item from the WorkCell. The Devices list, shown in the delete tab, shows a device name. This means that when the user deletes a device, the frames associated with that device are now "free", i.e. the device property is deleted, but the frames and objects are still in the WorkCell. These object and frames will now show up in the Object list and the Frames list of the delete tab, and the user can now remove the frames and objects from the WorkCell. The Object list of the delete tab only deletes objects, but if the user selects a frame from the Frame list and deletes it, all objects associated with that frame will also be deleted. Furthermore, if the user selects a frame from the Frames list and deletes it, all children of children of said frame will also be deleted. It should be noted, that the Frames list of the delete tab does not update properly because of an internal bug in RWS, this means that when the user deletes a frame, the frame will still appear in the list, but if the user looks in the TreeView plugin, or searches the WorkCell, the user will notice that the frame has actually been deleted. The user is then able to delete a frame twice, which will cause a segmentation error and crash RWS. This is a critical error, but it has not been solved because solving this error is out of the scope of the project.
+
 
 
 \subsection{Dialog Windows}
+\label{sec:DialogWindows}
 The dialog window is the main communication with the user in this plugin. Dialog windows are top-level windows, and they provide the user with either information, or they allow the users to select options to perform a command or task. This section will show how dialog windows has been handled in the plugin.\\
 
 The dialogs of EasyInsert has been implemented in it's own class dialog.hpp, i.e. a subclass of QDialog, see figure~\ref{fig:subClassQWidget} for an example of a Qt subclass. This was done to keep it independent and self-contained from the rest of the plug-in. The constructor for the dialog class is very simple, see figure~\ref{fig:dialogConstructor}. A constructor with no WorkCell parameter is also available and passing a parent is optional, though a name must always be given to the constructor. 
@@ -149,7 +156,7 @@ delete geoDialog; //Delete the dialog object when done using it
 
 As seen on figure~\ref{fig:dialogAcceptedRejectedCode}, after the exec() function returns, we simply check whether the result was QDialog::Accepted or not. If the result is accepted, then something should be done with the inputs given to the dialog window. We access these input via self explanatory public get-functions, e.g. the NameBox contains the name input (as seen on figure~\ref{fig:dialogAcceptedRejectedCode} line 4). After we have collected all the information we wanted out of the dialog window, then we can proceed to do something with the information, like e.g. the insertion of a frame. When we are done with the dialog window it should be deleted, because the dialog object is still alive until the parent is dead (in this case the plugin). If we do not delete the dialog object the dialog objects, created in the lifetime of the plugin, will just waste space in memory. 
 
-It would take some time to inspect all of the function blocks on figure~\ref{fig:dialogBlocks}. Therefore only one function block, namely createNameBox() figure~\ref{fig:dialogCreateNameBoxCode} will be inspected. All the function blocks has a similar structure except from createLibSettingsBox(), which functionality will be discussed SOMEWHERE I DNO YET.
+It would to much time to inspect all of the function blocks on figure~\ref{fig:dialogBlocks}. Therefore only one function block, namely createNameBox() figure~\ref{fig:dialogCreateNameBoxCode} will be inspected. All the function blocks has a similar structure.
 
 \begin{figure}[h] % code example of createNameBox
 \centering
@@ -174,7 +181,7 @@ After the composite widget has been created, the layout for the parent widget ha
 \begin{figure}[h] % table of function blocks
 \centering
 \begin{center}
-  \begin{tabular}{ | l | p{7cm} |}
+  \begin{tabular}{ | p{6cm} | p{7cm} |}
     \hline
     \textbf{Function blocks} 	   &   \textbf{Description}  \\ \hline
     createButtonBox()			   &   The Cancel and OK buttons. This block is used in all the dialog windows.   		\\ \hline
@@ -185,7 +192,7 @@ After the composite widget has been created, the layout for the parent widget ha
 	createConfigurationBoxSphere() &   A sphere specific configuration option, i.e. the dimensions of the sphere. 	\\ \hline	
 	createConfigurationBoxCone()   &   A cone specific configuration option, i.e. the dimensions of the cone.  	\\ \hline	
     createConfigurationBoxTube()   &   A tube specific configuration option, i.e. the dimensions of the tube.  	\\ \hline	
-	createLibSettingsBox()		   &   This block is used to edit the settings of the device library.    	\\ \hline	 
+	createLibSettingsBox(PropertyMap *map)		   &   This block is used to edit the settings of the device library.    	\\ \hline	 
 	createFrameSelection()		   &   A way to select a parent frame for the inserted element. Default is the WORLD frame.		\\
     \hline
   \end{tabular}
@@ -199,7 +206,127 @@ Something about what could be worked on in regard to this class. Like constructo
 Is this something that should be in this chapter?
 
 
+\subsection{Settings}
+\label{sec:Settings}
+Defining settings for an application is a common thing. It was therefore decided that EasyInsert should have some way to set settings. Settings for the plugin is stored in a XML file. The only current setting a user can set is, as mention in~\ref{sec:UserInterface}, the path for the library in the device tab. Though it should be easy to extend the plugin to have more settings, and even other utilities through the tool bar if needed. The settings button, as noted in~\ref{sec:UserInterface}, is the only button available in the tool bar so far, and thus the extend of the tool bar will be shortly discussed in this chapter as well.\\
+
+The first thing the plugin does under it's construction, is to load the settings. This is done through the setupSettings() function, and the code of the function can be seen on figure~\ref{fig:settingsCodeSetup}. It is determined if there exists a settings file for the plugin (eisettings.xml), this is done on line 1 and 2 on figure~\ref{fig:settingsCodeSetup} with the boost library \cite{BoostPathSettings}. If a settings file exists, the code will proceed to load the file and warn the user if something went wrong. The loading of the file is done with the XMLPropertyLoader class \cite{XMLPropertyLoader}, which loads the settings file into a Property container called a PropertyMap. The PropertyMap class is part of the common namespace and can be used to store various user information, in this case for settings purposes. As seen on figure~\ref{fig:settingsCodeSetup} line 4, the PropertyMap, \_propMap, is loaded with the settings for the plugin. On line 13 we store a pointer, \_settingsMap, to the PropertyMap of the conveniently named Property EasyInsertSettings from the settings file. The following code checks if any settings were actually loaded, since if the user has not used the plugin yet, no settings files exists yet (or maybe it was deleted). The EasyInsertSettings Property would then have to be added, as seen on line 15, so a proper settings file can be created later. Settings are then stored under this property with an appropriate tag, so it is easy identifiable.
+
+\begin{figure}[h] % Code of setupSettings
+\centering
+\lstset{language=C++} 
+\begin{lstlisting}[frame=single]  
+boost::filesystem::path settingsPath("eisettings.xml"); 
+if( exists(settingsPath) ){ //If the file exists
+	try { 
+		_propMap = rw::loaders::XMLPropertyLoader::load("eisettings.xml");
+		} catch(rw::common::Exception &e){
+			RW_WARN("Could not load settings from 'eisettings.xml': " 
+			<< e.getMessage().getText() << "\n Using default settings!");
+		} catch(std::exception &e){
+ 			RW_WARN("Could not load settings from 'eisettings.xml': " 
+ 			<< e.what() << "\n Using default settings!");
+		}
+	}
+_settingsMap = _propMap.getPtr<PropertyMap>("EasyInsertSettings");
+if(_settingsMap==NULL){ // if there is no settings set yet
+	_propMap.add("EasyInsertSettings", "Settings for EasyInsert", PropertyMap());
+	_settingsMap = _propMap.getPtr<PropertyMap>("EasyInsertSettings");
+}	 
+\end{lstlisting}
+\caption{Code example of how the settings of the plugin are loaded. If there were any trouble loading the settings, the user will be noticed and default settings will be used.}
+\label{fig:settingsCodeSetup} 	
+\end{figure}
+
+As mentioned in section~\ref{sec:UserInterface}, the user is prompted with a dialog window when pushing the [...] button on figure~\ref{fig:settingsDialog}. This is a QFileDialog \cite{QtDocumentationQFileDialog} dialog which allow users to select a directory. The createLibSettingsBox(PropertyMap *map) function from figure~\ref{fig:dialogBlocks}, the function block that is part of figure~\ref{fig:settingsDialog} , signals the public slot setDirectoryDialog() on a click event of the [...] button. On figure~\ref{fig:settingsCodeQFileDialog} the code from the setDirectorydialog() slot is shown. The QFileDialog instance saves the directory the user choose in the QString dir on line 1, and we then make sure on line 4 that the user didn't select nothing(if he cancels the dialog). The directory is then set in the \_settingsMap on line 5 using the PropertyMap member function set(const std::string \&identifier, const T \&value ). The identifier is here "Devices" and the value associated with it is the chosen directory dir. Finally the pathLine, the line edit of figure~\ref{fig:settingsDialog}, is updated as well.
+
+\begin{figure}[h] % Code of QFileDialog and setting the setting
+\centering
+\lstset{language=C++} 
+\begin{lstlisting}[frame=single]  
+QString dir = QFileDialog::getExistingDirectory(this, 
+		tr("Open Directory"), pathLine->text(),
+	    QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (dir != "") {
+        _settingsMap->set("Devices", dir.toStdString());
+        pathLine->setText(dir);
+    }
+\end{lstlisting}
+\caption{The setDirectoryDialog() function. This function prompts the user with a QFileDialog dialog window, which allow users to select directory. The selected directory is then set in the settings and the pathLine of the LibSettingsBox is updated.}
+\label{fig:settingsCodeQFileDialog} 	
+\end{figure}
+
+When the settings dialog from figure~\ref{fig:settingsDialog} returns, it is checked if the user accepted the settings,  as seen on figure ~\ref{fig:settingsCodeReturnDialog}. If the user accepted we try to save the settings using the XMLPropertySaver \cite{XMLPropertySaver} class and catch any errors. The root path is then updated (see section~\ref{sec:DeviceTab} for more information about the root path) with the PropertyMap member function get(const std::string \&identifier, const T \&defval). "Devices" is here the identifier, that means, if a Device tag exists in the \_settingsMap, then the associated setting is returned. Otherwise the default value "/" is returned.
+
+\begin{figure}[h] % Code of save the settings, and getting
+\centering
+\lstset{language=C++} 
+\begin{lstlisting}[frame=single]  
+if (settingsDialog->result() == QDialog::Accepted) {
+	try {
+		rw::loaders::XMLPropertySaver::save(_propMap, "eisettings.xml");
+	} catch(const rw::common::Exception& e) {
+		RW_WARN("Error saving settings file: " << e);
+	} catch(...) {
+		RW_WARN("Error saving settings file due to unknown exception!");
+	}
+	view->setRootIndex(dirmodel->setRootPath(QString::fromStdString(_settingsMap->get("Devices", "/")))); 
+}
+\end{lstlisting}
+\caption{Example code of when a settings dialog window has returned and something should be done to the settings.}
+\label{fig:settingsCodeReturnDialog} 	
+\end{figure}
+
+Reflection, we should have added to the rwsettings file, the reason we did not was, because that at that moment, it was actually more easy to make our own settings file.
+
+\subsubsection{Tool Bar}
+\label{sec:ToolBar}
+
+The tool bar is constructed in the createToolBar() function (figure~\ref{fig:settingsToolBarCode}) and it is pretty straight forward. The only hiccup can be managing the menu's for the buttons in the tool bar. We create a tool bar with the QToolBar class and the buttons with QToolButton. After the toolbar and button(s) has been created, the icons and tool tips are set. On line 5 a QMenu is created, QMenu is a selection menu. Afterwards a QAction is created as well, which is an abstract user interface action that can inserted into widgets. We then add the action to the menu. On line 8 the settingsButton gets the menu set, followed by a pop up mode selection. Lastly we add the settingsButton to the toolBar, and we connect the settingsAction to the settings() slot. The settings() slot is the function that creates the settings dialog window on figure~\ref{fig:settingsDialog} and waits for the user to select the settings, before saving them, like on figure~\ref{fig:settingsCodeReturnDialog}.
+
+\begin{figure}[h] % Code of createToolBar
+\centering
+\lstset{language=C++} 
+\begin{lstlisting}[frame=single]  
+QToolBar *toolBar = new QToolBar(this);
+QToolButton *settingsButton = new QToolButton();
+settingsButton->setIcon(QIcon(":/settings.png"));
+settingsButton->setToolTip("Settings");
+QMenu *settingsMenu = new QMenu("Settings menu");
+QAction *settingsAction = new QAction("Libraries",this);
+settingsMenu->addAction(settingsAction);
+settingsButton->setMenu(settingsMenu);
+settingsButton->setPopupMode(QToolButton::InstantPopup);
+toolBar->addWidget(settingsButton);
+connect(settingsAction, SIGNAL(triggered()), this, SLOT(settings()));
+return toolBar;
+\end{lstlisting}
+\caption{The createToolBar() function. This function sets up the tool bar in the plugin and connects the actions to the appropriate slots.}
+\label{fig:settingsToolBarCode} 	
+\end{figure}
+
+Reflection
+the undo button would have been another button on the tool bar
+
+\subsection{Device Tab}
+\label{sec:DeviceTab}
+
+QScrollArea
+QListView
+QFileSystemModel
+setRootIndex
+setRootPath - monitors the directory so any changes is reflected
 
 
+\subsection{Geometries Tab}
+\label{sec:GeoTab}
+
+\subsection{Delete Tab}
+\label{sec:DelTab}
+
+QlistWidget
+
+
+\subsection{EasyInsert Construction - Bringing it all together}
 
 
