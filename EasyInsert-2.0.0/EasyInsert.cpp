@@ -138,7 +138,7 @@ QWidget* EasyInsert::createDevTab()
     view = new QListView(devTab);
 	dirmodel = new QFileSystemModel(view);
     view->setModel(dirmodel);
-	view->setRootIndex(dirmodel->setRootPath(QString::fromStdString(_settingsMap->get<std::string>("Devices", "/"))));
+    view->setRootIndex(dirmodel->setRootPath(QString::fromStdString(_settingsMap->get<std::string>("Devices", "/"))));
 
     QPushButton *loadBtn = new QPushButton("Load",devTab);
     connect(loadBtn, SIGNAL(clicked()), this, SLOT(loadDevice()));
@@ -219,8 +219,8 @@ QWidget* EasyInsert::createGeoTab()
     layout->addWidget(btns[6], 3, 0);
     layout->addWidget(btns[7], 3, 1);
 
-    layout->setColumnMinimumWidth(0,50);
-    layout->setColumnMinimumWidth(1,50);
+    //layout->setColumnMinimumWidth(0,50);
+    //layout->setColumnMinimumWidth(1,50);
 
     geoTab->setLayout(layout);
     widg->setWidget(geoTab);

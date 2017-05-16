@@ -100,6 +100,11 @@ private:
     std::vector<rw::kinematics::Frame*> _devFrameList;
     std::vector<rw::kinematics::Frame*> _frames;
 
+    QListView *view;
+    QFileSystemModel *dirmodel;
+    rw::common::PropertyMap _propMap;
+    rw::common::PropertyMap *_settingsMap;
+
     /*
     typedef std::map<QTreeWidgetItem*, rw::kinematics::Frame*> FrameMap;
     FrameMap _frameMap;
@@ -112,12 +117,9 @@ private:
     DeviceMap _deviceMap; //not using this anyway it seems
     */
 
-protected:
 
-    QListView *view;
-    QFileSystemModel *dirmodel;
-    rw::common::PropertyMap _propMap;
-    rw::common::PropertyMap *_settingsMap;
+
+
 
 private slots:
     void stateChangedListener(const rw::kinematics::State& state);
