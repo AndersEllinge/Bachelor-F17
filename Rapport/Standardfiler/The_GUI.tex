@@ -216,11 +216,6 @@ Go through the constructor.
 \centering
 \lstset{language=C++} 
 \begin{lstlisting}[frame=single]  
-
-\end{lstlisting}
-\caption{The createDevTab() function. It creates the widget in the tab from figure~\ref{fig:EasyInsertDevice}}
-\label{fig:eiConstructor} 	
-\end{figure}
 EasyInsert::EasyInsert():
     RobWorkStudioPlugin("EasyInsert", QIcon(":/pa_icon.png"))
 {
@@ -233,17 +228,19 @@ EasyInsert::EasyInsert():
     verticalLayout->addWidget(_toolBar);
     verticalLayout->setAlignment(_toolBar,Qt::AlignRight);
     QTabWidget *tabWindow = new QTabWidget(dockWidgetContent);
-    _devTab = createDevTab();
-    _geoTab = createGeoTab();
-    _deleteTab = createDeleteTab();
-    tabWindow->addTab(_devTab, "Devices");
-    tabWindow->addTab(_geoTab, "Geometries");
-    tabWindow->addTab(_deleteTab, "Delete");
+    tabWindow->addTab(createDevTab(), "Devices");
+    tabWindow->addTab(createGeoTab(), "Geometries");
+    tabWindow->addTab(createDeleteTab(), "Delete");
     verticalLayout->addWidget(tabWindow);
     dockWidgetContent->setLayout(verticalLayout);
     widg->setWidget(dockWidgetContent);
 	this->setWidget(widg);
 }
+\end{lstlisting}
+\caption{The createDevTab() function. It creates the widget in the tab from figure~\ref{fig:EasyInsertDevice}}
+\label{fig:eiConstructor} 	
+\end{figure}
+
 \subsubsection{Settings}
 \label{sec:Settings}
 Defining settings for an application is a common thing. It was therefore decided that EasyInsert should have some way to set settings. Settings for the plugin is stored in a XML file. The only current setting a user can set is, as mention in~\ref{sec:UserInterface}, the path for the library in the device tab. Though it should be easy to extend the plugin to have more settings, and even other utilities through the tool bar if needed.\\
