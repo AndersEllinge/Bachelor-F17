@@ -26,12 +26,10 @@ EasyInsert::EasyInsert():
     verticalLayout->setAlignment(_toolBar,Qt::AlignRight);
 
     QTabWidget *tabWindow = new QTabWidget(dockWidgetContent);
-    _devTab = createDevTab();
-    _geoTab = createGeoTab();
-    _deleteTab = createDeleteTab();
-    tabWindow->addTab(_devTab, "Devices");
-    tabWindow->addTab(_geoTab, "Geometries");
-    tabWindow->addTab(_deleteTab, "Delete");
+
+    tabWindow->addTab(createDevTab(), "Devices");
+    tabWindow->addTab(createGeoTab(), "Geometries");
+    tabWindow->addTab(createDeleteTab(), "Delete");
     verticalLayout->addWidget(tabWindow);
 
     //done with creating all the stuff, now set the layout for the base
