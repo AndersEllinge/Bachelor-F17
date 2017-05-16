@@ -9,12 +9,13 @@ Something about we first explore the user interface of the plugin, and then we l
 			plug-in specific elements for RWS and how they are used.
 			.ui was not used, why?
 		Dialogs
-		Settings		
+		EasyInsert Construction - Bringing it all together.	
+		Settings			
 		Device tab
 			mention something in the introduction about how the tabs will be gone through
 		Geo tab
 		Delete tab
-		EasyInsert Construction - Bringing it all together.
+		
 
 \subsection{User Interface}
 \label{sec:UserInterface}
@@ -206,9 +207,46 @@ Something about what could be worked on in regard to this class. Like constructo
 Is this something that should be in this chapter?
 
 
-\subsection{Settings}
+\subsection{EasyInsert Implementation}
+This chapter will go through how EasyInsert achieved the functionalities and interfaces mentioned in section~\ref{sec:UserInterface} with the help from the dialog, creator and loader classes. 
+
+Go through the constructor.
+
+\begin{figure}[h] % Code of ei constructor
+\centering
+\lstset{language=C++} 
+\begin{lstlisting}[frame=single]  
+
+\end{lstlisting}
+\caption{The createDevTab() function. It creates the widget in the tab from figure~\ref{fig:EasyInsertDevice}}
+\label{fig:eiConstructor} 	
+\end{figure}
+EasyInsert::EasyInsert():
+    RobWorkStudioPlugin("EasyInsert", QIcon(":/pa_icon.png"))
+{
+    setupSettings();
+    QScrollArea *widg = new QScrollArea(this);
+	widg->setWidgetResizable(true);
+	QWidget *dockWidgetContent = new QWidget(this);
+	QVBoxLayout *verticalLayout = new QVBoxLayout(dockWidgetContent);
+    _toolBar = createToolBar();
+    verticalLayout->addWidget(_toolBar);
+    verticalLayout->setAlignment(_toolBar,Qt::AlignRight);
+    QTabWidget *tabWindow = new QTabWidget(dockWidgetContent);
+    _devTab = createDevTab();
+    _geoTab = createGeoTab();
+    _deleteTab = createDeleteTab();
+    tabWindow->addTab(_devTab, "Devices");
+    tabWindow->addTab(_geoTab, "Geometries");
+    tabWindow->addTab(_deleteTab, "Delete");
+    verticalLayout->addWidget(tabWindow);
+    dockWidgetContent->setLayout(verticalLayout);
+    widg->setWidget(dockWidgetContent);
+	this->setWidget(widg);
+}
+\subsubsection{Settings}
 \label{sec:Settings}
-Defining settings for an application is a common thing. It was therefore decided that EasyInsert should have some way to set settings. Settings for the plugin is stored in a XML file. The only current setting a user can set is, as mention in~\ref{sec:UserInterface}, the path for the library in the device tab. Though it should be easy to extend the plugin to have more settings, and even other utilities through the tool bar if needed. The settings button, as noted in~\ref{sec:UserInterface}, is the only button available in the tool bar so far, and thus the extend of the tool bar will be shortly discussed in this chapter as well.\\
+Defining settings for an application is a common thing. It was therefore decided that EasyInsert should have some way to set settings. Settings for the plugin is stored in a XML file. The only current setting a user can set is, as mention in~\ref{sec:UserInterface}, the path for the library in the device tab. Though it should be easy to extend the plugin to have more settings, and even other utilities through the tool bar if needed.\\
 
 The first thing the plugin does under it's construction, is to load the settings. This is done through the setupSettings() function, and the code of the function can be seen on figure~\ref{fig:settingsCodeSetup}. It is determined if there exists a settings file for the plugin (eisettings.xml), this is done on line 1 and 2 on figure~\ref{fig:settingsCodeSetup} with the boost library \cite{BoostPathSettings}. If a settings file exists, the code will proceed to load the file and warn the user if something went wrong. The loading of the file is done with the XMLPropertyLoader class \cite{XMLPropertyLoader}, which loads the settings file into a Property container called a PropertyMap. The PropertyMap class is part of the common namespace and can be used to store various user information, in this case for settings purposes. As seen on figure~\ref{fig:settingsCodeSetup} line 4, the PropertyMap, \_propMap, is loaded with the settings for the plugin. On line 13 we store a pointer, \_settingsMap, to the PropertyMap of the conveniently named Property EasyInsertSettings from the settings file. The following code checks if any settings were actually loaded, since if the user has not used the plugin yet, no settings files exists yet (or maybe it was deleted). The EasyInsertSettings Property would then have to be added, as seen on line 15, so a proper settings file can be created later. Settings are then stored under this property with an appropriate tag, so it is easy identifiable.
 
@@ -281,8 +319,8 @@ Reflection, we should have added to the rwsettings file, the reason we did not w
 
 \subsubsection{Tool Bar}
 \label{sec:ToolBar}
-
-The tool bar is constructed in the createToolBar() function (figure~\ref{fig:settingsToolBarCode}) and it is pretty straight forward. The only hiccup can be managing the menu's for the buttons in the tool bar. We create a tool bar with the QToolBar class and the buttons with QToolButton. After the toolbar and button(s) has been created, the icons and tool tips are set. On line 5 a QMenu is created, QMenu is a selection menu. Afterwards a QAction is created as well, which is an abstract user interface action that can inserted into widgets. We then add the action to the menu. On line 8 the settingsButton gets the menu set, followed by a pop up mode selection. Lastly we add the settingsButton to the toolBar, and we connect the settingsAction to the settings() slot. The settings() slot is the function that creates the settings dialog window on figure~\ref{fig:settingsDialog} and waits for the user to select the settings, before saving them, like on figure~\ref{fig:settingsCodeReturnDialog}.
+The settings button, as noted in~\ref{sec:UserInterface}, is the only button available in the tool bar so far, and thus the extend of the tool bar will be shortly discussed in this chapter.
+The tool bar is constructed in the createToolBar() function (figure~\ref{fig:settingsToolBarCode}) and it is pretty straight forward. The only hiccup can be managing the menu's for the buttons in the tool bar. We create a tool bar with the QToolBar class and the buttons with QToolButton. After the toolbar and button(s) has been created, the icons and tool tips are set. On line 5 a QMenu is created, QMenu is a selection menu. Afterwards a QAction is created as well, which is an abstract user interface action that can be inserted into widgets. We then add the action to the menu. On line 8 the settingsButton gets the menu set, followed by a pop up mode selection. Lastly we add the settingsButton to the toolBar, and we connect the settingsAction to the settings() slot. The settings() slot is the function that creates the settings dialog window on figure~\ref{fig:settingsDialog} and waits for the user to select the settings, before saving them, like on figure~\ref{fig:settingsCodeReturnDialog}.
 
 \begin{figure}[h] % Code of createToolBar
 \centering
@@ -308,25 +346,133 @@ return toolBar;
 Reflection
 the undo button would have been another button on the tool bar
 
-\subsection{Device Tab}
+\subsubsection{Devices Tab}
 \label{sec:DeviceTab}
+This section discusses the implementation of the Devices tab from figure~\ref{fig:EasyInsertDevice}. The Devices tab is set up with the function createDevTab(), which returns the composite widget making up the Devices tab. createDevTab() can be seen on figure ~\ref{fig:deviceTabCode}. The widget created and returned is a QScrollArea widget with a composite child. A QScrollArea widget provides a scrolling view onto another widget (the child). The QScrollArea widget is created on line 2, the widget is then set to be resizeable and the frame is removed. When a QScrollArea is set to be resizeable, the child widget of the QScrollArea will automatically be resized so to either avoid scroll bars (decrease size of child) or utilize extra space (increase size of child). It should be noted that when QScrollArea has a composite child with a layout, the size policy of that layout will determine the size (or resize) of the widget. The composite child is created on line 5 and then a vertical layout is created. On line 7 a QListView is created, this is a widget that provides a list view onto a model. Afterwards a QFileSystemModel is created and put onto the list view. The QFileSystemModel provides a data model for the local file system. Following, the \_settingsMap with the Devices library path is read, and then used to set the root path on the model with the QFileSystemModel public function setRootPath(const QString \&newpath). This actually installs a QFileSystemWatcher to monitor the path and update the QFileSystemModel accordingly. The view of the QListView's root index is then set to the model's root path. The load button is then created and connected to the loadDevice() slot which creates the dialog window shown on figure~\ref{fig:loadDialog}. Finally the widgets, the view and the button, are added to the layout and the composite widget gets the layout set. The composite widget has now been made, so the QScrollArea is then imposed onto the composite widget and returned. 
 
-QScrollArea
-QListView
-QFileSystemModel
-setRootIndex
-setRootPath - monitors the directory so any changes is reflected
+\begin{figure}[h] % Code of createDevTab()
+\centering
+\lstset{language=C++} 
+\begin{lstlisting}[frame=single]  
+QWidget* EasyInsert::createDevTab(){
+	QScrollArea *widg = new QScrollArea(); //the parent 
+	widg->setWidgetResizable(true); //children will scale 
+	widg->setFrameShape(QFrame::NoFrame); //no frame 
+	QWidget *devTab = new QWidget(); //container widget
+	QVBoxLayout *verticalLayout = new QVBoxLayout(devTab); 
+	view = new QListView(devTab); //list view widget
+	dirmodel = new QFileSystemModel(view); //filesystem model
+	view->setModel(dirmodel); //set the model
+	view->setRootIndex(dirmodel->setRootPath(QString::fromStdString(_settingsMap->get("Devices", "/")))); // set the root
+	QPushButton *loadBtn = new QPushButton("Load",devTab); //make button
+	connect(loadBtn, SIGNAL(clicked()), this, SLOT(loadDevice())); 
+	verticalLayout->addWidget(view); // add to layout
+	verticalLayout->addWidget(loadBtn);
+	devTab->setLayout(verticalLayout); //set the layout
+	widg->setWidget(devTab); // set the widget
+	return widg;
+}
+\end{lstlisting}
+\caption{The createDevTab() function. It creates the widget in the tab from figure~\ref{fig:EasyInsertDevice}}
+\label{fig:deviceTabCode} 	
+\end{figure}
 
-
-\subsection{Geometries Tab}
+\subsubsection{Geometries Tab}
 \label{sec:GeoTab}
 
-\subsection{Delete Tab}
+Introduction
+
+The Geometries tab is set up with the function createGeoTab() (figure ~\ref{fig:geoTabCode}), and it uses a similar procedure as the createDevTab(). A QScrollArea with a composite widget is returned. The main difference between the Devices tab and the Geometries tab, are the children of the composite widget, a QGridLayout, and that the QScrollArea is not set to be resizeable. The reason for different children of the composite widget is quite obvious (this tab should show something else), and a QGridLayout was chosen because it is a convenient layout to present the buttons in. The resizeable option of the QScrollArea is not used because of aesthetic reasons. Since, if the resizeable option was on, the buttons could either be scaled to ridiculous sizes or, if the buttons have fixed sizes, have loads of spacing. 
+
+The children of the composite widget are eight QToolButtons. Each button has an intuitive icon and size set, and a tool tip to reflect the action. The buttons are then connected to their appropriate slot function.    
+
+slots are boilerplate code, they all create a prober dialog window so the user can select options for the action, the slot then waits for the dialog to return and then uses the creator with the user supplied parameters as discussed in the other sections.
+
+QToolButton are more sophisticated and are generally preferred when the button is used as an icon.
+
+
+\begin{figure}[h] % Code of createGeoTab()
+\centering
+\lstset{language=C++} 
+\begin{lstlisting}[frame=single]  
+QWidget* EasyInsert::createGeoTab(){
+	QScrollArea *widg = new QScrollArea(); //the parent
+    widg->setFrameShape(QFrame::NoFrame); //no frame
+    QWidget *geoTab = new QWidget(); //container widget
+    QGridLayout *layout = new QGridLayout(geoTab);
+    QToolButton *btns[8]; //8 buttons
+
+    btns[0] = new QToolButton();
+    btns[0]->setIcon(QIcon(":icons/cube.png")); //btn icon
+    btns[0]->setToolTip("Cube"); //tool tip
+    btns[0]->setIconSize(QSize(50, 50)); // size of the btn
+    	/*  Create all the other buttons the same way   */
+    connect(btns[0], SIGNAL(clicked()), this, SLOT(cube()));
+ 		/*  Connect all the buttons to their slots as well  */
+    layout->addWidget(btns[0], 0, 0);
+		/*  Add all the other buttons to the grid as well  */    
+  
+    geoTab->setLayout(layout); //set layout
+    widg->setWidget(geoTab); // set widget
+    return widg;
+}
+\end{lstlisting}
+\caption{The createGeoTab() function. It creates the widget in the tab from firgure~\ref{fig:EasyInsertGeo}. It should be noted that some redundant code has been omitted from the figure to save space.}
+\label{fig:geoTabCode} 	
+\end{figure}
+
+\subsubsection{Delete Tab}
 \label{sec:DelTab}
+
+
+\begin{figure}[h] % Code of createDelTab()
+\centering
+\lstset{language=C++} 
+\begin{lstlisting}[frame=single]  
+QWidget* EasyInsert::createDelTab(){
+	QScrollArea *widg = new QScrollArea(); //the parent
+    widg->setWidgetResizable(true); //scale widgets
+    widg->setFrameShape(QFrame::NoFrame); //no frame
+    QWidget *devTab = new QWidget(); //container widget
+    QVBoxLayout *verticalLayout = new QVBoxLayout(devTab);
+    QGroupBox *delDevBox = new QGroupBox(tr("Devices:"));
+    QGroupBox *delFrameBox = new QGroupBox(tr("Frames:"));
+    QGroupBox *delObjBox = new QGroupBox(tr("Objects:"));
+    QGridLayout *layoutDev = new QGridLayout();
+    QGridLayout *layoutFrame = new QGridLayout();
+    QGridLayout *layoutObj = new QGridLayout();
+    _deviceWidget = new QListWidget(this); //list widgets 
+    _frameWidget = new QListWidget(this);  //to list relevant
+    _objectWidget = new QListWidget(this); //items
+
+    QPushButton *delDevBtn = new QPushButton("Delete",devTab);
+    connect(delDevBtn, SIGNAL(clicked()), this, SLOT(deleteDev()));
+    /* create the two other delete buttons and connect them as well */
+
+    layoutDev->addWidget(_deviceWidget,0,0); //left side
+    layoutDev->addWidget(delDevBtn,0,1); // right side
+    delDevBox->setLayout(layoutDev);
+    /* add widget and set layout for the two others as well */
+
+    verticalLayout->addWidget(delDevBox); //add all widgets
+    verticalLayout->addWidget(delObjBox);
+    verticalLayout->addWidget(delFrameBox);
+    devTab->setLayout(verticalLayout); //set layout
+    widg->setWidget(devTab); // set widget
+    return widg;
+}
+\end{lstlisting}
+\caption{The createDelTab function. It creates the widget in the tab from figure~\ref{fig:EasyInsertDelete}. It should be noted that some redundant code has been omitted from the figure to save space.}
+\label{fig:delTabCode} 	
+\end{figure}
+
 
 QlistWidget
 
 
-\subsection{EasyInsert Construction - Bringing it all together}
+\subsubsection{The Slots}
+
+Many slots. They all have been constructed fairly similar, except the delete ones.
+
 
 
