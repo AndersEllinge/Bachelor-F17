@@ -237,8 +237,72 @@ EasyInsert::EasyInsert():
 	this->setWidget(widg);
 }
 \end{lstlisting}
-\caption{The createDevTab() function. It creates the widget in the tab from figure~\ref{fig:EasyInsertDevice}}
-\label{fig:eiConstructor} 	
+\caption{Write something}
+\label{fig:eiClass} 	
+\end{figure}
+
+\begin{figure}[h] % Code of ei constructor
+\centering
+\lstset{language=C++} 
+\begin{lstlisting}[frame=single]  
+class EasyInsert: public rws::RobWorkStudioPlugin, private Ui::EasyInsert
+{
+Q_OBJECT
+Q_INTERFACES( rws::RobWorkStudioPlugin )
+#if RWS_USE_QT5
+Q_PLUGIN_METADATA(IID "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1" FILE "EasyInsert.json")
+#endif
+
+public:
+    EasyInsert();
+	virtual ~EasyInsert();
+    virtual void open(rw::models::WorkCell* workcell);
+    virtual void close();
+    virtual void initialize();
+
+private:
+    void setupSettings();
+    QToolBar* createToolBar();
+    QWidget* createDevTab();
+    QWidget* createGeoTab();
+    QWidget* createDeleteTab();
+    void showFrameStructure();
+    void clearListContent();
+    void update();
+
+    rw::kinematics::State _state;
+    rw::models::WorkCell* _workcell;
+    QListWidget* _deviceWidget;
+    QListWidget* _frameWidget;
+    QListWidget* _objectWidget;
+    QToolBar* _toolBar;
+    std::vector<rw::kinematics::Frame*> _devFrameList;
+    std::vector<rw::kinematics::Frame*> _frames;
+    QListView *view;
+    QFileSystemModel *dirmodel;
+    rw::common::PropertyMap _propMap;
+    rw::common::PropertyMap *_settingsMap;
+
+private slots:
+    void stateChangedListener(const rw::kinematics::State& state);
+    void loadDevice();
+    void settings();
+    void cube();
+    void plane();
+    void sphere();
+    void cone();
+    void cylinder();
+    void tube();
+    void fixedFrame();
+    void movableFrame();
+    void deleteFrame();
+    void deleteChildren(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc);
+    void deleteDev();
+    void deleteObj();
+};
+\end{lstlisting}
+\caption{Write something}
+\label{fig:eiClass} 	
 \end{figure}
 
 \subsubsection{Settings}
@@ -472,4 +536,4 @@ QlistWidget
 Many slots. They all have been constructed fairly similar, except the delete ones.
 
 
-
+\subsubsection{The StateChangedListener}
