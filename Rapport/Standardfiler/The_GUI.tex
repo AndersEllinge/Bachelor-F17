@@ -237,7 +237,7 @@ EasyInsert::EasyInsert():
 	this->setWidget(widg);
 }
 \end{lstlisting}
-\caption{Write something}
+\caption{This figure show the constructor of the plugin.}
 \label{fig:eiClass} 	
 \end{figure}
 
@@ -438,7 +438,7 @@ QWidget* EasyInsert::createDevTab(){
 	return widg;
 }
 \end{lstlisting}
-\caption{The createDevTab() function. It creates the widget in the tab from figure~\ref{fig:EasyInsertDevice}}
+\caption{The createDevTab() slot. The function creates the widget in the tab from figure~\ref{fig:EasyInsertDevice}}
 \label{fig:deviceTabCode} 	
 \end{figure}
 
@@ -542,7 +542,7 @@ The three QGroupBoxs are then added to the vertical layout and the composted wid
 
 
 \subsubsection{The Slots}
-
+\label{eiSlots}
 In this section the slots of EasyInsert will be discussed, though stateChangedListener() slot is left out to be discussed in the next section.\\
 
 The Devices tab has only one button connected to a slot, loadDevice(), this slot is pretty straight forward and is very similar to the slots that the Geometries tab buttons are connected to. loadDevice() takes advantage of the dialog class to create an interactable dialog window so the user can define parameters (discussed in section ~\ref{sec:DialogWindows}), which are then passed to the loader class to load the desired device (discussed in section~\ref{}).\\
@@ -571,12 +571,12 @@ void EasyInsert::deleteFrame()
         rw::common::Log::log().info() << "select something " << std::endl;
 }
 \end{lstlisting}
-\caption{Write something}
+\caption{This figure shows the deleteFrame() slot which is called from the Delete tab when deleting frames. This slot will start a recursive deletion process.}
 \label{fig:eiDeleteFrames} 	
 \end{figure}
 
-deleteFrame() has a similar structure to deleteDev() and deleteObj() up to the point of when it calls the recursive deleteChildren(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc) function. As seen on figure~\ref{fig:eiDeleteFrames} line 3, it is first checked if there is a selected item, and if there is, the name is used to find the frame, just like in deleteDev() and deleteObj(). Though on line 5, 7, 8 and 10 something is going on, this will be explained in section ~\ref{eiProblems}, this is in fact a recurring thing that is done in all the slots if the source code is inspected. 
-deleteChildren(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc) is then called with the selected frame and WorkCell on line 9.
+deleteFrame() has a similar structure to deleteDev() and deleteObj() up to the point when it calls the recursive deleteChildren(...) function. As seen on figure~\ref{fig:eiDeleteFrames} line 3, it is first checked if there is a selected item, and if there is, the name is used to find the frame, just like in deleteDev() and deleteObj(). Though on line 5, 7, 8 and 10 something is going on, this will be explained in section ~\ref{eiProblems}, this is in fact a recurring thing that is done in all the slots if the source code is inspected. 
+deleteChildren(...) is then called with the selected frame and WorkCell on line 9.
 
 \begin{figure}[h] % Code of delete children
 \centering
@@ -604,23 +604,34 @@ void EasyInsert::deleteChildren(rw::kinematics::Frame* frame, rw::models::WorkCe
     }
 }
 \end{lstlisting}
-\caption{Write something}
+\caption{The recursive deleteChildren(...) function. This function will also remove all objects associated with the frames deleted.}
 \label{fig:eiDeleteChildren} 	
 \end{figure}
 
-
-A Depth-first search method, i.e. the code traverses along a branch in the parent/child hierarchy for as long as possible before backtracking. 
-The base of the recursive function is seen on line 6, when a frame is found that is not a parent, then that frame must be childless and OK for deletion.
-When a childless frame has been found, all objects associated with this frame needs to be deleted as well. 
-
-Of course if the user tries to delete the WORLD frame, then the deletion is silently ignored, because the WORLD frame should not be casually deleted.
+deleteChildren(...) works as a Depth-first search method, i.e. the code traverses along a branch in the parent/child hierarchy for as long as possible before backtracking. The base of the recursion is seen on line 6, when a frame is found that is not a parent, then that frame must be childless and OK for deletion.
+When a childless frame has been found, all objects associated with this frame needs to be deleted as well. This is done in the for loop on line 9, a vector of all the objects in the WorkCell is made, and then every object's associated frames is inspected on line 12. If there is a match, then the object is removed and then repeated until all objects has been run through. Of course if the user tries to delete the WORLD frame, then the deletion is silently ignored on line 18, because the WORLD frame should not be casually deleted.
 
 \subsubsection{The StateChangedListener}
 \label{sec:eiStateChangedListener}
-Introduction
 
-How we use the statechangedlistener to update the delete lists and use showFrameStructure.
+The stateChangedListener is a special slot which is subscribed to the stateChangedEvent() in RWS. That means, whenever a change of the state occurs the stateChangedEvent() emits a signal that the stateChangedListener listens after and can react to. 
 
+\begin{figure}[h] % Code of init
+\centering
+\lstset{language=C++} 
+\begin{lstlisting}[frame=single] 
+void EasyInsert::initialize()
+{
+    getRobWorkStudio()->stateChangedEvent().add(boost::bind(&EasyInsert::stateChangedListener, this, _1), this);
+}
+\end{lstlisting}
+\caption{During plugin initialization the stateChangedListener() slot will be connected to the stateChangedEvent().}
+\label{fig:eiStateChangedListener} 	
+\end{figure}
+
+The stateChangedListener is set up to listen for events from the stateChangedEvent() under the initialize() virtual function, see figure~\ref{fig:eiStateChangedListener}. The stateChangedListener() slot is then called when ever a change occurs. The slot calls the update() function, which in turn makes sure that appropriate elements of the plug in is updated. Currently only the list of the Delete tab is updated through the function showFrameStructure(). showFrameStructure() clears all the elements in the lists of the Delete tab and also the vectors containing the actual object pointers with the clearListContent() function. showFrameStructure() will the proceed to find all the devices and store the pointers to them in a vector. These devices are then checked if they are checked whether they are serial devices or tree devices, since these are the only devices supported by the plug in. When the device has been identified, the device name is added to the device list of the Delete tab and all the frames of the devices are stored in a vector to be used later, since the object and frames list are not interested in showing device frames. 
+showFrameStructure() will then go on to find frames not part of any device by first getting all frames from the WorkCell and storing them in a vector. The vector of device frames is then compared to all the frames in the WorkCell, and if any frame is found to be part of a device it is simply removed from the frames vector until only non device frames are left in that vector. The names of the frames and then simply added to the Frames view of the Delete tab.
+Finally a vector of all the objects of the WorkCell will be compared to the objects of the device frame vector. If any objects are found to be part of a device, these objects will be removed from the vector of objects. The names of the objects left in the vector will then be saved in the Objects view from the Delete tab. 
 
 
 \subsubsection{Problems}
@@ -631,6 +642,6 @@ Problems about RWS statechangeevent(), duplicates and weird behaviour on inserti
 
 Problem with the delete updating, possible because of problems with the internal RWS cache of the states. When a new state is signalled the problem is gone. Though the swapping could not save this problem.
 
-
+Objects should be have unique names. If you insert a box with the same name as a geometry of a device, it is not guaranteed the right object will be deleted.
 
 
