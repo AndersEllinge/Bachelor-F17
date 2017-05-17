@@ -1,8 +1,8 @@
 \section{Inserting devices}
-This section contains the description of the solution regarding adding devices to a WorkCell. The solution was heavily inspired by the XMLRWLoader from the loaders section of the RobWork library. The solution was put in a class called loader.
+This section contains the description of the functionality related solution regarding adding devices to a WorkCell. The solution was heavily inspired by the XMLRWLoader from the loaders section of the RobWork library. The solution was put in a class called loader.
 
 \subsection{General explanation of the solution}
-The solution for the requirements related to insertion of devices (See need to have requirement 3) was, just like with inserting frames and geometries, divided into two parts. The first part is the interface to the user required for the user to be able to supply the necessary information needed. The second part is the process of creating and inserting the device defined by the user. The reason for this separation is the same as the one given in inserting frames and geometries section (\ref{subsec:iFramesAGeomsGE} General explanation of the solution).
+The solution for the requirements related to insertion of devices (See need to have requirement 3) was, just like with inserting frames and geometries, divided into two parts. The first part is the interface to the user required for the user to be able to supply the necessary information needed. The interface is explained later in section~\ref{sec:DeviceTab}. The second part is the process of creating and inserting the device defined by the user. The reason for this separation is the same as the one given in inserting frames and geometries section (section~\ref{subsec:iFramesAGeomsGE}).
 
 \subsection{Using the loader}
 The loader contains two functionalities the user should be aware of. The first functionality is a function called add. This functions adds the device described in a XML file to a given WorkCell. The function add takes in a string representing the path to the, the WorkCell which the information should be added to, a string representing the custom name of the device and a string containing the name of the frame on which the device should be placed. The user can also supply a transform which is applied to the base frame of the device, giving it an initial placement. The transform can be supplied in two different ways, the user can supply the function with a transform object or the x, y, z and R, P, Y values.\\
@@ -29,8 +29,15 @@ A good place to start is to analyse the flow that the loadWorkCell function have
 	\end{enumerate}
 	\item Create a new WorkCell object
 	\item Create and add all the frames, defined in the DummyWorkCell, to the WorkCell
+	\begin{enumerate}
+		\item Does not include frames from devices
+	\end{enumerate}
 	\item Add all frame properties to the WorkCell
 	\item Create all devices defined in the DummyWorkCell
+	\begin{enumerate}
+		\item Create and add all device related frames
+		\item Create all device related models
+	\end{enumerate}
 	\item Create and add models, belonging to the added frames, to the WorkCell
 	\item Create and add all DAF (dynamically attachable) frames to the WorkCell
 	\item Create and add collision models to the WorkCell
@@ -76,4 +83,5 @@ Changing the parent for the device has a really simple solution. Remember when r
 
 
 \subsection{The future of the loader}
-VODKA VODKA!
+As the reader might already have suspected, the loader can be used to add much more than a device. In the case that a XML file with the contains more than a single device, all the other items are also added. This can in some cases be useful, it is however this makes it less intuitive to use the loader. Because of this, one of the more immediate additions to the loader would be to flesh out the functionalities and add catches so the user cannot use the function in an unintended way. The functions, as an example, could be addDevice(...) which adds a single device, addObject(...) which adds a single object described in a XML file and addWC(...) which would add the entire content of another WorkCell described in a XML file to another WorkCell.\\
+The reader might also have noticed that when inserting single device, a lot of the actions taken are never used. A good example is the first step in where the frames not associated with a device. This step is unnecessary since there should be none of these frames in the description of a single device. Since the plan would be to create specialized functions, these functions could be optimized by removing the unnecessary parts of the functions.
