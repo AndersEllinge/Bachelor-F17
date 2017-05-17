@@ -6,10 +6,25 @@ The solution for the requirements related to insertion of devices (See need to h
 
 \subsection{Using the loader}
 The loader contains two functionalities the user should be aware of. The first functionality is a function called add. This functions adds the device described in a XML file to a given WorkCell. The function add takes in a string representing the path to the, the WorkCell which the information should be added to, a string representing the custom name of the device and a string containing the name of the frame on which the device should be placed. The user can also supply a transform which is applied to the base frame of the device, giving it an initial placement. The transform can be supplied in two different ways, the user can supply the function with a transform object or the x, y, z and R, P, Y values.\\
-
 The loader also contains the functionality to load a WorkCell from an XML-file, just like the XMLRWLoader. This functionality was made solely to give the loader more consistency in its functionalities.\\
+An example of using the loader to add a device can be seen on figure~\ref{fig:UseCodeExampleLoader}.
 
-An example of using the loader can be seen on figure !!!!!.
+\begin{figure}[h]
+	\centering
+	\lstset{language=C++} 
+	\begin{lstlisting}[frame=single]
+	WorkCell::Ptr wc; // WorkCell needing the device
+	String path = "Some path"; // Path to the device
+	String name = "test"; // Custom name given to device
+	String parent = "WORLD"; // Name of parent frame
+	Transform3D transform; // Initial placement of the device
+	
+	// Add device with the parameters given
+	ei::loader::add(path, wc, name, parent, transform);
+	\end{lstlisting}
+	\caption{Code example of using the to add a device}
+	\label{fig:UseCodeExampleLoader}
+\end{figure}
 
 
 \subsection{Understanding the XMLRWLoader}
@@ -52,7 +67,14 @@ A good place to start is to analyse the flow that the loadWorkCell function have
 	\item Return the WorkCell
 \end{enumerate}
 
-It should be advised that this sequence is a intuitive understanding of the loadWorkCell function. The function does much more than this, however this is the bread and butter of the function. A more in depth illustration of how the XMLRWLoader functions can be seen on the flowchart contained in figure !!!!!.
+It should be advised that this sequence is a intuitive understanding of the loadWorkCell function. The function does much more than this, however this is the bread and butter of the function. A more in depth illustration of how the XMLRWLoader functions can be seen on the flowchart contained in figure~\ref{fig:ComplexLoadWC}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.55]{Figures/ComplexLoadWC.png}
+	\caption{Illustration of how XMLRWLoader loads the contents of an XML file contianing the description of a WorkCell}
+	\label{fig:ComplexLoadWC}
+\end{figure}
 
 The XMLRWLoader also implements a helping struct that is called DummySetup, which task is store information related to the setup. This include several maps related to frames, the world frame of the WorkCell, the state structure of the WorkCell, a map related to objects, a vector contain initial actions, the DummyWorkCell, a map containing the devices, a scene descriptor, collision and proximity setup.
 
@@ -60,7 +82,43 @@ The XMLRWLoader also implements a helping struct that is called DummySetup, whic
 The implementation of the loader can be explained in the different capabilities that were added as time went on. The first capability of the loader was to add a device to the WorkCell. The second capability was to be able to give the device a name. The third capability was to be able to apply a transform to the device. The last capability added was the ability to define the parent frame of the device. After all of these capabilities were implemented, the loader now complies with requirements for inserting a device (See need to have requirement 3).
 
 \subsubsection{Adding a device to a WorkCell}
-Starting with the loadWorkCell function as a template, the place were the code handles what WorkCell is worked in needs to be rewritten. One of the first things that happen in the loadWorkCell function is that the DummySetup gets a new scene descriptor. This is changed so that the scene descriptor is set to the one from the defined WorkCell. The next thing related to the WorkCell is the state structure and world frame in the DummySetup. The loadWorkCell function normally creates a new state structure and then uses the root of this object as the world frame. this is changed so that the DummySetup is supplied the state structure and the world frame of the defined WorkCell. Lastly the loadWorkCell function creates a new WorkCell, this is simply just removed since it is no longer relevant. Figure !!!!! shows the changes made to the loadWorkCell template in order for it to support defining a WorkCell.
+Starting with the loadWorkCell function as a template, the place were the code handles what WorkCell is worked in needs to be rewritten. One of the first things that happen in the loadWorkCell function is that the DummySetup gets a new scene descriptor. This is changed so that the scene descriptor is set to the one from the defined WorkCell. The next thing related to the WorkCell is the state structure and world frame in the DummySetup. The loadWorkCell function normally creates a new state structure and then uses the root of this object as the world frame. this is changed so that the DummySetup is supplied the state structure and the world frame of the defined WorkCell. Lastly the loadWorkCell function creates a new WorkCell, this is simply just removed since it is no longer relevant. Figure~\ref{fig:ChangedInLoaderWorkCell} shows the changes made to the loadWorkCell template in order for it to support defining a WorkCell.
+
+\begin{figure}[h]
+	\centering
+	\lstset{language=C++} 
+	\begin{lstlisting}[frame=single]
+	DummySetup setup;
+	
+	/// XMLRWLoader
+	// New scene descriptor is created
+	setup.scene = ownedPtr(new SceneDescriptor());
+	
+	// New State structure is created
+	setup.tree = new StateStructure();
+	// World frame is saved in setup
+	setup.world = setup.tree->getRoot();
+	
+	// New WorkCell is created using the parsed information
+	WorkCell::Ptr wc = ownedPtr(new WorkCell(
+		ownedPtr(setup.tree), setup.dwc->_name, fname));
+		
+	// Scene descriptor of WorkCell is set to that in the setup
+	wc->setSceneDescriptor(setup.scene);
+	
+	
+	/// Changes	(wc is the supplied WorkCell)
+	// Scene descriptor in setup is set to that of the WorkCell
+	setup.scene = wc->getSceneDescriptor();
+	
+	// Get state structure from the WorkCell
+	setup.tree = wc->getStateStructure().get();
+	// Get World frame from the WorkCell
+	setup.world = wc->getWorldFrame();
+	\end{lstlisting}
+	\caption{Code example showing changes made to the template from the loadWorkCell(...) function regarding the WorkCell}
+	\label{fig:ChangedInLoaderWorkCell}
+\end{figure}
 
 \subsubsection{Custom naming the device}
 In order to choose the name of the device without, we need to access the information regarding the device and its frames before the device and its frames are created. Luckily, it is already known that this information is situated in the DummyWorkCell. The DummyWorkCell contains a vector with the description of all of the devices, however taken into account how this functionality is going to be used we assume there is only one device description and that there is one. This description of the device contains the name which is simply changed into the wanted name.\\
