@@ -73,7 +73,6 @@ private:
     QWidget* createDevTab();
     QWidget* createGeoTab();
     QWidget* createDeleteTab();
-    void updateDeviceTab();
     void showFrameStructure();
     void setupFrame(rw::kinematics::Frame& frame, QTreeWidgetItem* parentItem);
     //void setupDevice(rw::kinematics::Frame& frame, QTreeWidgetItem* parentItem)

@@ -51,7 +51,7 @@ void EasyInsert::initialize()
 
 void EasyInsert::workcellChangedListener(int notUsed)
 {
-    QMetaObject::invokeMethod(this, "update", Qt::QueuedConnection);
+    //QMetaObject::invokeMethod(this, "update", Qt::QueuedConnection);
 }
 
 void EasyInsert::open(WorkCell* workcell)
@@ -63,7 +63,7 @@ void EasyInsert::open(WorkCell* workcell)
     showFrameStructure();
 
     // connect the workcell changed handler
-    _workcell->workCellChangedEvent().add(boost::bind(&EasyInsert::workcellChangedListener, this, _1), this);
+    //_workcell->workCellChangedEvent().add(boost::bind(&EasyInsert::workcellChangedListener, this, _1), this);
 }
 
 void EasyInsert::close()
@@ -538,7 +538,7 @@ void EasyInsert::loadDevice()
 
     if (loadDialog->result() == QDialog::Accepted)
   	{
-    	rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+    	//rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
 
         rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
         getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
@@ -1084,29 +1084,28 @@ void EasyInsert::deleteFrame()
 
 void EasyInsert::deleteChildren(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc)
 {
-    std::vector<rw::kinematics::Frame*> frames = wc->getFrames();
-    rw::kinematics::State state = wc->getDefaultState();
+    if (frame->getName() != "WORLD") {
+        std::vector<rw::kinematics::Frame*> frames = wc->getFrames();
+        rw::kinematics::State state = wc->getDefaultState();
 
-    for (size_t i = 0; i < frames.size(); i++)
-        if (frames[i]->getParent(state) == frame)
-            deleteChildren(frames[i],wc);
-            //if (frames[i]->getParent(state)->getName() =! "WORLD")
+        for (size_t i = 0; i < frames.size(); i++)
+            if (frames[i]->getParent(state) == frame)
+                deleteChildren(frames[i],wc);
+                //if (frames[i]->getParent(state)->getName() =! "WORLD")
 
 
-    std::vector<rw::models::Object::Ptr> object = wc->getObjects();
+        std::vector<rw::models::Object::Ptr> object = wc->getObjects();
 
-    for (size_t i = 0; i < object.size(); i++) {
-        const std::vector <rw::kinematics::Frame*>& objectFrames = object[i].get()->getFrames();
+        for (size_t i = 0; i < object.size(); i++) {
+            const std::vector <rw::kinematics::Frame*>& objectFrames = object[i].get()->getFrames();
 
-        for (size_t j = 0; j < objectFrames.size(); j++) {
-            if (objectFrames[j] == frame) {
-                wc->removeObject(object[i].get());
-                break;
+            for (size_t j = 0; j < objectFrames.size(); j++) {
+                if (objectFrames[j] == frame) {
+                    wc->removeObject(object[i].get());
+                    break;
+                }
             }
         }
-    }
-
-    if (frame->getName() != "WORLD") {
         wc->remove(frame);
     }
 }
@@ -1182,6 +1181,7 @@ void EasyInsert::deleteObj()
     else
         rw::common::Log::log().info() << "select something " << std::endl;
 }
+
 
 void EasyInsert::update()
 {
