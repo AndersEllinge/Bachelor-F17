@@ -1,23 +1,135 @@
-\section{The Plug-In}
-Introduction to the chapter.
-Something about we first explore the user interface of the plugin, and then we look into the elements consisting within the user interface.
+\section{Dialog Windows}
+\label{sec:DialogWindows}
+The dialog window is the main communication with the user in this plugin. Dialog windows are top-level windows, and they provide the user with either information, or they allow the users to select options to perform a command or task. This section will show how dialog windows has been handled in the plugin.\\
 
-	What elements are there in this chapter?	
-		User Interface
-			All teh stuff the user can do in this plugin with pictures.	
-		EasyInsert
-			plug-in specific elements for RWS and how they are used.
-			.ui was not used, why?
-		Dialogs
-		EasyInsert Construction - Bringing it all together.	
-		Settings			
-		Device tab
-			mention something in the introduction about how the tabs will be gone through
-		Geo tab
-		Delete tab
+\subsection{Using the dialog class}
+The dialog class is fairly simple to use and extend. A dialog is made of blocks in a vertical layout of QWidget's, i.e. a dialog instance is a composite widget containing composite widgets. Figure~\ref{fig:dialogWindowExample} shows a dialog window with four blocks initialised.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.55]{Figures/dialogclassblocks.png}
+	\caption{This figure shows a dialog window of adding a fixed frame to a WorkCell containing various widgets relevant to the action. }
+	\label{fig:dialogWindowExample}
+\end{figure}
+
+All the blocks used to create all the dialog windows in the plug-in are shown in figure~\ref{fig:dialogBlocks}. These blocks are just member functions of the dialog class which returns a composite widget. So to create a dialog window as shown on figure~\ref{fig:dialogWindowExample}, a dialog instance should be constructed (in this case with a WorkCell pointer) and then simply adding the blocks to the dialog with the utility member function addToDialog(). See figure~\ref{fig:dialogWindowCode} which shows a code example on how to use the dialog class to construct the dialog window as shown on figure~\ref{fig:dialogWindowExample}. Since the dialog class is a subclass of QDialog, the position of the dialog window (opposed to a normal QDialog object) is always centred to the main application (RWS), even though a parent is passed as a parameter.
+
+\begin{figure}[h] % code of adding stuff to a dialog
+\centering
+\lstset{language=C++} 
+\begin{lstlisting}[frame=single]  
+QString st = "Fixed Frame"; //Name of the dialog window
+rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell(); //WorkCell
+dialog* geoDialog = new dialog(wc,st,this); //Create the dialog window
+geoDialog->addToDialog(geoDialog->createNameBox()); //Adding something
+geoDialog->addToDialog(geoDialog->createFrameSelection());
+geoDialog->addToDialog(geoDialog->createConfigurationBox());
+geoDialog->addToDialog(geoDialog->createButtonBox());	
+geoDialog->exec(); //execute/open dialog window	 
+\end{lstlisting}
+\caption{A sample code to illustrate how to construct the dialog window from figure~\ref{fig:dialogWindowExample}.}
+\label{fig:dialogWindowCode} 	
+\end{figure}
+
+exec(), seen on figure~\ref{fig:dialogWindowCode} line 8, is an inherited public slot that executes/shows the dialog window. The dialog shown is in modal mode, meaning the window denies all user actions on any other widgets in the application. The function returns a DialogCode containing the information about whether the dialog window was accepted or rejected. The accepted or rejected information is determined by the user input to the createButtonBox() function block, since the OK button emits a accepted() signal to the accept() slot of the dialog object when pressed. Likewise the Cancel emits a rejected() signal to the reject() slot of the dialog object, though a rejected() signal is also emitted when the user presses ESC on the keyboard or the x(close) button of the dialog window. 
+
+So when a dialog window has been created and used by a user, then some functionality should be executed based on the inputs given to the dialog. That means when the function exec() returns, we need to know whether the user accepted or rejected the dialog window (pressed OK or Cancel). This is done with the inherited public function result(). The function result() returns QDialog::Accepted when the dialog was accepted and QDialog::Rejected when it was rejected (QDialog::Accepted and QDialog::Rejected are both just normal enumerators, i.e. 1 and 0). 
+
+\begin{figure}[h] % code of what to do after exec
+\centering
+\lstset{language=C++} 
+\begin{lstlisting}[frame=single]  
+geoDialog->exec();
+if(geoDialog->result() == QDialog::Accepted) //Check the result
+{
+	std::string name = geoDialog->getNameBox(); //Get the name input
+	std::string frame = geoDialog->getFrameSelection(); //Get frame selc
+											 
+		/*	Do something with the information    */ 
 		
+}
+delete geoDialog; //Delete the dialog object when done using it
+\end{lstlisting}
+\caption{A sample code illustrating what to do after the exec()function returns.}
+\label{fig:dialogAcceptedRejectedCode} 	
+\end{figure}
 
-\subsection{User Interface}
+As seen on figure~\ref{fig:dialogAcceptedRejectedCode}, after the exec() function returns, we simply check whether the result was QDialog::Accepted or not. If the result is accepted, then something should be done with the inputs given to the dialog window. We access these input via self explanatory public get-functions, e.g. the NameBox contains the name input (as seen on figure~\ref{fig:dialogAcceptedRejectedCode} line 4). After we have collected all the information we wanted out of the dialog window, then we can proceed to do something with the information, like e.g. the insertion of a frame. When we are done with the dialog window it should be deleted, because the dialog object is still alive until the parent is dead (in this case the plugin). If we do not delete the dialog object the dialog objects, created in the lifetime of the plugin, will just waste space in memory. 
+
+\subsection{Implementaion of the dialog class}
+The dialogs of EasyInsert has been implemented in it's own class dialog.hpp, i.e. a subclass of QDialog, see figure~\ref{fig:subClassQWidget} for an example of a Qt subclass. This was done to keep it independent and self-contained from the rest of the plug-in. The constructor for the dialog class is very simple, see figure~\ref{fig:dialogConstructor}. A constructor with no WorkCell parameter is also available and passing a parent is optional, though a name must always be given to the constructor. 
+
+\begin{figure}[h] % Code of dialog constructor
+\centering
+\lstset{language=C++} 
+\begin{lstlisting}[frame=single]  
+dialog::dialog(rw::models::WorkCell::Ptr wc, QString dialog, QWidget *parent)
+    : QDialog(parent)
+{
+    _workCell = wc;
+    mainLayout = new QVBoxLayout();
+    setWindowTitle(dialog);
+}			 
+\end{lstlisting}
+\caption{The dialog class constructor. A WorkCell pointer to a RW instance is passed along as a parameter. The QString parameter is the name of the dialog box and the QWidget is a pointer to the parent widget }
+\label{fig:dialogConstructor} 	
+\end{figure}
+
+It would take to much time to inspect all of the function blocks on figure~\ref{fig:dialogBlocks}. Therefore only one function block, namely createNameBox() figure~\ref{fig:dialogCreateNameBoxCode} will be inspected. All the function blocks has a similar structure.
+
+\begin{figure}[h] % code example of createNameBox
+\centering
+\lstset{language=C++} 
+\begin{lstlisting}[frame=single]  
+QWidget* dialog::createNameBox() {
+    QGroupBox* nameBox = new QGroupBox(tr("Name")); //The nameBox widget
+    QHBoxLayout *layout = new QHBoxLayout; //layout for the nameBox
+    nameLine = new QLineEdit(); //The line edit the user can type the name
+    layout->addWidget(nameLine); //Add the line edit to the layout
+    nameBox->setLayout(layout); //Set the layout to the namebox
+    return nameBox; //Return the nameBox
+}
+\end{lstlisting}
+\caption{This figure shows the pulic function createNameBox() from the dialog class. The function is used to add a name line edit to dialog windows.}
+\label{fig:dialogCreateNameBoxCode} 	
+\end{figure}
+
+The general procedure in the function blocks, as seen on figure~\ref{fig:dialogCreateNameBoxCode}, is to first create the composite widget. This widget, in the case of createNameBox, is a QGroupBox widget. QGroupBox is a widget that is mainly used as a composite widget. The QGroupBox provides a box to group widgets in, a frame if wanted and a title. As seen on figure~\ref{fig:dialogCreateNameBoxCode} line 2, the title is set upon construction with the string "Name". The tr() function is for translation purposes \cite{QtDocumentationTr}.
+After the composite widget has been created, the layout for the parent widget has to be chosen and the child widget(s), in this case a QLineEdit(), has to be created. QLineEdit() is a simple line where text can be typed and edited in. When all the child widgets has been created, they need to be added to the layout of the parent. Lastly the layout is set to the parent and the parent is then returned. It should be noted that when the QLineEdit() was created, figure~\ref{fig:dialogCreateNameBoxCode} line 4, no parent was defined, i.e. it is actually not a child widget but a top-level widget. This is fine though, because when a top-level widget is added to a layout of another widget, that widget automatically takes responsibility as a parent and the top-level widget is now a child of that widget.
+
+\begin{figure} [h] % table of function blocks
+\centering
+\begin{center}
+  \begin{tabular}{ | p{6cm} | p{7cm} |}
+    \hline
+    \textbf{Function blocks} 	   &   \textbf{Description}  \\ \hline
+    createButtonBox()			   &   The Cancel and OK buttons. This block is used in all the dialog windows.   		\\ \hline
+    createNameBox() 			   &   A line edit to specify a name.   		\\ \hline
+    createCheckFramesBox()		   &   Two exclusive check boxes, i.e. only one of the boxes can be checked at a time.		\\ \hline
+    createConfigurationBox() 	   &   The different configurations available to adjust regarding displacement and rotation of the inserted element. 		\\ \hline
+	createConfigurationBoxCube()   &   A cube specific configuration option, i.e. the dimensions of the cube.  	\\ \hline	    
+	createConfigurationBoxSphere() &   A sphere specific configuration option, i.e. the dimensions of the sphere. 	\\ \hline	
+	createConfigurationBoxCone()   &   A cone specific configuration option, i.e. the dimensions of the cone.  	\\ \hline	
+    createConfigurationBoxTube()   &   A tube specific configuration option, i.e. the dimensions of the tube.  	\\ \hline	
+	createLibSettingsBox(PropertyMap *map)		   &   This block is used to edit the settings of the device library.    	\\ \hline	 
+	createFrameSelection()		   &   A way to select a parent frame for the inserted element. Default is the WORLD frame.		\\
+    \hline
+  \end{tabular}
+\end{center}
+\caption{This table summarizes all the different dialog function blocks used to construct the dialog windows in the plug-in.}
+\label{fig:dialogBlocks} 
+\end{figure}
+
+\subsection{The future of the dialog class}
+The dialog class can be extended formidably dialog library to create dialog windows for a quite variety of other future plugins or applications. The dialog class could greatly benefit from having more layouts upon construction. As of now, everything has to fit into a vertical layout, but if the class could be extended to support defined layout in the constructor, then a user would be able to customize their dialog windows even further. 
+
+\clearpage
+
+\section{The Plug-In}
+
+This section will explore the EasyInsert plugin created in this project. The user interface of the plugin will be explained while not going into much detail about how the those functionalities are made. When the use of the plugin has been explained, the section will delve into the implementation of the plugin. The plugin uses the stand alone classes creator, loader and dialog to achieve many of it's functionalities, while relying on the Qt library to set up the GUI elements and the RW libraries. Lastly the future of the plugin will be discussed in this section.
+	
+\subsection{The User Interface}
 \label{sec:UserInterface}
 This section explores the user interface of the plugin. When the plugin is loaded and opened, the user is met with figure~\ref{fig:EasyInsertDevice}. This is the Device tab of EasyInsert and from here it is possible to select a device listed and load it into the WorkCell by pressing the Load button. Upon pressing Load, the user is prompted with a dialog window where the user can specify options about the loaded device. Figure~\ref{fig:loadDialog} is the exact dialog window the user would see after selecting a device and pressing the load button. The user can now give the device a unique name, select a frame that the device should be on and specify the configurations such as displacement and rotation. A user can now select e.g. a fanuc robot arm, as the one on figure~\ref{fig:FANUCLRM200}, and insert it. Afterwards the user can then select another device, let's say some kind of hand device, and now insert that device on the end frame of the fanuc. The hand device now acts as the end effector of the fanuc, which only took a few clicks to set up. 
 
@@ -78,139 +190,12 @@ The Geometries tab shows a grid of icons, see figure~\ref{fig:EasyInsertGeo}. Th
 \end{enumerate*}
 These icons are all buttons the user can click, and after a click has occurred a dialog window appears with options regarding the insertion of said geometry. When the user hovers over a button, a small box identifying the icon appears, telling the user what sort of object it is. Figure~\ref{fig:cubeDialog} is the dialog window prompted when clicking the cube icon, and as seen, the user can specify a name for the geometry, select a reference frame and set the displacement and rotation configurations, just like when inserting a device. Though for a geometric primitive, like the cube, the user can also specify the dimensions of the geometric figure. The user can also specify whether the primitive should create a movable frame to associate the object with, or if the user want to use an existing frame.\\
 
-The delete tab, as seen on figure~\ref{fig:EasyInsertDelete}, is a tab where the user can select a device, object or a frame and press the Delete button to remove said item from the WorkCell. The Devices list, shown in the delete tab, shows a device name. This means that when the user deletes a device, the frames associated with that device are now "free", i.e. the device property is deleted, but the frames and objects are still in the WorkCell. These object and frames will now show up in the Object list and the Frames list of the delete tab, and the user can now remove the frames and objects from the WorkCell. The Object list of the delete tab only deletes objects, but if the user selects a frame from the Frame list and deletes it, all objects associated with that frame will also be deleted. Furthermore, if the user selects a frame from the Frames list and deletes it, all children of children of said frame will also be deleted. It should be noted, that the Frames list of the delete tab does not update properly because of an internal bug in RWS, this means that when the user deletes a frame, the frame will still appear in the list, but if the user looks in the TreeView plugin, or searches the WorkCell, the user will notice that the frame has actually been deleted. The user is then able to delete a frame twice, which will cause a segmentation error and crash RWS. This is a critical error, but it has not been solved because solving this error is out of the scope of the project.
-
-
-
-\subsection{Dialog Windows}
-\label{sec:DialogWindows}
-The dialog window is the main communication with the user in this plugin. Dialog windows are top-level windows, and they provide the user with either information, or they allow the users to select options to perform a command or task. This section will show how dialog windows has been handled in the plugin.\\
-
-The dialogs of EasyInsert has been implemented in it's own class dialog.hpp, i.e. a subclass of QDialog, see figure~\ref{fig:subClassQWidget} for an example of a Qt subclass. This was done to keep it independent and self-contained from the rest of the plug-in. The constructor for the dialog class is very simple, see figure~\ref{fig:dialogConstructor}. A constructor with no WorkCell parameter is also available and passing a parent is optional, though a name must always be given to the constructor. 
-
-\begin{figure}[h] % Code of dialog constructor
-\centering
-\lstset{language=C++} 
-\begin{lstlisting}[frame=single]  
-dialog::dialog(rw::models::WorkCell::Ptr wc, QString dialog, QWidget *parent)
-    : QDialog(parent)
-{
-    _workCell = wc;
-    mainLayout = new QVBoxLayout();
-    setWindowTitle(dialog);
-}			 
-\end{lstlisting}
-\caption{The dialog class constructor. A WorkCell pointer to a RW instance is passed along as a parameter. The QString parameter is the name of the dialog box and the QWidget is a pointer to the parent widget }
-\label{fig:dialogConstructor} 	
-\end{figure}
-
-The dialog class is fairly simple to use and extend. A dialog is made of blocks in a vertical layout of QWidget's, i.e. a dialog instance is a composite widget containing composite widgets. Figure~\ref{fig:dialogWindowExample} shows a dialog window with four blocks initialised.
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[scale=0.55]{Figures/dialogclassblocks.png}
-	\caption{This figure shows a dialog window of adding a fixed frame to a WorkCell containing various widgets relevant to the action. }
-	\label{fig:dialogWindowExample}
-\end{figure}
-
-All the blocks used to create all the dialog windows in the plug-in are shown in figure~\ref{fig:dialogBlocks}. These blocks are just member functions of the dialog class which returns a composite widget. So to create a dialog window as shown on figure~\ref{fig:dialogWindowExample}, a dialog instance should be constructed (in this case with a WorkCell pointer) and then simply adding the blocks to the dialog with the utility member function addToDialog(). See figure~\ref{fig:dialogWindowCode} which shows a code example on how to use the dialog class to construct the dialog window as shown on figure~\ref{fig:dialogWindowExample}. Since the dialog class is a subclass of QDialog, the position of the dialog window (opposed to a normal QDialog object) is always centred to the main application (RWS), even though a parent is passed as a parameter.
-
-\begin{figure}[h] % code of adding stuff to a dialog
-\centering
-\lstset{language=C++} 
-\begin{lstlisting}[frame=single]  
-QString st = "Fixed Frame"; //Name of the dialog window
-rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell(); //WorkCell
-dialog* geoDialog = new dialog(wc,st,this); //Create the dialog window
-geoDialog->addToDialog(geoDialog->createNameBox()); //Adding something
-geoDialog->addToDialog(geoDialog->createFrameSelection());
-geoDialog->addToDialog(geoDialog->createConfigurationBox());
-geoDialog->addToDialog(geoDialog->createButtonBox());	
-geoDialog->exec(); //execute/open dialog window	 
-\end{lstlisting}
-\caption{A sample code to illustrate how to construct the dialog window from figure~\ref{fig:dialogWindowExample}.}
-\label{fig:dialogWindowCode} 	
-\end{figure}
-
-exec(), seen on figure~\ref{fig:dialogWindowCode} line 8, is an inherited public slot that executes/shows the dialog window. The dialog shown is in modal mode, meaning the window denies all user actions on any other widgets in the application. The function returns a DialogCode containing the information about whether the dialog window was accepted or rejected. The accepted or rejected information is determined by the user input to the createButtonBox() function block, since the OK button emits a accepted() signal to the accept() slot of the dialog object when pressed. Likewise the Cancel emits a rejected() signal to the reject() slot of the dialog object, though a rejected() signal is also emitted when the user presses ESC on the keyboard or the x(close) button of the dialog window. 
-
-So when a dialog window has been created and used by a user, then some functionality should be executed based on the inputs given to the dialog. That means when the function exec() returns, we need to know whether the user accepted or rejected the dialog window (pressed OK or Cancel). This is done with the inherited public function result(). The function result() returns QDialog::Accepted when the dialog was accepted and QDialog::Rejected when it was rejected (QDialog::Accepted and QDialog::Rejected are both just normal enumerators, i.e. 1 and 0). 
-
-\begin{figure}[h] % code of what to do after exec
-\centering
-\lstset{language=C++} 
-\begin{lstlisting}[frame=single]  
-geoDialog->exec();
-if(geoDialog->result() == QDialog::Accepted) //Check the result
-{
-	std::string name = geoDialog->getNameBox(); //Get the name input
-	std::string frame = geoDialog->getFrameSelection(); //Get frame selc
-											 
-		/*	Do something with the information    */ 
-		
-}
-delete geoDialog; //Delete the dialog object when done using it
-\end{lstlisting}
-\caption{A sample code illustrating what to do after the exec()function returns.}
-\label{fig:dialogAcceptedRejectedCode} 	
-\end{figure}
-
-As seen on figure~\ref{fig:dialogAcceptedRejectedCode}, after the exec() function returns, we simply check whether the result was QDialog::Accepted or not. If the result is accepted, then something should be done with the inputs given to the dialog window. We access these input via self explanatory public get-functions, e.g. the NameBox contains the name input (as seen on figure~\ref{fig:dialogAcceptedRejectedCode} line 4). After we have collected all the information we wanted out of the dialog window, then we can proceed to do something with the information, like e.g. the insertion of a frame. When we are done with the dialog window it should be deleted, because the dialog object is still alive until the parent is dead (in this case the plugin). If we do not delete the dialog object the dialog objects, created in the lifetime of the plugin, will just waste space in memory. 
-
-It would to much time to inspect all of the function blocks on figure~\ref{fig:dialogBlocks}. Therefore only one function block, namely createNameBox() figure~\ref{fig:dialogCreateNameBoxCode} will be inspected. All the function blocks has a similar structure.
-
-\begin{figure}[h] % code example of createNameBox
-\centering
-\lstset{language=C++} 
-\begin{lstlisting}[frame=single]  
-QWidget* dialog::createNameBox() {
-    QGroupBox* nameBox = new QGroupBox(tr("Name")); //The nameBox widget
-    QHBoxLayout *layout = new QHBoxLayout; //layout for the nameBox
-    nameLine = new QLineEdit(); //The line edit the user can type the name
-    layout->addWidget(nameLine); //Add the line edit to the layout
-    nameBox->setLayout(layout); //Set the layout to the namebox
-    return nameBox; //Return the nameBox
-}
-\end{lstlisting}
-\caption{This figure shows the pulic function createNameBox() from the dialog class. The function is used to add a name line edit to dialog windows.}
-\label{fig:dialogCreateNameBoxCode} 	
-\end{figure}
-
-The general procedure in the function blocks, as seen on figure~\ref{fig:dialogCreateNameBoxCode}, is to first create the composite widget. This widget, in the case of createNameBox, is a QGroupBox widget. QGroupBox is a widget that is mainly used as a composite widget. The QGroupBox provides a box to group widgets in, a frame if wanted and a title. As seen on figure~\ref{fig:dialogCreateNameBoxCode} line 2, the title is set upon construction with the string "Name". The tr() function is for translation purposes \cite{QtDocumentationTr}.
-After the composite widget has been created, the layout for the parent widget has to be chosen and the child widget(s), in this case a QLineEdit(), has to be created. QLineEdit() is a simple line where text can be typed and edited in. When all the child widgets has been created, they need to be added to the layout of the parent. Lastly the layout is set to the parent and the parent is then returned. It should be noted that when the QLineEdit() was created, figure~\ref{fig:dialogCreateNameBoxCode} line 4, no parent was defined, i.e. it is actually not a child widget but a top-level widget. This is fine though, because when a top-level widget is added to a layout of another widget, that widget automatically takes responsibility as a parent and the top-level widget is now a child of that widget.
-
-\begin{figure}[h] % table of function blocks
-\centering
-\begin{center}
-  \begin{tabular}{ | p{6cm} | p{7cm} |}
-    \hline
-    \textbf{Function blocks} 	   &   \textbf{Description}  \\ \hline
-    createButtonBox()			   &   The Cancel and OK buttons. This block is used in all the dialog windows.   		\\ \hline
-    createNameBox() 			   &   A line edit to specify a name.   		\\ \hline
-    createCheckFramesBox()		   &   Two exclusive check boxes, i.e. only one of the boxes can be checked at a time.		\\ \hline
-    createConfigurationBox() 	   &   The different configurations available to adjust regarding displacement and rotation of the inserted element. 		\\ \hline
-	createConfigurationBoxCube()   &   A cube specific configuration option, i.e. the dimensions of the cube.  	\\ \hline	    
-	createConfigurationBoxSphere() &   A sphere specific configuration option, i.e. the dimensions of the sphere. 	\\ \hline	
-	createConfigurationBoxCone()   &   A cone specific configuration option, i.e. the dimensions of the cone.  	\\ \hline	
-    createConfigurationBoxTube()   &   A tube specific configuration option, i.e. the dimensions of the tube.  	\\ \hline	
-	createLibSettingsBox(PropertyMap *map)		   &   This block is used to edit the settings of the device library.    	\\ \hline	 
-	createFrameSelection()		   &   A way to select a parent frame for the inserted element. Default is the WORLD frame.		\\
-    \hline
-  \end{tabular}
-\end{center}
-\caption{This table summarizes all the different dialog function blocks used to construct the dialog windows in the plug-in.}
-\label{fig:dialogBlocks} 
-\end{figure}
-
-
-Something about what could be worked on in regard to this class. Like constructors for a generic dialog window, mainlayout in a grid instead and extended adddialog functionality.
-Is this something that should be in this chapter?
-
+The delete tab, as seen on figure~\ref{fig:EasyInsertDelete}, is a tab where the user can select a device, object or a frame and press the Delete button to remove said item from the WorkCell. The Devices list, shown in the delete tab, shows a device name. This means that when the user deletes a device, the frames associated with that device are now "free", i.e. the device property is deleted, but the frames and objects are still in the WorkCell. These object and frames will now show up in the Object list and the Frames list of the delete tab, and the user can now remove the frames and objects from the WorkCell. The Object list of the delete tab only deletes objects, but if the user selects a frame from the Frame list and deletes it, all objects associated with that frame will also be deleted. Furthermore, if the user selects a frame from the Frames list and deletes it, all children of said frame will also be deleted. It should be noted, that the Frames list of the delete tab does not update properly because of an internal bug in RWS, this means that when the user deletes a frame, the frame will still appear in the list, but if the user looks in the TreeView plugin, or searches the WorkCell, the user will notice that the frame has actually been deleted. The user is then able to delete a frame twice, which will cause a segmentation error and crash RWS, this is further discussed in section~\ref{sec:eiProblems}
 
 \subsection{EasyInsert Implementation}
 This chapter will go through how EasyInsert achieved the functionalities and interfaces mentioned in section~\ref{sec:UserInterface} with the help from the dialog, creator and loader classes. 
 
-On figure~\ref{fig:eiClass} the constructor for the plugin is seen. Before creating the widgets making up the plugin, all settings are set up with the setupSettings() function on line 4 (discussed in section~\ref{sec:Settings}). The parent widget of the plugin is then created which is a QScrollArea. A QScrollArea widget provides a scrolling view onto another widget (the child). The QScrollArea widget is created on line 5 and the widget is then set to be resizeable. When a QScrollArea is set to be resizeable, the child widget of the QScrollArea will automatically be resized so to either avoid scroll bars (decrease size of child) or utilize extra space (increase size of child). It should be noted that when QScrollArea has a composite child with a layout, the size policy of that layout will determine the size (or resize) of the widget. The composite child is created on line 7 and then a vertical layout is created. QToolbar is then created on line 9 using the createToolBar() function (discussed in section~\ref{sec:ToolBar}), the tool bar is then added to they layout and it is right aligned. On line 12 the QTabWidget is created, a QTabWidget is a widget with stacked tabs of widgets, where the user can select a tab and see the widget associated with that tab. To create a tab, a QWidget needs to be passed to the addTab function and a name can be given as well. On line 13 to 15 all the tabs are created with the help of createDevTab() (section~\ref{sec:DeviceTab}), createGeoTab() (section~\ref{sec:GeoTab}) and createDeleteTab() (section~\ref{sec:DelTab}) which all returns a QWidget. The QTabWidget is then added to the layout and set to the composite child which in turn is set to the QScrollArea widget and finally the QScrollArea widget is set to the QDockWidget of RWS. 
+On figure~\ref{fig:eiClass} the constructor for the plugin is seen. Before creating the widgets making up the plugin, all settings are set up with the setupSettings() function on line 4 (discussed in section~\ref{sec:Settings}). The parent widget of the plugin is then created which is a QScrollArea. A QScrollArea widget provides a scrolling view onto another widget (the child). The QScrollArea widget is created on line 5 and the widget is then set to be resizeable. When a QScrollArea is set to be resizeable, the child widget of the QScrollArea will automatically be resized so to either avoid scroll bars (decrease size of child) or utilize extra space (increase size of child). It should be noted that when QScrollArea has a composite child with a layout, the size policy of that layout will determine the size (or resize) of the widget. The composite child is created on line 7 and then a vertical layout is created. QToolbar is then created on line 9 using the createToolBar() function (discussed in section~\ref{sec:ToolBar}), the tool bar is then added to the layout and it is right aligned. On line 12 the QTabWidget is created, a QTabWidget is a widget with stacked tabs of widgets, where the user can select a tab and see the widget associated with that tab. To create a tab, a QWidget needs to be passed to the addTab function and a name can be given as well. On line 13 to 15 all the tabs are created with the help of createDevTab() (section~\ref{sec:DeviceTab}), createGeoTab() (section~\ref{sec:GeoTab}) and createDeleteTab() (section~\ref{sec:DelTab}) which all returns a QWidget. The QTabWidget is then added to the layout and set to the composite child which in turn is set to the QScrollArea widget and finally the QScrollArea widget is set to the QDockWidget of RWS. 
 
 \begin{figure}[h] % Code of ei constructor
 \centering
@@ -241,73 +226,9 @@ EasyInsert::EasyInsert():
 \label{fig:eiClass} 	
 \end{figure}
 
-%\begin{figure}[h] % ei class
-%\centering
-%\lstset{language=C++} 
-%\begin{lstlisting}[frame=single]  
-%class EasyInsert: public rws::RobWorkStudioPlugin, private Ui::EasyInsert
-%{
-%Q_OBJECT
-%Q_INTERFACES( rws::RobWorkStudioPlugin )
-%#if RWS_USE_QT5
-%Q_PLUGIN_METADATA(IID "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1" FILE "EasyInsert.json")
-%#endif
-%
-%public:
-%    EasyInsert();
-%	virtual ~EasyInsert();
-%    virtual void open(rw::models::WorkCell* workcell);
-%    virtual void close();
-%    virtual void initialize();
-%
-%private:
-%    void setupSettings();
-%    QToolBar* createToolBar();
-%    QWidget* createDevTab();
-%    QWidget* createGeoTab();
-%    QWidget* createDeleteTab();
-%    void showFrameStructure();
-%    void clearListContent();
-%    void update();
-%
-%    rw::kinematics::State _state;
-%    rw::models::WorkCell* _workcell;
-%    QListWidget* _deviceWidget;
-%    QListWidget* _frameWidget;
-%    QListWidget* _objectWidget;
-%    QToolBar* _toolBar;
-%    std::vector<rw::kinematics::Frame*> _devFrameList;
-%    std::vector<rw::kinematics::Frame*> _frames;
-%    QListView *view;
-%    QFileSystemModel *dirmodel;
-%    rw::common::PropertyMap _propMap;
-%    rw::common::PropertyMap *_settingsMap;
-%
-%private slots:
-%    void stateChangedListener(const rw::kinematics::State& state);
-%    void loadDevice();
-%    void settings();
-%    void cube();
-%    void plane();
-%    void sphere();
-%    void cone();
-%    void cylinder();
-%    void tube();
-%    void fixedFrame();
-%    void movableFrame();
-%    void deleteFrame();
-%    void deleteChildren(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc);
-%    void deleteDev();
-%    void deleteObj();
-%};
-%\end{lstlisting}
-%\caption{Write something}
-%\label{fig:eiClass} 	
-%\end{figure}
-
 \subsubsection{Settings}
 \label{sec:Settings}
-Defining settings for an application is a common thing. It was therefore decided that EasyInsert should have some way to set settings. Settings for the plugin is stored in a XML file. The only current setting a user can set is, as mention in~\ref{sec:UserInterface}, the path for the library in the device tab. Though it should be easy to extend the plugin to have more settings, and even other utilities through the tool bar if needed.\\
+Defining settings for an application is a common thing. It was therefore decided that EasyInsert should have some way to set settings. Settings for the plugin is stored in a XML file. The only current setting a user can set is, as mention in~\ref{sec:UserInterface}, the path for the library in the device tab, which is also the 2. nice to have requirement and in turn indirectly also fulfils the need to have requirement 3.1. Though it should be easy to extend the plugin to have more settings, and even other utilities through the tool bar if needed.\\
 
 The first thing the plugin does under it's construction, is to load the settings. This is done through the setupSettings() function, and the code of the function can be seen on figure~\ref{fig:settingsCodeSetup}. It is determined if there exists a settings file for the plugin (eisettings.xml), this is done on line 1 and 2 on figure~\ref{fig:settingsCodeSetup} with the boost library \cite{BoostPathSettings}. If a settings file exists, the code will proceed to load the file and warn the user if something went wrong. The loading of the file is done with the XMLPropertyLoader class \cite{XMLPropertyLoader}, which loads the settings file into a Property container called a PropertyMap. The PropertyMap class is part of the common namespace and can be used to store various user information, in this case for settings purposes. As seen on figure~\ref{fig:settingsCodeSetup} line 4, the PropertyMap, \_propMap, is loaded with the settings for the plugin. On line 13 we store a pointer, \_settingsMap, to the PropertyMap of the conveniently named Property EasyInsertSettings from the settings file. The following code checks if any settings were actually loaded, since if the user has not used the plugin yet, no settings files exists yet (or maybe it was deleted). The EasyInsertSettings Property would then have to be added, as seen on line 15, so a proper settings file can be created later. Settings are then stored under this property with an appropriate tag, so it is easy identifiable.
 
@@ -376,8 +297,6 @@ if (settingsDialog->result() == QDialog::Accepted) {
 \label{fig:settingsCodeReturnDialog} 	
 \end{figure}
 
-Reflection, we should have added to the rwsettings file, the reason we did not was, because that at that moment, it was actually more easy to make our own settings file.
-
 \subsubsection{Tool Bar}
 \label{sec:ToolBar}
 The settings button, as noted in~\ref{sec:UserInterface}, is the only button available in the tool bar so far, and thus the extend of the tool bar will be shortly discussed in this chapter.
@@ -407,12 +326,9 @@ QToolBar* EasyInsert::createToolBar()
 \label{fig:settingsToolBarCode} 	
 \end{figure}
 
-Reflection
-the undo button would have been another button on the tool bar
-
 \subsubsection{Devices Tab}
 \label{sec:DeviceTab}
-This section discusses the implementation of the Devices tab from figure~\ref{fig:EasyInsertDevice}. The Devices tab is made with the function createDevTab(), which returns the composite widget making up the Devices tab. createDevTab() can be seen on figure ~\ref{fig:deviceTabCode}.
+This section discusses the implementation of the Devices tab from figure~\ref{fig:EasyInsertDevice}, which also fulfils the 3. need to have requirement. The Devices tab is made with the function createDevTab(), which returns the composite widget making up the Devices tab. createDevTab() can be seen on figure ~\ref{fig:deviceTabCode}.
 It should be noted that the procedure of setting up the widget is very similar to that of the EasyInsert constructor on figure~\ref{fig:eiClass}, i.e. using QScrollArea as the parent of a composite widget. Thus only the composite child will be discussed.  The composite child is created on line 5 and then a vertical layout is created. On line 7 a QListView is created, this is a widget that provides a list view onto a model. Afterwards a QFileSystemModel is created and put onto the list view. The QFileSystemModel provides a data model for the local file system. Following, the \_settingsMap with the Devices library path is read, and then used to set the root path on the model with the QFileSystemModel public function setRootPath(const QString \&newpath). This actually installs a QFileSystemWatcher to monitor the path and update the QFileSystemModel accordingly. The view of the QListView's root index is then set to the model's root path, so as the content of the QFilSystemModel is shown in the list. The load button is then created and connected to the loadDevice() slot which creates the dialog window shown on figure~\ref{fig:loadDialog}. Finally the widgets, the view and the button, are added to the layout and the composite widget gets the layout set. The composite widget has now been made, so the QScrollArea is then imposed onto the composite widget and returned. 
 
 \begin{figure}[h] % Code of createDevTab()
@@ -444,8 +360,7 @@ QWidget* EasyInsert::createDevTab(){
 
 \subsubsection{Geometries Tab}
 \label{sec:GeoTab}
-
-This section discusses the implementation of the Geometries tab from figure~\ref{fig:EasyInsertGeo}. The Geometries tab is made with the function createGeoTab() and it uses a similar procedure as the createDevTab(). The differences between the Devices tab and the Geometries tab, are the children of the composite widget, a QGridLayout, and that the QScrollArea is not set to be resizeable. The reason for different children of the composite widget is quite obvious (this tab should show something else), and a QGridLayout was chosen because it is a convenient layout to present the buttons in. The resizeable option of the QScrollArea is not used because of aesthetic reasons. Since, if the resizeable option was on, the buttons could either be scaled to ridiculous sizes or, if the buttons have fixed sizes, have loads of spacing. 
+This section discusses the implementation of the Geometries tab from figure~\ref{fig:EasyInsertGeo}, which fulfils the need to have requirements 1, 2 and 2.1. The Geometries tab is made with the function createGeoTab() and it uses a similar procedure as the createDevTab(). The differences between the Devices tab and the Geometries tab, are the children of the composite widget, a QGridLayout, and that the QScrollArea is not set to be resizeable. The reason for different children of the composite widget is quite obvious (this tab should show something else), and a QGridLayout was chosen because it is a convenient layout to present the buttons in. The resizeable option of the QScrollArea is not used because of aesthetic reasons. Since, if the resizeable option was on, the buttons could either be scaled to ridiculous sizes or, if the buttons have fixed sizes, have loads of spacing. 
 
 The children of the composite widget are eight QToolButtons. QToolButtons were used instead of QPushButtons, because even if QToolButtons are more sophisticated, they are generally preferred when the button is used as an icon. Each button has an intuitive icon and size set, and a tool tip to reflect the action. The buttons are then connected to their appropriate slot function and added to the layout. The slot functions are respectively \begin{enumerate*}[font={\color{red!50!black}\bfseries}]
 \item cube()
@@ -458,96 +373,26 @@ The children of the composite widget are eight QToolButtons. QToolButtons were u
 \item movableFrame().
 \end{enumerate*}    
 Likewise the composite widget is then get the layout set, and the QScrollArea is imposed onto the composite widget and returned.
-%\begin{figure}[h] % Code of createGeoTab()
-%\centering
-%\lstset{language=C++} 
-%\begin{lstlisting}[frame=single]  
-%QWidget* EasyInsert::createGeoTab(){
-%	QScrollArea *widg = new QScrollArea(); //the parent
-%    widg->setFrameShape(QFrame::NoFrame); //no frame
-%    QWidget *geoTab = new QWidget(); //container widget
-%    QGridLayout *layout = new QGridLayout(geoTab);
-%    QToolButton *btns[8]; //8 buttons
-%
-%    btns[0] = new QToolButton();
-%    btns[0]->setIcon(QIcon(":icons/cube.png")); //btn icon
-%    btns[0]->setToolTip("Cube"); //tool tip
-%    btns[0]->setIconSize(QSize(50, 50)); // size of the btn
-%    	/*  Create all the other buttons the same way   */
-%    connect(btns[0], SIGNAL(clicked()), this, SLOT(cube()));
-% 		/*  Connect all the buttons to their slots as well  */
-%    layout->addWidget(btns[0], 0, 0);
-%		/*  Add all the other buttons to the grid as well  */    
-%  
-%    geoTab->setLayout(layout); //set layout
-%    widg->setWidget(geoTab); // set widget
-%    return widg;
-%}
-%\end{lstlisting}
-%\caption{The createGeoTab() function. It creates the widget in the tab from firgure~\ref{fig:EasyInsertGeo}. It should be noted that some redundant code has been omitted from the figure to save space.}
-%\label{fig:geoTabCode} 	
-%\end{figure}
 
 \subsubsection{Delete Tab}
 \label{sec:DelTab}
 
-This section discusses the implementation of the Delete tab from figure~\ref{fig:EasyInsertDelete}. The Delete tab is made with the function createDeleteTab() and it uses are similar procedure as the createDevTab() function. The only difference between the Devices tab and the Delete tab are the children of the composite widget.
+This section discusses the implementation of the Delete tab from figure~\ref{fig:EasyInsertDelete}, which fulfils the need to have requirement 4. The Delete tab is made with the function createDeleteTab() and it uses are similar procedure as the createDevTab() function. The only difference between the Devices tab and the Delete tab are the children of the composite widget.
 
-The composite widget of the Delete tab has three composite children in a vertical layout. Each composite child is a QGroupBox, one for Devices, Objects and Frames with each their own layout. They all have a QListWidget and a QPushButton widget added to their layout. The QListWidget is similar to the QListview used in the Device tab, but whereas QListWidget uses a more classic item-based interface for adding and removing items, it lacks in flexibility. However the QListWidget was still preferred because of it's more straight forward use. It should be noted that only the names of the devices, geometries and frames will be saved in the list and not the actual object. Each button is then connected to a prober delete slot. Respectively \begin{enumerate*}[font={\color{red!50!black}\bfseries}]
+The composite widget of the Delete tab has three composite children in a vertical layout. Each composite child is a QGroupBox, one for Devices, Objects and Frames with each their own layout. They all have a QListWidget and a QPushButton widget added to their layout. The QListWidget is similar to the QListview used in the Device tab, but whereas QListWidget uses a more classic item-based interface for adding and removing items, it lacks in flexibility. However the QListWidget was still preferred because of it's more straight forward use. It should be noted that only the names of the devices, objects and frames will be saved in the list and not pointers to the actual objects. Each button is then connected to a proper delete slot. Respectively \begin{enumerate*}[font={\color{red!50!black}\bfseries}]
 \item deleteDev()
 \item deleteObj()
 \item deleteFrame().
 \end{enumerate*} 
 The three QGroupBoxs are then added to the vertical layout and the composted widgets get the layout set. The QScrollArea is then imposed onto the composited widget and returned.
-%\begin{figure}[h] % Code of createDelTab()
-%\centering
-%\lstset{language=C++} 
-%\begin{lstlisting}[frame=single]  
-%QWidget* EasyInsert::createDelTab(){
-%	QScrollArea *widg = new QScrollArea(); //the parent
-%    widg->setWidgetResizable(true); //scale widgets
-%    widg->setFrameShape(QFrame::NoFrame); //no frame
-%    QWidget *devTab = new QWidget(); //container widget
-%    QVBoxLayout *verticalLayout = new QVBoxLayout(devTab);
-%    QGroupBox *delDevBox = new QGroupBox(tr("Devices:"));
-%    QGroupBox *delFrameBox = new QGroupBox(tr("Frames:"));
-%    QGroupBox *delObjBox = new QGroupBox(tr("Objects:"));
-%    QGridLayout *layoutDev = new QGridLayout();
-%    QGridLayout *layoutFrame = new QGridLayout();
-%    QGridLayout *layoutObj = new QGridLayout();
-%    _deviceWidget = new QListWidget(this); //list widgets 
-%    _frameWidget = new QListWidget(this);  //to list relevant
-%    _objectWidget = new QListWidget(this); //items
-%
-%    QPushButton *delDevBtn = new QPushButton("Delete",devTab);
-%    connect(delDevBtn, SIGNAL(clicked()), this, SLOT(deleteDev()));
-%    /* create the two other delete buttons and connect them as well */
-%
-%    layoutDev->addWidget(_deviceWidget,0,0); //left side
-%    layoutDev->addWidget(delDevBtn,0,1); // right side
-%    delDevBox->setLayout(layoutDev);
-%    /* add widget and set layout for the two others as well */
-%
-%    verticalLayout->addWidget(delDevBox); //add all widgets
-%    verticalLayout->addWidget(delObjBox);
-%    verticalLayout->addWidget(delFrameBox);
-%    devTab->setLayout(verticalLayout); //set layout
-%    widg->setWidget(devTab); // set widget
-%    return widg;
-%}
-%\end{lstlisting}
-%\caption{The createDelTab function. It creates the widget in the tab from figure~\ref{fig:EasyInsertDelete}. It should be noted that some redundant code has been omitted from the figure to save space.}
-%\label{fig:delTabCode} 	
-%\end{figure}
-
 
 \subsubsection{The Slots}
-\label{eiSlots}
+\label{sec:eiSlots}
 In this section the slots of EasyInsert will be discussed, though stateChangedListener() slot is left out to be discussed in the next section.\\
 
-The Devices tab has only one button connected to a slot, loadDevice(), this slot is pretty straight forward and is very similar to the slots that the Geometries tab buttons are connected to. loadDevice() takes advantage of the dialog class to create an interactable dialog window so the user can define parameters (discussed in section ~\ref{sec:DialogWindows}), which are then passed to the loader class to load the desired device (discussed in section~\ref{}).\\
+The Devices tab has only one button connected to a slot, loadDevice(), this slot is pretty straight forward and is very similar to the slots that the Geometries tab buttons are connected to. loadDevice() takes advantage of the dialog class to create an interactable dialog window (discussed in section ~\ref{sec:DialogWindows}) so the user can define parameters such as the need to have requirements 3.2 and 3.3, which are then passed to the loader class to load the desired device (discussed in section~\ref{}).\\
 
-All the slots that the buttons from the Geometries tab are connected to are heavily boilerplated code. They all take advantage of the dialog class to construct an interactable dialog window so the user can define parameters (discussed in section~\ref{sec:DialogWindows}), which are then passed to the creator class to load the desired geometry (discussed in section~\ref{subsec:iframAGeomUsing}).\\
+All the slots that the buttons from the Geometries tab are connected to are heavily boilerplated code. They all take advantage of the dialog class to construct an interactable dialog window (discussed in section~\ref{sec:DialogWindows}) so the user can define parameters such as need to have requirements 1.1, 1.2 and 2.2 which are then passed to the creator class to load the desired geometry (discussed in section~\ref{subsec:iframAGeomUsing}).\\
 
 The slots that the Delete tab buttons are connected to are all delete functionalities. They all make use of the remove function provided by the RW models WorkCell namespace. deleteDev() and deleteObj() are very similar in structure, they both check if anything has been selected in their list and act if so. They use the name of the device/object selected in the list to find the device/object with respectively findDevice(const std::string \&name) and findObject(const std::string \&name) and then deletes them with remove(rw::common::Ptr<Device> device) and remove(rw::common::Ptr<Object> object).
 deleteFrame() however is a little more tricky, since it was decided that when the user removes a frame, all associated geometries also should be deleted as well, furthermore if the frame has any children, these should also be deleted. This led to a recursive solution, because RW does not support removal of frames with children. Figure~\ref{fig:eiDeleteFrames} is the code for the deleteFrame() slot and the recursive code is the function deleteChildren(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc) (figure ~\ref{fig:eiDeleteChildren}). 
@@ -609,7 +454,7 @@ void EasyInsert::deleteChildren(rw::kinematics::Frame* frame, rw::models::WorkCe
 \end{figure}
 
 deleteChildren(...) works as a Depth-first search method, i.e. the code traverses along a branch in the parent/child hierarchy for as long as possible before backtracking. The base of the recursion is seen on line 6, when a frame is found that is not a parent, then that frame must be childless and OK for deletion.
-When a childless frame has been found, all objects associated with this frame needs to be deleted as well. This is done in the for loop on line 9, a vector of all the objects in the WorkCell is made, and then every object's associated frames is inspected on line 12. If there is a match, then the object is removed and then repeated until all objects has been run through. Of course if the user tries to delete the WORLD frame, then the deletion is silently ignored on line 18, because the WORLD frame should not be casually deleted.
+When a childless frame has been found, all objects associated with this frame needs to be deleted as well. This is done in the for loop on line 9, a vector of all the objects in the WorkCell is made, and then every object's associated frames is inspected on line 12. If there is a match, then the object is removed and then repeated until all objects has been run through. Of course if the user tries to delete the WORLD frame, then the deletion is silently ignored on line 18, because the WORLD frame should not be deleted.
 
 \subsubsection{The StateChangedListener}
 \label{sec:eiStateChangedListener}
@@ -629,19 +474,24 @@ void EasyInsert::initialize()
 \label{fig:eiStateChangedListener} 	
 \end{figure}
 
-The stateChangedListener is set up to listen for events from the stateChangedEvent() under the initialize() virtual function, see figure~\ref{fig:eiStateChangedListener}. The stateChangedListener() slot is then called when ever a change occurs. The slot calls the update() function, which in turn makes sure that appropriate elements of the plug in is updated. Currently only the list of the Delete tab is updated through the function showFrameStructure(). showFrameStructure() clears all the elements in the lists of the Delete tab and also the vectors containing the actual object pointers with the clearListContent() function. showFrameStructure() will the proceed to find all the devices and store the pointers to them in a vector. These devices are then checked if they are checked whether they are serial devices or tree devices, since these are the only devices supported by the plug in. When the device has been identified, the device name is added to the device list of the Delete tab and all the frames of the devices are stored in a vector to be used later, since the object and frames list are not interested in showing device frames. 
-showFrameStructure() will then go on to find frames not part of any device by first getting all frames from the WorkCell and storing them in a vector. The vector of device frames is then compared to all the frames in the WorkCell, and if any frame is found to be part of a device it is simply removed from the frames vector until only non device frames are left in that vector. The names of the frames and then simply added to the Frames view of the Delete tab.
-Finally a vector of all the objects of the WorkCell will be compared to the objects of the device frame vector. If any objects are found to be part of a device, these objects will be removed from the vector of objects. The names of the objects left in the vector will then be saved in the Objects view from the Delete tab. 
+The stateChangedListener is set up to listen for events from the stateChangedEvent() under the initialize() virtual function, see figure~\ref{fig:eiStateChangedListener}. The stateChangedListener() slot is then called when ever a change occurs. The slot calls the update() function, which in turn makes sure that appropriate elements of the plug in is updated. Currently only the list of the Delete tab is updated through the function showFrameStructure(). showFrameStructure() clears all the elements in the lists of the Delete tab and also the vectors containing the actual object pointers with the clearListContent() function. showFrameStructure() will the proceed to find all the devices and store the pointers to them in a vector. These devices are then checked whether they are a serial devices or a tree devices, since these are the only devices supported by the plug in. When the device has been identified, the device name is added to the device list of the Delete tab and all the frames of the devices are stored in a vector to be used later, since the object and frames list are not interested in showing device frames. 
+showFrameStructure() will then go on to find frames not part of any device by first getting all frames from the WorkCell and storing them in a vector. The vector of device frames is then compared to all the frames in the WorkCell, and if any frame is found to be part of a device it is simply removed from the frames vector until only non device frames are left in that vector. The names of the remaining frames are then simply added to the Frames view of the Delete tab.
+Finally a vector of all the objects of the WorkCell will be compared to the objects of the device frame vector. If any objects are found to be part of a device, these objects will be removed from the vector of objects. The names of the objects left in the vector will then be saved in the Objects view from the Delete tab.
+As noted in section~\ref{sec:UserInterface}, there are problems with updating the Frames view list properly, this issue will be discussed in section~\ref{sec:eiProblems}.
 
 
 \subsubsection{Problems}
 \label{sec:eiProblems}
-Introduction
+This section will go through problems regarding the implementation of the plugin. Some of the problems have been temporarily solved while suggestions for solving others, or the root of the problems, are given as well. \\
 
-Problems about RWS statechangeevent(), duplicates and weird behaviour on inserting devices/geometries. When a new state is signalled the problem disappears. This was solved by swapping WorkCells before inserting.
+As noted in section~\ref{sec:eiSlots}, when inserting and deleting both devices and geometries, the WorkCell of RWS will temporally be swapped with a dummy WorkCell while working on the WorkCell. If this was not done, then RWS would seem to duplicate seemingly random elements of the insertions and in general behave unwanted when inserting devices or geometries. This is most likely due to state update problems of RWS, because if the WorkCell was inspected, disregarding RWS, there seemed to be no problem at all. In fact, if no swapping was done upon inserting, a state change after the insertion would update the WorkCell of RWS properly, indicating problems with the update mechanism of RWS. Swapping the WorkCell out of RWS when inserting was deemed to be a fine solution to the problem, since it is a pretty cheap action. Though the problem should be inspected more in depth to improve the update mechanism of RWS, this of course is out of scope for this project. 
+However a problem still exists regarding updating the state when deleting frames, as noted in section~\ref{sec:UserInterface}. The Frames view of the Delete tab is not updated properly, even though the frames has been deleted correctly. When a new state change happens the Frames view of the Delete tab is then updated correctly. The interesting point is that if the deleteFrame() slot is rewritten to not be recursive, the problem seems to disappear, though now frames can only be deleted one at a time and only frames with no children. This indicates that there might be some issues with the internal state cache of RWS, which then would have to be looked into to remove the problem when deleting recursively.\\
 
-Problem with the delete updating, possible because of problems with the internal RWS cache of the states. When a new state is signalled the problem is gone. Though the swapping could not save this problem.
+If geometries are created with the same base frame, the objects view will show the name of that frame, because objects are named after the base frame. This will in turn cause problems when deleting objects with the same base frame, because they can't be identified easily. This means no matter which of the objects are chosen for deletion (they all have the same name), the first object created will always be deleted and so forth. A solution to this problem could be to use QMetaType \cite{QMetaType} to declare a custom type compatible with QVariant \cite{QVariant} of the Object class from RWS. Using QVariant to store a copy of the Object will then allow one to set the data of a QListWidgetItem to that QVariant value. A user would then be able to, though a tool tip, when selecting a item from the Object view see all the contents (e.g. models and geometries) of that object. The deleteObj() slot would then have to be extended to check whether the object it is deleting contains the same contents.
 
-Objects should be have unique names. If you insert a box with the same name as a geometry of a device, it is not guaranteed the right object will be deleted.
+\subsection{Future of the Plugin}
+\label{sec:futureOfThePlugin}
+Further work on the user interface would revolve around solving the problems discussed in ~\ref{sec:eiProblems} and generally improving the GUI, while still keeping the GUI intuitive. The settings of the plugin however would also require a revisit, since RWS actually has a settings file. This means that settings of the plugin should be reworked to add its settings to the RWS settings file instead of creating a new file.
+Also a possible extension to add to the plugin would be a feature such as an Undo button, from the nice to have requirements 3, for undoing an insertion/deletion.
 
 
