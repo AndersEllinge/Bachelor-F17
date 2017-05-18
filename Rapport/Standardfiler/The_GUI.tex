@@ -1,6 +1,6 @@
 \section{Dialog Windows}
 \label{sec:DialogWindows}
-The dialog window is the main communication with the user in this plugin. Dialog windows are top-level windows, and they provide the user with either information, or they allow the users to select options to perform a command or task. This section will show how dialog windows has been handled in the plugin.\\
+The dialog window is a great tool to communicate with a user with. Dialog windows are top-level windows, and they provide the user with either information, or they allow the users to select options to perform a command or task. This section will show how dialog windows has been created and made available in this project with the dialog class.\\
 
 \subsection{Using the dialog class}
 The dialog class is fairly simple to use and extend. A dialog is made of blocks in a vertical layout of QWidget's, i.e. a dialog instance is a composite widget containing composite widgets. Figure~\ref{fig:dialogWindowExample} shows a dialog window with four blocks initialised.
@@ -12,7 +12,7 @@ The dialog class is fairly simple to use and extend. A dialog is made of blocks 
 	\label{fig:dialogWindowExample}
 \end{figure}
 
-All the blocks used to create all the dialog windows in the plug-in are shown in figure~\ref{fig:dialogBlocks}. These blocks are just member functions of the dialog class which returns a composite widget. So to create a dialog window as shown on figure~\ref{fig:dialogWindowExample}, a dialog instance should be constructed (in this case with a WorkCell pointer) and then simply adding the blocks to the dialog with the utility member function addToDialog(). See figure~\ref{fig:dialogWindowCode} which shows a code example on how to use the dialog class to construct the dialog window as shown on figure~\ref{fig:dialogWindowExample}. Since the dialog class is a subclass of QDialog, the position of the dialog window (opposed to a normal QDialog object) is always centred to the main application (RWS), even though a parent is passed as a parameter.
+All the blocks available for dialog windows in the dialog class are shown on figure~\ref{fig:dialogBlocks}. These blocks are just member functions of the dialog class which returns a composite widget. So to create a dialog window as shown on figure~\ref{fig:dialogWindowExample}, a dialog instance should be constructed (in this case with a WorkCell pointer) and then simply adding the blocks to the dialog with the utility member function addToDialog(). See figure~\ref{fig:dialogWindowCode} which shows a code example on how to use the dialog class to construct the dialog window as shown on figure~\ref{fig:dialogWindowExample}. Since the dialog class is a subclass of QDialog, the position of the dialog window (opposed to a normal QDialog object) is always centred to the main application (RWS), even though a parent is passed as a parameter.
 
 \begin{figure}[h] % code of adding stuff to a dialog
 \centering
@@ -54,7 +54,7 @@ delete geoDialog; //Delete the dialog object when done using it
 \label{fig:dialogAcceptedRejectedCode} 	
 \end{figure}
 
-As seen on figure~\ref{fig:dialogAcceptedRejectedCode}, after the exec() function returns, we simply check whether the result was QDialog::Accepted or not. If the result is accepted, then something should be done with the inputs given to the dialog window. We access these input via self explanatory public get-functions, e.g. the NameBox contains the name input (as seen on figure~\ref{fig:dialogAcceptedRejectedCode} line 4). After we have collected all the information we wanted out of the dialog window, then we can proceed to do something with the information, like e.g. the insertion of a frame. When we are done with the dialog window it should be deleted, because the dialog object is still alive until the parent is dead (in this case the plugin). If we do not delete the dialog object the dialog objects, created in the lifetime of the plugin, will just waste space in memory. 
+As seen on figure~\ref{fig:dialogAcceptedRejectedCode}, after the exec() function returns, we simply check whether the result was QDialog::Accepted or not. If the result is accepted, then something should be done with the inputs given to the dialog window. We access these input via self explanatory public get-functions, e.g. the NameBox contains the name input (as seen on figure~\ref{fig:dialogAcceptedRejectedCode} line 4). After we have collected all the information we wanted out of the dialog window, then we can proceed to do something with the information, like e.g. the insertion of a frame. When we are done with the dialog window it should be deleted, because the dialog object is still alive until the parent is dead. If we do not delete the dialog object the dialog objects, created in the lifetime of the parent, will just waste space in memory. 
 
 \subsection{Implementaion of the dialog class}
 The dialogs of EasyInsert has been implemented in it's own class dialog.hpp, i.e. a subclass of QDialog, see figure~\ref{fig:subClassQWidget} for an example of a Qt subclass. This was done to keep it independent and self-contained from the rest of the plug-in. The constructor for the dialog class is very simple, see figure~\ref{fig:dialogConstructor}. A constructor with no WorkCell parameter is also available and passing a parent is optional, though a name must always be given to the constructor. 
@@ -121,7 +121,7 @@ After the composite widget has been created, the layout for the parent widget ha
 \end{figure}
 
 \subsection{The future of the dialog class}
-The dialog class can be extended formidably dialog library to create dialog windows for a quite variety of other future plugins or applications. The dialog class could greatly benefit from having more layouts upon construction. As of now, everything has to fit into a vertical layout, but if the class could be extended to support defined layout in the constructor, then a user would be able to customize their dialog windows even further. 
+The dialog class can be extended formidably as a dialog library to create dialog windows for a quite variety of other future plugins or applications. The dialog class could greatly benefit from having more layouts upon construction. As of now, blocks of a dialog window has to fit into a vertical layout, but if the class could be extended to support defined layout in the constructor, then a user would be able to customize their dialog windows even further. 
 
 \clearpage
 
