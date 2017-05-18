@@ -28,6 +28,7 @@ An example of using the loader to add a device can be seen on figure~\ref{fig:Us
 
 
 \subsection{Understanding the XMLRWLoader}
+\label{subsec:XMLRWLoader}
 In order to understand what it takes to load information from an XML-file into the format used in RobWork, it is worth the time to study the XMLRWLoader. Another good reason to study the XMLRWLoader is that it solves a problem very similar to the problem of interest in this chapter. There are only two differences, the XMLRWLoader loads not only devices and it creates a new WorkCell to put the items in.\\
 
 The function of interest from the XMLRWLoader is the loadWorkcell function. This function takes in a single input which is a string containing the path to the XML file describing the WorkCell.\\
