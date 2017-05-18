@@ -67,6 +67,15 @@ Illustrations of the joint device types can be seen on figure~\ref{fig:DeviceTyp
 	\label{fig:DeviceTypes}
 \end{figure}
 
+\subsection{3D Transforms}
+In the RobWork library the general way of moving around frames and other items is through the concept of transforms. For application regarding a 3D euclidean space, it is normal to use 3D transforms. A 3D transform is a 4 by 4 matrix. This matrix is created from a 3 element vector containing the displacement and a 3 by 3 matrix containing the rotation. In RobWork, the rotation is commonly given in roll, pitch and yaw values, which is a way to describe the rotation with 3 values instead of the 3 by 3 matrix. Roll, pitch and yaw is normally refered to as the RPY or R, P, Y values. On figure~\ref{fig:RPYExample} is an illustration of what the RPY values represent using a plane.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.55]{Figures/RPYExample.png}
+	\caption{Illustration of the RPY values using a plane \cite{RPY}}
+	\label{fig:RPYExample}
+\end{figure}
 
 \subsection{States and State Structures}
 In RobWork the structure of the frames are represented through a class called State Structure. The State Structure also holds the state of all the frames in the form of a class called State. The State is a collection of the states of all the frames contained in the State Structure. This is done as a kinematic tree.
