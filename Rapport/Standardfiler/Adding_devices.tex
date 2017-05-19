@@ -142,5 +142,6 @@ Changing the parent for the device has a really simple solution. Remember when r
 
 
 \subsection{The future of the loader}
+\label{subsec:futureLoader}
 As the reader might already have suspected, the loader can be used to add much more than a device. In the case that a XML file with the contains more than a single device, all the other items are also added. This can in some cases be useful, it is however this makes it less intuitive to use the loader. Because of this, one of the more immediate additions to the loader would be to flesh out the functionalities and add catches so the user cannot use the function in an unintended way. The functions, as an example, could be addDevice(...) which adds a single device, addObject(...) which adds a single object described in a XML file and addWC(...) which would add the entire content of another WorkCell described in a XML file to another WorkCell.\\
 The reader might also have noticed that when inserting single device, a lot of the actions are never used. A good example is the first step where the frames not associated with a device are created. This step is unnecessary since there should be none of these frames in the description of a single device. Since the plan would be to create specialized functions, these functions could be optimized by removing the unnecessary parts of the functions.

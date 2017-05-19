@@ -1,5 +1,10 @@
-\section{Plugin Analysis}
-Gaining a better understanding of the design of the plugin based on the user needs and wants, before a development process begins. This chapter goes through the process of understanding the problem that is the basis of the plugin and help specify a generalization of how the solution should look. In the end a specified list of requirements is acquired. These requirements are used to guide the solution and in the end, test the solution.
+\section{Project specification and analysis}
+Now that the a general understanding of the RobWork project and library is attained, the project can be specified. This chapter also goes through the process of understanding the problem that is the basis of the project and help specify a generalization of how the solution should look. In the end a specified list of requirements is acquired. These requirements are used to guide the solution and in the end, test the solution.
+
+\subsection{Specifying the project}
+As briefly mentioned in the introduction, this project is about easing the process of using RobWork and RobWorkStudio. It was agreed upon that this should be done through a plugin to RobWorkStudio, since this would have several benefits. One of the benefits of making a plugin versus coding the solution directly into RobWorkStudio was that compiling and testing would be way faster. Another good reason was that it was determined to create a plugin was that it would be easier to distribute.\\
+
+The way of easing the process of using RobWork, that this project works with, is related to the creation of a environment in RobWork. This means easing the process of adding elements to a WorkCell. Therefore the plugin should, via a user interface, be able to insert RobWork related elements. In this project the elements that were deemed important to work with were, frames, devices and some geometric primitives.
 
 \subsection{Using RobWorkStudio}
 Since we (the authors) had never worked with RWS before. We had no personal experience regarding the problem and had to gather information about how RWS is used before implementing a solution (i.e a plug-in). The primary method to gather this information has been through interviews, to learn about the difficulties and limitations of the current solution/system.
