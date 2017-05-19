@@ -39,9 +39,29 @@ Some of the more concrete functionalities and ideas, that was discussed in the i
 \end{itemize}
 
 \subsection{Defining use cases}
-From the interviews a clearer understanding of the use of RobWorkStudio and some general pointers towards the design of the solution was established. From this some general use cases where made, describing the current use of RWS (with XML files). The use cases created were for adding a frame/geometry, adding a device and deleting an element. The use case for adding a frame/geometry can be seen on figure !!!!!.
+From the interviews a clearer understanding of the use of RobWorkStudio and some general pointers towards the design of the solution was established. From this some general use cases where made, describing the current use of RWS (with XML files). The use cases created were for adding a frame/geometry, adding a device and deleting an element. The use case for adding a frame/geometry can be seen on figure~\ref{fig:currentUseCase}.
 
-Based on these use cases an additional set of use cases were made describing the potential use of the plugin. This set of use cases, combined with the first set of use cases, was used to verify that the creation of the plugin would actually be beneficial for the user. The use case for adding a frame/geometry for the potential use of the plugin can be seen on figure !!!!!.
+\begin{figure}
+\begin{framed}
+\underline{\textbf{Adding a frame/geometry to a WorkCell, current}}\\\\
+\textbf{Main Success Scenario:} The user opens the XML-file describing the WorkCell in an editor. The user then writes the appropriate tag for adding the frame/geometry. The user then writes the appropriate tags for adding the additional information for the frame/geometry. The user then saves the WorkCell XML-file. The user then swaps to/ starts up RobWorkStudio. The user then loads the WorkCell from the XML-file via open in RobWorkStudio.\\\\
+\textbf{Alternate Scenarios:} The user makes an error, the loader or parser catches this error and stops the loading process. The user is informed of the error.
+\end{framed}
+\caption{Use case describing how currently to add a frame/geometry to an environment}
+\label{fig:currentUseCase}
+\end{figure}
+
+Based on these use cases an additional set of use cases were made describing the potential use of the plugin. This set of use cases, combined with the first set of use cases, was used to verify that the creation of the plugin would actually be beneficial for the user. The use case for adding a frame/geometry for the potential use of the plugin can be seen on figure~\ref{fig:pluginUseCase}.
+
+\begin{figure}
+\begin{framed}
+\underline{\textbf{Adding a frame/geometry to a WorkCell, potential plugin}}\\\\
+\textbf{Main Success Scenario:} The user selects the wanted type of frame/geometry. The user then inputs the required information for the selected type of frame/geometry. The frame/geometry is then created and inserted into the WorkCell.\\\\
+\textbf{Alternate Scenarios:} If the user supplied invalid information, the user is informed of the invalid information.
+\end{framed}
+\caption{Use case describing how a plugin would potentially add a frame/geometry to an environment}
+\label{fig:pluginUseCase}
+\end{figure}
 
 \subsection{Requirement specification}
 The requirements are used to specify the solution. The requirements for the project is based on the interviews and the use cases. The requirements have been divided into 2 sections, “need to have” and “nice to have”. The “need to have” requirements are requirements that needs to be fulfilled by the solution and should be verifiable , whereas the “nice to have” requirements should not necessarily be fulfilled and can be more subjective. It was decided, that devices should be described via a XML-file, as it is the standard already in use. It also makes it possible to use the parsers from RobWork to get the information from the device. It was also decided, that the ideas revolving use of the 3D view was ignored, since it would require a lot of research contra the time available to come up with a solution.\\

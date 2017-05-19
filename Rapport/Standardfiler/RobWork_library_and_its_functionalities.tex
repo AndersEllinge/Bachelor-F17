@@ -27,6 +27,7 @@ Dependent joins refer to joints which transform depends on one or multiple other
 
 Frames in a WorkCell are required to have a parent and are given a unique name so that no frames can be confused for another. Only one frame in the WorkCell has no parent. This frame is called WORLD and is created when the WorkCell is constructed. The WORLD frame can be seen as the global 3D euclidean space for the WorkCell.
 
+In RobWork there is also a special kind of frame called a DAF frame. DAF stands for dynamically attachable frame. A DAF frame is a frame which is implemented so that the parent of the frame is more dynamic to change.
 
 \subsection{Objects}
 Contrary to frames which represents the relationships in the environment, objects represents physical things in the scene. Also contrary to frames is that the name of an object does not have to be unique.\\
