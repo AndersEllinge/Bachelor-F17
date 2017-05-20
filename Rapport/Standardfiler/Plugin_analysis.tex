@@ -1,17 +1,19 @@
 \section{Project specification and analysis}
-Now that the a general understanding of the RobWork project and library is attained, the project can be specified. This chapter also goes through the process of understanding the problem that is the basis of the project and help specify a generalization of how the solution should look. In the end a specified list of requirements is acquired. These requirements are used to guide the solution and in the end, test the solution.
+Now that the a general understanding of the RobWork project and library is attained, the project can be specified. This chapter also goes through the process of understanding the problem that is the basis of the project and help specify a generalization of how the solution should look. In the end a specified list of requirements is acquired. These requirements are used to guide the solution and in the end secure a successful project.
 
 \subsection{Specifying the project}
-As briefly mentioned in the introduction, this project is about easing the process of using RobWork and RobWorkStudio. It was agreed upon that this should be done through a plugin to RobWorkStudio, since this would have several benefits. One of the benefits of making a plugin versus coding the solution directly into RobWorkStudio was that compiling and testing would be way faster. Another good reason was that it was determined to create a plugin was that it would be easier to distribute.\\
+As briefly mentioned in the introduction, this project is about easing the process of using RobWork and RobWorkStudio. It was agreed upon that this should be done through a plugin to RobWorkStudio, since this would have several benefits. One of the benefits of making a plugin versus coding the solution directly into RobWorkStudio was that compiling and testing would be faster. Another good reason was that it would be easier to distribute.\\
 
-The way of easing the process of using RobWork, that this project works with, is related to the creation of a environment in RobWork. This means easing the process of adding elements to a WorkCell. Therefore the plugin should, via a user interface, be able to insert RobWork related elements. In this project the elements that were deemed important to work with were, frames, devices and some geometric primitives.
+The way of easing the process of using RobWork, that this project works with, is related to the creation of a environment in RobWork. This means easing the process of adding elements to a WorkCell. Therefore the plugin should, via a user interface, be able to insert RobWork related elements. In this project the elements that were deemed important to work with were, frames, devices and some geometric primitives.\\
 
-\subsection{Using RobWorkStudio}
-Since we (the authors) had never worked with RWS before. We had no personal experience regarding the problem and had to gather information about how RWS is used before implementing a solution (i.e a plug-in). The primary method to gather this information has been through interviews, to learn about the difficulties and limitations of the current solution/system.
+As explained in chapter !!!!! this is usually done through an XML file. Doing it this way is seen by some as a tedious process. As new users ourselves, we also saw the potentially steep learning curve for using XML files. This is unwanted if a new user just wants to, as an example, create simple description of a scene.
 
-The interviews conducted were largely semi-structured interviews, i.e. an open interview with a template for the interviewer to direct the interview in a proper direction. See appendix for the template used, however this template does not truly reflect what was learned from the interview. The reason for this type of interview, was to keep an open mind and try to get as many creative suggestions and inputs on how the interviewees uses RWS and how they alternatively would like to use it. The interviews lasted from 15 minutes to 30 minutes depending on the interviewee.
+\subsection{Analysis of the use of RobWorkStudio}
+Since we (the authors) had never worked with RWS before. We had no personal experience regarding the problem and had to gather information about how RWS is used by current users before implementing a solution. The primary method used to gather this information has been through interviews, to learn about the difficulties and limitations of the current solution/system.
 
-The people interviewed are as follows:
+The interviews conducted were largely semi-structured interviews, i.e. an open interview with a template for the interviewer to direct the interview in a proper direction. See appendix !!!!! for the template used. Be aware that this template does not truly reflect what was learned from the interview. The reason for this type of interview, was to keep an open mind and try to get as many creative suggestions and inputs on how the interviewees uses RWS and how they alternatively would like to use it. The interviews lasted from 15 minutes to 30 minutes depending on the interviewee.
+
+The following people were interviewed:
 
 \begin{labeling}{Thomas Fridolin Iversen}
 \item [Lars-Peter Ellekilde] Lektor at The Mærsk Mc-Kinney Møller Institute, SDU Robotics
@@ -21,8 +23,7 @@ The people interviewed are as follows:
 \item [Kristian Møller Hansen] Student at The Mærsk Mc-Kinney Møller Institute, SDU Robotics
 \end{labeling}
 
-There were a general interest for the problem at hand, since writing XML files and adjusting a WorkCell can be a tedious process. For new users of RWS the problem was clearly recognized, since learning the syntax for the XML files can be quite daunting and slow to get started with. The potential of also being able to show something fast in RWS without having to do much work on setting anything up, was seen as a great asset.
-
+There were a general interest for the problem at hand. The tediousness of writing XML files to adjust a WorkCell was confirmed by some of the interviewees. Some of the interviewees also confirmed the expected problem concerning the learning curve of using XML files, saying it felt quite daunting and slow to get started with. The potential of also being able to show something fast in RWS without having to do much work on setting anything up, was seen as a great asset.\\
 Some of the more concrete functionalities and ideas, that was discussed in the interviews, are summarized in the following bullet points.
 
 \begin{itemize}
@@ -51,20 +52,20 @@ From the interviews a clearer understanding of the use of RobWorkStudio and some
 \label{fig:currentUseCase}
 \end{figure}
 
-Based on these use cases an additional set of use cases were made describing the potential use of the plugin. This set of use cases, combined with the first set of use cases, was used to verify that the creation of the plugin would actually be beneficial for the user. The use case for adding a frame/geometry for the potential use of the plugin can be seen on figure~\ref{fig:pluginUseCase}.
+Based on these use cases an additional set of use cases were made describing the potential use of the solution. This set of use cases, combined with the first set of use cases, was used to verify that the creation of the solution would actually be beneficial for the user. The use case for adding a frame/geometry for the potential use of the solution can be seen on figure~\ref{fig:pluginUseCase}.
 
 \begin{figure}
 \begin{framed}
-\underline{\textbf{Adding a frame/geometry to a WorkCell, potential plugin}}\\\\
+\underline{\textbf{Adding a frame/geometry to a WorkCell, potential solution}}\\\\
 \textbf{Main Success Scenario:} The user selects the wanted type of frame/geometry. The user then inputs the required information for the selected type of frame/geometry. The frame/geometry is then created and inserted into the WorkCell.\\\\
 \textbf{Alternate Scenarios:} If the user supplied invalid information, the user is informed of the invalid information.
 \end{framed}
-\caption{Use case describing how a plugin would potentially add a frame/geometry to an environment}
+\caption{Use case describing how a solution would potentially add a frame/geometry to an environment}
 \label{fig:pluginUseCase}
 \end{figure}
 
 \subsection{Requirement specification}
-The requirements are used to specify the solution. The requirements for the project is based on the interviews and the use cases. The requirements have been divided into 2 sections, “need to have” and “nice to have”. The “need to have” requirements are requirements that needs to be fulfilled by the solution and should be verifiable , whereas the “nice to have” requirements should not necessarily be fulfilled and can be more subjective. It was decided, that devices should be described via a XML-file, as it is the standard already in use. It also makes it possible to use the parsers from RobWork to get the information from the device. It was also decided, that the ideas revolving use of the 3D view was ignored, since it would require a lot of research contra the time available to come up with a solution.\\
+The requirements are used to specify the solution. The requirements for the project is based on the interviews and the use cases. The requirements have been divided into 2 sections, “need to have” and “nice to have”. The “need to have” requirements are requirements that needs to be fulfilled by the solution and should be verifiable , whereas the “nice to have” requirements should not necessarily be fulfilled and can be more subjective. It was decided, that devices should be described via a XML-file, as it is the standard already in use. It also makes it possible to use the parsers from RobWork to get the information from the device. It was also decided, that the ideas revolving use of the 3D view was ignored, since it would require a lot of research contra the time available to come up with a solution. The reason that the solution is should be a plugin is not part of these requirements is that this was agreed upon before starting the project, hence it is seen as an ingrained part of the project instead of a requirement.\\
 
 Need to have requirements:
 \begin{enumerate}
@@ -79,9 +80,9 @@ Need to have requirements:
 		\item The geometries are: Boxes, Planes, Spheres, Cones, Cylinders and Tubes.
 		\item It should be possible for the user to give the geometries an initial placement and rotation.
 	\end{enumerate}
-	\item The user should be able to insert a device described by a XML-file.
+	\item The user should be able to insert a device described by a XML file.
 	\begin{enumerate}
-		\item It should be possible for the user to supply a path to a XML-file containing the description of a device.
+		\item It should be possible for the user to supply a path to a XML file containing the description of a device.
 		\item It should be possible for the user to define the parent frame of the device.
 		\item It should be possible for the user to give the device an initial placement and rotation.
 	\end{enumerate}
@@ -90,10 +91,9 @@ Need to have requirements:
 
 Nice to have requirements:
 \begin{enumerate}
-	\item The GUI of the plugin should be intuitive to use.
-	\begin{enumerate}
-		\item Overview of potential parent frames when inserting a new frame, device.
-	\end{enumerate}
+	\item The user interface of the plugin should be intuitive to use.
 	\item The user should be able to define a library of devices for easier insertion.
 	\item The user should be able to undo an action via a button or a pressing a key sequence (like ctrl + z).
 \end{enumerate}
+
+The following chapters will describe the solution made in regards to these requirements.
