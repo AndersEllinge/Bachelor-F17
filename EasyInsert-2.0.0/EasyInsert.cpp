@@ -1098,24 +1098,12 @@ void EasyInsert::deleteSingleFrame()
             }
         }
 
-        std::vector<rw::models::Object::Ptr> object = wc->getObjects();
-        for (size_t i = 0; i < object.size(); i++) {
-            const std::vector <rw::kinematics::Frame*>& objectFrames = object[i].get()->getFrames();
-            for (size_t j = 0; j < objectFrames.size(); j++) {
-                if (objectFrames[j] == frame) {
-                    wc->removeObject(object[i].get());
-                    break;
-                }
-            }
-        }
+        removeAllObjects(frame,wc);
         if(frame->getName() != "WORLD")
             wc->remove(frame);
 
         getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
 
-
-        //_frameWidget->clear();
-        //showFrameStructure();
     }
     else
         rw::common::Log::log().info() << "select something " << std::endl;
@@ -1170,23 +1158,27 @@ void EasyInsert::deleteChildren(rw::kinematics::Frame* frame, rw::models::WorkCe
                 }
             }
         }
-
-        std::cout << "Removing objects" << std::endl;
-        std::vector<rw::models::Object::Ptr> object = wc->getObjects();
-
-        for (size_t i = 0; i < object.size(); i++) {
-            const std::vector <rw::kinematics::Frame*>& objectFrames = object[i].get()->getFrames();
-
-            for (size_t j = 0; j < objectFrames.size(); j++) {
-                if (objectFrames[j] == frame) {
-                    wc->removeObject(object[i].get());
-                    break;
-                }
-            }
-        }
+        removeAllObjects(frame,wc);
         std::cout << "removing: " << frame->getName() << std::endl;
         wc->remove(frame);
         std::cout << "Removed!" << std::endl;
+    }
+}
+
+void EasyInsert::removeAllObjects(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc)
+{
+    std::cout << "Removing objects" << std::endl;
+    std::vector<rw::models::Object::Ptr> object = wc->getObjects();
+
+    for (size_t i = 0; i < object.size(); i++) {
+        const std::vector <rw::kinematics::Frame*>& objectFrames = object[i].get()->getFrames();
+
+        for (size_t j = 0; j < objectFrames.size(); j++) {
+            if (objectFrames[j] == frame) {
+                wc->removeObject(object[i].get());
+                break;
+            }
+        }
     }
 }
 

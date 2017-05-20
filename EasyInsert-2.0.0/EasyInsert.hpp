@@ -81,6 +81,7 @@ private:
     //void clearTreeContent();
     void clearListContent();
     void update();
+    void removeAllObjects(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc);
     //void registerFrameItem(Frame* frame, QTreeWidgetItem* item);
 
     rw::kinematics::State _state;
