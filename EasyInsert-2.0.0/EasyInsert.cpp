@@ -51,7 +51,8 @@ void EasyInsert::initialize()
 
 void EasyInsert::workcellChangedListener(int notUsed)
 {
-    //QMetaObject::invokeMethod(this, "update", Qt::QueuedConnection);
+    std::cout << "workcell changed " << std::endl;
+    QMetaObject::invokeMethod(this, "update", Qt::QueuedConnection);
 }
 
 void EasyInsert::open(WorkCell* workcell)
@@ -237,20 +238,30 @@ QWidget* EasyInsert::createDeleteTab()
     QGroupBox *delFrameBox = new QGroupBox(tr("Frames:"));
     QGroupBox *delObjBox = new QGroupBox(tr("Objects:"));
     QGridLayout *layoutDev = new QGridLayout();
-    QGridLayout *layoutFrame = new QGridLayout();
     QGridLayout *layoutObj = new QGridLayout();
+    QGridLayout *layoutFrame = new QGridLayout();
+    QVBoxLayout *delButtons = new QVBoxLayout();
 
     _deviceWidget = new QListWidget(this);
-    _frameWidget = new QListWidget(this);
     _objectWidget = new QListWidget(this);
+    _frameWidget = new QListWidget(this);
+    _frameDelBtns = new QWidget();
+
+    QLabel *singleDel = new QLabel(this);
+    singleDel->setText("Single");
+    QLabel *recurvDel = new QLabel(this);
+    recurvDel->setText("Recursive");
+
 
 
     QPushButton *delDevBtn = new QPushButton("Delete",devTab);
     connect(delDevBtn, SIGNAL(clicked()), this, SLOT(deleteDev()));
     QPushButton *delObjBtn = new QPushButton("Delete",devTab);
     connect(delObjBtn, SIGNAL(clicked()), this, SLOT(deleteObj()));
-    QPushButton *delBtn = new QPushButton("Delete",devTab);
-    connect(delBtn, SIGNAL(clicked()), this, SLOT(deleteFrame()));
+    QPushButton *delSingleBtn = new QPushButton("Delete",devTab);
+    connect(delSingleBtn, SIGNAL(clicked()), this, SLOT(deleteSingleFrame()));
+    QPushButton *delRecursiveBtn = new QPushButton("Delete",devTab);
+    connect(delRecursiveBtn, SIGNAL(clicked()), this, SLOT(deleteFrame()));
 
     layoutDev->addWidget(_deviceWidget,0,0);
     layoutDev->addWidget(delDevBtn,0,1);
@@ -260,8 +271,13 @@ QWidget* EasyInsert::createDeleteTab()
     layoutObj->addWidget(delObjBtn,0,1);
     delObjBox->setLayout(layoutObj);
 
+    delButtons->addWidget(singleDel);
+    delButtons->addWidget(delSingleBtn);
+    delButtons->addWidget(recurvDel);
+    delButtons->addWidget(delRecursiveBtn);
+    _frameDelBtns->setLayout(delButtons);
     layoutFrame->addWidget(_frameWidget,0,0);
-    layoutFrame->addWidget(delBtn,0,1);
+    layoutFrame->addWidget(_frameDelBtns,0,1);
     delFrameBox->setLayout(layoutFrame);
 
     verticalLayout->addWidget(delDevBox);
@@ -336,6 +352,7 @@ QWidget* EasyInsert::createDeleteTab()
 
 void EasyInsert::showFrameStructure()
 {
+    std::cout << "showFrameStructure running:" << std::endl;
     clearListContent();
     if (_workcell != NULL) {
         const std::vector<rw::models::Device::Ptr>& devices = _workcell->getDevices();
@@ -381,6 +398,7 @@ void EasyInsert::showFrameStructure()
             QListWidgetItem* deviceItem = new QListWidgetItem();
             _frameWidget->addItem(deviceItem); // own deviceItem
             deviceItem->setText(_frames[i]->getName().c_str());
+            std::cout << "added: " << _frames[i]->getName().c_str() << std::endl;
         }
     }
 
@@ -1057,12 +1075,58 @@ void EasyInsert::movableFrame()
     delete geometriDialog;
 }
 
+void EasyInsert::deleteSingleFrame()
+{
+    if (_frameWidget->currentItem() != NULL) {
+
+        QListWidgetItem* item = _frameWidget->currentItem();
+        rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
+        rw::kinematics::Frame* frame = wc->findFrame(item->text().toStdString());
+
+        rw::models::WorkCell::Ptr dummy = rw::common::ownedPtr(new rw::models::WorkCell("dummy")); // Create dummy wc for swap
+        getRobWorkStudio()->setWorkCell(dummy); // Temporarily swap out wc from rws
+
+        std::vector<rw::kinematics::Frame*> frames = wc->getFrames();
+        int id = frame->getID();
+        if( frames[id]!=NULL ){
+            // check if frame has staticly connected children
+            rw::kinematics::Frame::iterator_pair iter = frames[id]->getChildren();
+            if( iter.first!=iter.second ){
+                getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+                RW_THROW("Frame has staticly connected children and therefore cannot be removed from tree!");
+                return;
+            }
+        }
+
+        std::vector<rw::models::Object::Ptr> object = wc->getObjects();
+        for (size_t i = 0; i < object.size(); i++) {
+            const std::vector <rw::kinematics::Frame*>& objectFrames = object[i].get()->getFrames();
+            for (size_t j = 0; j < objectFrames.size(); j++) {
+                if (objectFrames[j] == frame) {
+                    wc->removeObject(object[i].get());
+                    break;
+                }
+            }
+        }
+        if(frame->getName() != "WORLD")
+            wc->remove(frame);
+
+        getRobWorkStudio()->setWorkCell(wc); // Swap back wc into rws
+
+
+        //_frameWidget->clear();
+        //showFrameStructure();
+    }
+    else
+        rw::common::Log::log().info() << "select something " << std::endl;
+
+}
+
 void EasyInsert::deleteFrame()
 {
     if (_frameWidget->currentItem() != NULL) {
 
         QListWidgetItem* item = _frameWidget->currentItem();
-
         rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell();
         rw::kinematics::Frame* frame = wc->findFrame(item->text().toStdString());
 
@@ -1084,16 +1148,30 @@ void EasyInsert::deleteFrame()
 
 void EasyInsert::deleteChildren(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc)
 {
+    std::cout << "Starting a deleteChild process on " << frame->getName() << std::endl;
     if (frame->getName() != "WORLD") {
         std::vector<rw::kinematics::Frame*> frames = wc->getFrames();
-        rw::kinematics::State state = wc->getDefaultState();
+        int id = frame->getID();
+        std::cout << id << std::endl;
+        if( frames[id]!=NULL ){
+            std::cout << "id != null" << std::endl;
+            rw::kinematics::Frame::iterator_pair iter = frames[id]->getChildren(wc->getDefaultState());
+            std::cout << "crash" << std::endl;
+            std::vector<rw::kinematics::Frame*> children;
+            if ( iter.first!=iter.second){
+                std::cout << "child has childrens!" << std::endl;
+                for (; iter.first!=iter.second; iter.first++) {
+                    rw::kinematics::Frame* child = &(*(iter.first));
+                    children.push_back(child);
+                    std::cout << "found child: "<<child->getName() <<  " ID: "<< child->getID() << std::endl;
+                }
+                for (size_t i = 0; i < children.size(); i++) {
+                    deleteChildren(children[i],wc);
+                }
+            }
+        }
 
-        for (size_t i = 0; i < frames.size(); i++)
-            if (frames[i]->getParent(state) == frame)
-                deleteChildren(frames[i],wc);
-                //if (frames[i]->getParent(state)->getName() =! "WORLD")
-
-
+        std::cout << "Removing objects" << std::endl;
         std::vector<rw::models::Object::Ptr> object = wc->getObjects();
 
         for (size_t i = 0; i < object.size(); i++) {
@@ -1106,7 +1184,9 @@ void EasyInsert::deleteChildren(rw::kinematics::Frame* frame, rw::models::WorkCe
                 }
             }
         }
+        std::cout << "removing: " << frame->getName() << std::endl;
         wc->remove(frame);
+        std::cout << "Removed!" << std::endl;
     }
 }
 
@@ -1144,7 +1224,6 @@ void EasyInsert::deleteDev()
 {
     if (_deviceWidget->currentItem() != NULL) {
         QListWidgetItem* item = _deviceWidget->currentItem();
-
         rw::models::WorkCell::Ptr wc = getRobWorkStudio()->getWorkCell(); // please corret sometime
         rw::common::Ptr <rw::models::Device> device = wc->findDevice(item->text().toStdString());
         //std::vector<rw::models::Object::Ptr> object = wc->getObjects();
@@ -1209,7 +1288,9 @@ void EasyInsert::clearListContent()
 
 void EasyInsert::stateChangedListener(const State& state)
 {
+
     _state = state;
+
     update();
 }
 

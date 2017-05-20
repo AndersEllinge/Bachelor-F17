@@ -89,6 +89,7 @@ private:
     //QTreeWidget* _treeWidget;
     QListWidget* _deviceWidget;
     QListWidget* _frameWidget;
+    QWidget* _frameDelBtns;
     QListWidget* _objectWidget;
 
     QToolBar* _toolBar;
@@ -132,6 +133,7 @@ private slots:
     void tube();
     void fixedFrame();
     void movableFrame();
+    void deleteSingleFrame();
     void deleteFrame();
     void deleteChildren(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc);
     void findChildren(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc);
