@@ -1,4 +1,5 @@
 #include "loader.hpp"
+#include "creator.hpp"
 #include <RobWorkStudio.hpp>
 
 #include <rw/loaders/rwxml/XMLRWParser.hpp>
@@ -780,19 +781,18 @@ std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::P
 
 		// container for actions to execute when all frames and devices has been loaded
 		DummySetup setup;
-	    //setup.scene = ownedPtr(new SceneDescriptor()); // THIS LINE CHANGED
-        setup.scene = wc->getSceneDescriptor();
+	    //setup.scene = ownedPtr(new SceneDescriptor());
+        setup.scene = wc->getSceneDescriptor(); // Reworked to get SceneDescriptor from defined WorkCell
 
 		// Start parsing workcell
-		//boost::shared_ptr<DummyWorkcell> workcell = XMLRWParser::parseWorkcell(filename); // THIS LINE CHANGED
+		//boost::shared_ptr<DummyWorkcell> workcell = XMLRWParser::parseWorkcell(filename);
 		setup.dwc = XMLRWParser::parseWorkcell(filename);
 
-        ///////////////////////////////////////////////////////////////////
-        // RENAMING DEVICE STUFF
+        // Renaming device related stuff ------------------------------------ //
         if (name != "") {
-            setup.dwc->_devlist[0]._name = name; /// FIX DEVICE NAME
+            setup.dwc->_devlist[0]._name = name; /// Renaming device
 
-            /// FIX FRAME SCOPE AND REFFRAME
+            // Fixing frame name and reference frame name
             for (int i = 0; i < setup.dwc->_devlist[0]._frames.size(); i++) {
                 setup.dwc->_devlist[0]._frames[i]._scope.insert(setup.dwc->_devlist[0]._frames[i]._scope.begin(), name); // Add device name as extra scope to frames
                 if (setup.dwc->_devlist[0]._frames[i]._refframe != "WORLD")
@@ -800,7 +800,7 @@ std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::P
                 //rw::common::Log::log().info() << setup.dwc->_devlist[0]._frames[i]._refframe << std::endl;
             }
 
-            // FIX MODELMAP
+            // Fixing model map
             std::vector<std::string> tmpMapFirst;
             std::vector<std::vector<DummyModel>> tmpModelMapSecond;
 
@@ -815,7 +815,7 @@ std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::P
                 setup.dwc->_devlist[0]._modelMap[renameFrameName(tmpMapFirst[i], name)] = tmpModelMapSecond[i];
             }
 
-            /// FIX LIMITMAP
+            // Fixing limit map
             tmpMapFirst.clear();
             std::vector<std::vector<DummyLimit>> tmpLimitMapSecond;
 
@@ -831,7 +831,7 @@ std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::P
             }
 
 
-            /// FIX PROPMAP
+            // Fixing property map
             tmpMapFirst.clear();
             std::vector<std::vector<DummyProperty>> tmpPropertyMapSecond;
 
@@ -846,7 +846,7 @@ std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::P
                 setup.dwc->_devlist[0]._propertyMap[renameFrameName(tmpMapFirst[i], name)] = tmpPropertyMapSecond[i];
             }
         }
-        ///////////////////////////////////////////////////////////////////
+        // ------------------------------------------------------------------ //
 
         /// Redefine starting frame
         setup.dwc->_devlist[0]._frames[0]._refframe = startFrame;
@@ -870,19 +870,19 @@ std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::P
 		}
 
 		// Now build a workcell from the parsed results
-		//setup.tree = new StateStructure(); // THIS LINE CHANGED
-        setup.tree = wc->getStateStructure().get();
-		//setup.world = setup.tree->getRoot(); // THIS LINE CHANGED
-        setup.world = wc->getWorldFrame();
+		//setup.tree = new StateStructure();
+        setup.tree = wc->getStateStructure().get(); // Get tree from defined WorkCell
+		//setup.world = setup.tree->getRoot();
+        setup.world = wc->getWorldFrame(); // Get WORLD from defined WorkCell
 		setup.frameMap[setup.world->getName()] = setup.world;
-        rw::kinematics::Frame* start = wc->findFrame(startFrame);
+        rw::kinematics::Frame* start = wc->findFrame(startFrame); // Add starting frame to frame map
         setup.frameMap[startFrame] = start;
 
-		// Create WorkCell
-		//WorkCell::Ptr wc = ownedPtr(new WorkCell(ownedPtr(setup.tree), setup.dwc->_name, fname)); // THIS LINE CHANGED
-		//wc->setSceneDescriptor(setup.scene); // THIS LINE CHANGED
-		//if(setup.scene) // THIS LINE CHANGED
-		//    setup.scene->setWorkCell(wc); // THIS LINE CHANGED
+		// Create WorkCell (No longer needed)
+		//WorkCell::Ptr wc = ownedPtr(new WorkCell(ownedPtr(setup.tree), setup.dwc->_name, fname));
+		//wc->setSceneDescriptor(setup.scene);
+		//if(setup.scene)
+		//    setup.scene->setWorkCell(wc);
 
 		// first create all frames defined in the workcell
 		for (size_t i = 0; i < setup.dwc->_framelist.size(); i++) {
@@ -1000,8 +1000,7 @@ std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::P
 			collisionSetup = defaultCollisionSetup(*wc);
 		}
 
-        ///////////////////////////////////////////////////////////////////
-        /// FIX OF COLSETUP
+        // Fixing collision setup ------------------------------------------- //
         if (name != "") {
 
             auto exList = collisionSetup.getExcludeList();
@@ -1024,10 +1023,10 @@ std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::P
                 collisionSetup.removeExcludePair(exList[i]);
             }
 
-            collisionSetup.merge(wc->getCollisionSetup()); // MERGE WITH CURRENT SETUP
+            collisionSetup.merge(wc->getCollisionSetup()); // Merge in changes
         }
 
-        ///////////////////////////////////////////////////////////////////
+        // ------------------------------------------------------------------ //
 
 		CollisionSetup::set(collisionSetup, wc);
 
@@ -1063,24 +1062,24 @@ std::string ei::loader::addToWorkCell(std::string fname, rw::models::WorkCell::P
 		// make sure to add the name of the workcell file to the workcell propertymap
 		wc->getPropertyMap().set<std::string>("WorkCellFileName", filename);
 
-		return setup.dwc->_devlist[0]._name;
+		return setup.dwc->_devlist[0]._name; // return name of device
 	} catch (const std::exception& e) {
 		RW_THROW("Could not load WorkCell: " << fname << ". An error occoured:\n " << std::string(e.what()));
 	}
 
-	return "";
+	return ""; // return error name
 }
 
 void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name, std::string startFrame) {
 	ei::loader loader;
-	loader.addToWorkCell(filename, wc, name, startFrame);
+	loader.addToWorkCell(filename, wc, name, startFrame); // Add to WorkCell
 }
 
 void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name, std::string startFrame, rw::math::Transform3D<double> transform) {
     ei::loader loader;
 
 	std::string newName = loader.addToWorkCell(filename, wc, name, startFrame); // Add device to wc
-    if (newName == "")
+    if (newName == "") // Check for error
         return;
 
     rw::kinematics::State state = wc->getDefaultState(); // Get state of wc
@@ -1100,22 +1099,12 @@ void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::st
 }
 
 void ei::loader::add(std::string filename, rw::models::WorkCell::Ptr wc, std::string name, std::string startFrame, double x, double y, double z, double R, double P, double Y) {
-    rw::math::Vector3D<double> displacement(x/100, y/100, z/100);
-
-    rw::math::Rotation3D<double> rotationR(cos(R), sin(R), 0, -sin(R), cos(R), 0, 0, 0, 1);
-    rw::math::Rotation3D<double> rotationY(1, 0, 0, 0, cos(Y), sin(Y), 0, -sin(Y), cos(Y));
-    rw::math::Rotation3D<double> rotationP(cos(P), 0, -sin(P), 0, 1, 0, sin(P), 0, cos(P));
-
-    rw::math::Rotation3D<double> combinedRotation = rw::math::Rotation3D<double>::multiply(rw::math::Rotation3D<double>::multiply(rotationP, rotationR), rotationY);
-
-    rw::math::Transform3D<double> transform(displacement, combinedRotation);
-
-    ei::loader::add(filename, wc, name, startFrame, transform);
+    ei::loader::add(filename, wc, name, startFrame, ei::creator::getTransform3D(x, y, z, R, P, Y)); // Use creator to create transform
 }
 
 rw::models::WorkCell::Ptr ei::loader::load(std::string filename, std::string name) {
     ei::loader loader;
-    rw::models::WorkCell::Ptr wc = rw::common::ownedPtr(new rw::models::WorkCell(name));
-    loader.addToWorkCell(filename, wc, name, "WORLD");
-    return wc;
+    rw::models::WorkCell::Ptr wc = rw::common::ownedPtr(new rw::models::WorkCell(name)); // Create new WorkCell
+    loader.addToWorkCell(filename, wc, name, "WORLD"); // Add information to the new WorkCell
+    return wc; // Return WorkCell
 }
