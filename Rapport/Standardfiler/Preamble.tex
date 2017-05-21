@@ -185,7 +185,7 @@
 % ============== Bilag =============================================
 % ==================================================================
 \newcommand{\startbilag}{		% Kommandoen kaldes i main og opsætter formateringen af bilag
-	\clearpage
+	%\clearpage
 	\appendix
 	\ifthenelse{\equal{\docklasse}{report}}
 		{\hvisdansk%
@@ -193,7 +193,7 @@
 			{\renewcommand{\chaptername}{Appendix}}%
 		}%
 		{}
-	\clearpage
+	%\clearpage
 	\ifthenelse{\equal{\docklasse}{report}}%
 		{\hvisdansk%
 			{\addcontentsline{toc}{chapter}{Bilag}}%
