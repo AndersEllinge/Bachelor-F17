@@ -1,46 +1,60 @@
 \section{Use cases}
 \label{app:useCases}
-Use cases for current use
-Adding a frame/geometry to a WorkCell
-Main Success Scenario: The user opens the XML-file describing the WorkCell in an editor. The user then writes the appropriate tag for adding the frame/geometry. The user then writes the appropriate tags for adding the additional information for the frame/geometry. The user then saves the WorkCell XML-file. The user then swaps to/ starts up RobWorkStudio. The user then loads the WorkCell from the XML-file via open in RobWorkStudio.
+\subsection{Use cases for current use}
+\textbf{Adding a frame/geometry to a WorkCell}
 
-Alternate Scenarios:
-The user makes an error, the loader or parser catches this error and stops the loading process. The user is informed of the error.
+\noindent\textit{Main Success Scenario:} The user opens the XML-file describing the WorkCell in an editor. The user then writes the appropriate tag for adding the frame/geometry. The user then writes the appropriate tags for adding the additional information for the frame/geometry. The user then saves the WorkCell XML-file. The user then swaps to/ starts up RobWorkStudio. The user then loads the WorkCell from the XML-file via open in RobWorkStudio.\\
 
+\noindent\textit{Alternate Scenarios:}
 
-Adding a device to a WorkCell
-Main Success Scenario: The user opens the XML-file describing the WorkCell in an editor. The user uses the include tag to refer to the description of the device from another XML-file. The user then saves the WorkCell XML-file. The user then swaps to/ starts up RobWorkStudio. The user then loads the WorkCell from the XML-file via open in RobWorkStudio.
+\noindent The user makes an error, the loader or parser catches this error and stops the loading process. The user is informed of the error.\\
+\\
 
-Alternate Scenarios:
-The user manually writes the description of the device.
+\noindent\textbf{Adding a device to a WorkCell}
 
-The user makes an error, the loader or parser catches this error and stops the loading process. The user is informed of the error. 
+\noindent\textit{Main Success Scenario:} The user opens the XML-file describing the WorkCell in an editor. The user uses the include tag to refer to the description of the device from another XML-file. The user then saves the WorkCell XML-file. The user then swaps to/ starts up RobWorkStudio. The user then loads the WorkCell from the XML-file via open in RobWorkStudio.\\
 
+\noindent\textit{Alternate Scenarios:} 
 
-Deleting an element
-Main Success Scenario: The user opens the XML-file describing the WorkCell in an editor. 
-The user deletes the tag that resembles the part the user wishes to delete. The user then saves the WorkCell XML-file. The user then swaps to/ starts up RobWorkStudio. The user then loads the WorkCell from the XML-file via open in RobWorkStudio.
+\noindent The user manually writes the description of the device.\\
 
-Alternate Scenarios: 
-The user makes an error, the loader or parser catches this error and stops the loading process. The user is informed of the error.
-Use cases for solution
+\noindent The user makes an error, the loader or parser catches this error and stops the loading process. The user is informed of the error. \\
+\\
 
-Adding a frame/geometry to a WorkCell
-Main Success Scenario: The user selects the wanted type of frame/geometry. The user then inputs the required information for the selected type of frame/geometry. The frame/geometry is then created and inserted into the WorkCell.
+\noindent\textbf{Deleting an element}
 
-Alternate Scenarios:
-If the user supplied invalid information, the user is informed of the invalid information.
+\noindent\textit{Main Success Scenario:} The user opens the XML-file describing the WorkCell in an editor. The user deletes the tag that resembles the part the user wishes to delete. The user then saves the WorkCell XML-file. The user then swaps to/ starts up RobWorkStudio. The user then loads the WorkCell from the XML-file via open in RobWorkStudio.\\
 
-Adding a device to a WorkCell
-Main Success Scenario: The user supplies the description of the device. The user then supplies the information about where the device should be placed and possibly a transform. The user also gives the device a name.
+\noindent\textit{Alternate Scenarios: }
 
-Alternate Scenarios:
-If the user gave the device a name that is already in use, the adding process is stopped and the user is informed of this error.
+\noindent The user makes an error, the loader or parser catches this error and stops the loading process. The user is informed of the error.\\
 
-If the user supplied invalid information, the user is informed of the invalid information.
+\clearpage
+\subsection{Use cases for solution}
 
-Deleting an element
-Main Success Scenario: The user selects the element that the user wishes to delete. The user then initialises the deletion process.
+\noindent\textbf{Adding a frame/geometry to a WorkCell}
 
-Alternate Scenarios:
-If the user supplied invalid information, the user is informed of the invalid information.
+\noindent\textit{Main Success Scenario: }The user selects the wanted type of frame/geometry. The user then inputs the required information for the selected type of frame/geometry. The frame/geometry is then created and inserted into the WorkCell.\\
+
+\noindent\textit{Alternate Scenarios:}
+
+\noindent If the user supplied invalid information, the user is informed of the invalid information.\\
+\\
+
+\noindent\textbf{Adding a device to a WorkCell}
+
+\noindent\textit{Main Success Scenario:} The user supplies the description of the device. The user then supplies the information about where the device should be placed and possibly a transform. The user also gives the device a name.\\
+
+\noindent\textit{Alternate Scenarios:}
+
+\noindent If the user gave the device a name that is already in use, the adding process is stopped and the user is informed of this error.\\
+
+\noindent If the user supplied invalid information, the user is informed of the invalid information.\\
+\\
+
+\noindent\textbf{Deleting an element}
+\noindent\textit{Main Success Scenario:} The user selects the element that the user wishes to delete. The user then initialises the deletion process.\\
+
+\noindent\textit{Alternate Scenarios:}
+
+\noindent If the user supplied invalid information, the user is informed of the invalid information.
