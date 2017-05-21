@@ -1,7 +1,7 @@
 \section{Qt}
 \label{sec:qt}
 %short introduction to the chapter
-Qt, pronounced "cute", is an open source cross-platform framework, mostly used for GUI(graphical user interface) programming. Qt has an easy to (re)use API(application programming interface), which in return gives high developer productivity. QT is C++ class library, hence new developers using Qt should have some understanding of C++.
+Qt, pronounced "cute", is an open source cross-platform framework, mostly used for GUI(graphical user interface) programming. Qt has an easy to (re)use API(application programming interface), which in return gives high developer productivity. Qt is C++ class library, hence new developers using Qt should have some understanding of C++.
 This chapter introduces terminologies used in Qt, and tries to give some general insight to how Qt operates and works regarding GUI development. For more information please refer to \cite{QtDocumentation}.
 
 %Maybe something about licencing and version used.
@@ -20,7 +20,7 @@ Qt broadly uses inheritance to create subclasses of instances in a natural way. 
 	\label{fig:QtHeirachy}
 \end{figure}
 
-C++ offers efficient runtime for a object oriented scheme, but lacks in regard to flexibility due to the static nature of the C++ Object Model. Qt has implemented the QObject as the hearth of the Qt Object Model, which preserve the efficient runtime while also offering more flexibility for the GUI domain. The Qt Object Model is implemented with standard C++ techniques. Some of the features that the Qt Object Model adds are e.g.
+C++ offers efficient runtime for an object oriented scheme, but lacks in regard to flexibility due to the static nature of the C++ Object Model. Qt has implemented the QObject as the hearth of the Qt Object Model, which preserve the efficient runtime while also offering more flexibility for the GUI domain. The Qt Object Model is implemented with standard C++ techniques. Some of the features that the Qt Object Model adds are e.g.
 
 \begin{itemize}
 \item Inter-Object Communication called Signal and Slots in the Qt Object Model. This topic is expanded upon in section~\ref{sec:signalandslots}.
@@ -35,7 +35,7 @@ Due to the Qt Object Model the Meta-Object System was in turn created, which on 
 \item the Q\_OBJECT macro and
 \item the Meta-Object compiler(moc).
 \end{enumerate*}
-Each QObject or subclass of QObject has an instance of QMetaObject created to hold the meta-data information, e.g. the name of the class or the class's meta-methods(signal, slots and other member functions). The Q\_OBJECT macro helps and defines the meta data for the moc at compile time. Please refer to figure~\ref{fig:QtC++BuildProcess} to see influence of the Meta-Object System in compile time.
+Each QObject or subclass of QObject has an instance of QMetaObject created to hold the meta-data information, e.g. the name of the class or the class's meta-methods(signal, slots and other member functions). The Q\_OBJECT macro helps and defines the meta data for the moc at compile time. Please refer to figure~\ref{fig:QtC++BuildProcess} to see the influence of the Meta-Object System in compile time.
 
 \begin{figure}[h]
 	\centering
@@ -69,11 +69,11 @@ QMainWindow is a subclass of QWidget, and is very essential to a Qt GUI applicat
 	\label{fig:QMainWindowExample}
 \end{figure}
 
-QMainWindow is usually a good class to use as the framework for an GUI application, though it is optional whether to use it or not. In the case of RWS, QMainWindow is used, and figure~\ref{fig:QMainWindowExample} nicely reflect the structure of RWS' GUI, where the central widget is a custom subclassed QWidget using Qt GUI modules providing classes for OpenGL integration for graphic rendering. The central widget of RWS will also be referred to as the 3D View. Various plug-ins to RWS are available to be docked in the docking area, or to be top-level windows (more on plug-ins in section~\ref{sec:plugin}) and tool bars and a menu bar are present as well for use.
+QMainWindow is usually a good class to use as the framework for an GUI application, though it is optional whether to use it or not. In the case of RWS, QMainWindow is used, and figure~\ref{fig:QMainWindowExample} nicely reflect the structure of RWS' GUI, where the central widget is a custom subclassed QWidget using Qt GUI modules providing classes for OpenGL integration for graphic rendering. The central widget of RWS will also be referred to as the 3D View. Various plugins to RWS are available to be docked in the docking area, or to be top-level windows (more on plugins in section~\ref{sec:plugin}) and tool bars and a menu bar are present as well for use.
 
 \subsubsection{QLayout}
 \label{sec:QLayout}
-QLayout is a subclass of QObject and QLayoutItem and is the base class of geometry managers. QLaoyt and it's subclasses are managers for the layout of a group of widget laid out in an application. All QWidget subclasses can use layouts to manage it's children e.g. figure~\ref{fig:QWidgetExample} uses the parent widget as composite widget with two composite children. The parent on figure~\ref{fig:QWidgetExample} use a QHBoxLayout, which lines the child widgets horizontally and makes each child fill one box. The children then has their own QVBoxLayout, which lines their children (grand children) vertically and assign each of those their own box as well. Figure~\ref{fig:QLayoutCode} shows how an implementation of five arbitrary widgets laid in the layout as in figure~\ref{fig:QWidgetExample}.
+QLayout is a subclass of QObject and QLayoutItem and is the base class of geometry managers. QLayout and its subclasses are managers for the layout of a group of widgets laid out in an application. All QWidget subclasses can use layouts to manage it's children e.g. figure~\ref{fig:QWidgetExample} uses the parent widget as composite widget with two composite children. The parent on figure~\ref{fig:QWidgetExample} use a QHBoxLayout, which lines the child widgets horizontally and makes each child fill one box. The children then has their own QVBoxLayout, which lines their children (grand children) vertically and assign each of those their own box as well. Figure~\ref{fig:QLayoutCode} shows how an implementation of five arbitrary widgets laid in the layout as in figure~\ref{fig:QWidgetExample}.
 
 \begin{figure}[h]
 \centering
@@ -103,7 +103,7 @@ cR->setLayout(cRL);
 \label{sec:signalandslots}
 Signals and slots are one of the more unique features provided by Qt, compared to other GUI frameworks. Signals and slots are used for inter-object communication, and it is made possible by the meta-object system (see section~\ref{sec:TheMetaObjectSystem}).The Signal and Slot mechanism is similar to callbacks, which basically are function pointers passed as arguments to other code, that is expected to call back the argument at some time. Qt made signals and slots instead of using callbacks to provide simplicity and ensure type-correctness of callback arguments.
 
-The Signal and Slot mechanism, see figure~\ref{fig:SignalAndSlots}, can be thought of as an implementation of the Observer Pattern PUT SOME REFERNCE HERE. A widget or object (the subject) can emit signals when particular events occurs, these signals can then be connected to slots of other objects (the observers). This means, when an object emits a signal, the connected object(s) slot will be called and executed. A signal can be connected to as many slots is needed, and slot vice versa. A slot does not know if it has a signal connected to it, and an object does not know if anything receives its signals.   
+The Signal and Slot mechanism, see figure~\ref{fig:SignalAndSlots}, can be thought of as an implementation of the Observer Pattern. A widget or object (the subject) can emit signals when particular events occurs, these signals can then be connected to slots of other objects (the observers). This means, when an object emits a signal, the connected object(s) slot will be called and executed. A signal can be connected to as many slots as needed, and slots can have as many signals connected to it as needed. A slot does not know if it has a signal connected to it, and an object does not know if anything receives its signals.   
 
 \begin{figure}[h]
 	\centering
@@ -130,40 +130,41 @@ signals:
 	void signal1();
 }
 \end{lstlisting}
-\caption{This is the .h file for an arbitrary object subclass of QWidget. It shows how the object can be constructed with a parent. The object also has the macro Q\_OBJECT the moc to define the slot and signal.}
+\caption{This is the .h file for an arbitrary object subclass of QWidget. It shows how the object can be constructed with a parent. The object also has the macro Q\_OBJECT to help the moc define the slot and signal.}
 \label{fig:subClassQWidget} 	
 \end{figure}
 
 The Signal and Slot mechanism is independent of any GUI event loop. That means that any QThread, inherited by QObject, runs its own event loop and  has no influence on the signal/slot mechanism, though it should be noted that using direct connections, where sender and receiver live in different threads, can be unsafe.
 
-\begin{figure}[h]
-\centering
-\lstset{language=C++} 
-\begin{lstlisting}[frame=single]  
-connect(ObjectA, SIGNAL(Signal1()), ObjectB, SLOT(Slot1()));
-connect(ObjectA, SIGNAL(Signal2()), ObjectB, SLOT(Slot2()));
-connect(ObjectA, SIGNAL(Signal1()), ObjectC, SLOT(Slot1()));
-\end{lstlisting}
-\caption{An example of how to connect ObjectA to Slot1 and Slot2 of ObjectB and Slot1 of ObjectC from figure~\ref{fig:SignalAndSlots}.}
-\label{fig:connect} 	
-\end{figure}
+
+%\begin{figure}[h]
+%\centering
+%\lstset{language=C++} 
+%\begin{lstlisting}[frame=single]  
+%connect(ObjectA, SIGNAL(Signal1()), ObjectB, SLOT(Slot1()));
+%connect(ObjectA, SIGNAL(Signal2()), ObjectB, SLOT(Slot2()));
+%connect(ObjectA, SIGNAL(Signal1()), ObjectC, SLOT(Slot1()));
+%\end{lstlisting}
+%\caption{An example of how to connect ObjectA to Slot1 and Slot2 of ObjectB and Slot1 of ObjectC from figure~\ref{fig:SignalAndSlots}.}
+%\label{fig:connect} 	
+%\end{figure}
 
 
-\subsection{Plug-in}
+\subsection{Plugin}
 \label{sec:plugin}
-Qt has a low-level API for extending Qt applications. This means that it is possible to make a custom widget(plug-in), which can dynamically be loaded in and out of the application. E.g. if the application lacks a user functionality, then it can be written without changing the main application. This is nice, because then third-party developers can easily extend the application while keeping it separate from the source code of the application.\\
+Qt has a low-level API for extending Qt applications. This means that it is possible to make a custom widget(plugin), which can dynamically be loaded in and out of the application. E.g. if the application lacks a user functionality, then it can be written without changing the main application. This is nice, because then third-party developers can easily extend the application while keeping it separate from the source code of the application.\\
 
-Qt plug-ins are stored as shared libraries (.so for linux), and are loaded on runtime with QPluginLoader. Though to extend a application with plug-ins, the application need to define a set of interfaces (these need to pure virtual functions), so that the plug-ins can communicate with the application. Further more, the moc should be made aware of the interface with Q\_DECLARE\_INTERFACE() in the header file of the defined set of interfaces. Lastly qobject\_cast() should be used to test whether a plug-in interfaces correctly to the application. See figure~\ref{fig:plugin} for an illustration of how RWS uses plug-ins.\\
+Qt plugins are stored as shared libraries (.so for linux), and are loaded on runtime with QPluginLoader. Though to extend an application with plugins, the application need to define a set of interfaces (these need to pure virtual functions), so that the plugins can communicate with the application. Further more, the moc should be made aware of the interface with Q\_DECLARE\_INTERFACE() in the header file of the defined set of interfaces. Lastly qobject\_cast() should be used to test whether a plugin interfaces correctly to the application. See figure~\ref{fig:plugin} for an illustration of how RWS uses plugins.\\
 
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.55]{Figures/pluginRWS.png}
-	\caption{RWS has a class RobWorkStudioPlugin to define the interfaces for plug-ins to RWS. The plug-in is then loaded into RWS, with the QPluginLoader class, and tested for interface compatibility with qobject\_cast().}
+	\caption{RWS has a class RobWorkStudioPlugin to define the interfaces for plugins to RWS. The plugin is then loaded into RWS, with the QPluginLoader class, and tested for interface compatibility with qobject\_cast().}
 	\label{fig:plugin}
 \end{figure}
 
-Creating a plug-in involves declaring the plug-in class inherited by QObject and the interfaces the plug-in wants to provide. The plug-in then need to use the Q\_INTERFACES() macro to tell the moc about the interfaces. With the Q\_PLUGING\_METADATA() macro the plug-in is exported, the macro instantiates the meta-data. The build process of the plug-in should then be appropriate using any preferred method. (E.g. CMake.)
+Creating a plugin involves declaring the plugin class inherited by QObject and the interfaces the plugin wants to provide. The plugin then need to use the Q\_INTERFACES() macro to tell the moc about the interfaces. With the Q\_PLUGIN\_METADATA() macro the plugin is exported, the macro instantiates the meta-data. The build process of the plugin should then be appropriate using any preferred method. (E.g. CMake.)
 
 
 

@@ -1,0 +1,46 @@
+\section{Use cases}
+\label{app:useCases}
+Use cases for current use
+Adding a frame/geometry to a WorkCell
+Main Success Scenario: The user opens the XML-file describing the WorkCell in an editor. The user then writes the appropriate tag for adding the frame/geometry. The user then writes the appropriate tags for adding the additional information for the frame/geometry. The user then saves the WorkCell XML-file. The user then swaps to/ starts up RobWorkStudio. The user then loads the WorkCell from the XML-file via open in RobWorkStudio.
+
+Alternate Scenarios:
+The user makes an error, the loader or parser catches this error and stops the loading process. The user is informed of the error.
+
+
+Adding a device to a WorkCell
+Main Success Scenario: The user opens the XML-file describing the WorkCell in an editor. The user uses the include tag to refer to the description of the device from another XML-file. The user then saves the WorkCell XML-file. The user then swaps to/ starts up RobWorkStudio. The user then loads the WorkCell from the XML-file via open in RobWorkStudio.
+
+Alternate Scenarios:
+The user manually writes the description of the device.
+
+The user makes an error, the loader or parser catches this error and stops the loading process. The user is informed of the error. 
+
+
+Deleting an element
+Main Success Scenario: The user opens the XML-file describing the WorkCell in an editor. 
+The user deletes the tag that resembles the part the user wishes to delete. The user then saves the WorkCell XML-file. The user then swaps to/ starts up RobWorkStudio. The user then loads the WorkCell from the XML-file via open in RobWorkStudio.
+
+Alternate Scenarios: 
+The user makes an error, the loader or parser catches this error and stops the loading process. The user is informed of the error.
+Use cases for solution
+
+Adding a frame/geometry to a WorkCell
+Main Success Scenario: The user selects the wanted type of frame/geometry. The user then inputs the required information for the selected type of frame/geometry. The frame/geometry is then created and inserted into the WorkCell.
+
+Alternate Scenarios:
+If the user supplied invalid information, the user is informed of the invalid information.
+
+Adding a device to a WorkCell
+Main Success Scenario: The user supplies the description of the device. The user then supplies the information about where the device should be placed and possibly a transform. The user also gives the device a name.
+
+Alternate Scenarios:
+If the user gave the device a name that is already in use, the adding process is stopped and the user is informed of this error.
+
+If the user supplied invalid information, the user is informed of the invalid information.
+
+Deleting an element
+Main Success Scenario: The user selects the element that the user wishes to delete. The user then initialises the deletion process.
+
+Alternate Scenarios:
+If the user supplied invalid information, the user is informed of the invalid information.

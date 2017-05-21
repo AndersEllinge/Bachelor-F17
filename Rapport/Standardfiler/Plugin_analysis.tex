@@ -1,17 +1,18 @@
 \section{Project specification and analysis}
+\label{sec:projectSpecification}
 Now that the a general understanding of the RobWork project and library is attained, the project can be specified. This chapter also goes through the process of understanding the problem that is the basis of the project and help specify a generalization of how the solution should look. In the end a specified list of requirements is acquired. These requirements are used to guide the solution and in the end secure a successful project.
 
 \subsection{Specifying the project}
 As briefly mentioned in the introduction, this project is about easing the process of using RobWork and RobWorkStudio. It was agreed upon that this should be done through a plugin to RobWorkStudio, since this would have several benefits. One of the benefits of making a plugin versus coding the solution directly into RobWorkStudio was that compiling and testing would be faster. Another good reason was that it would be easier to distribute.\\
 
-The way of easing the process of using RobWork, that this project works with, is related to the creation of a environment in RobWork. This means easing the process of adding elements to a WorkCell. Therefore the plugin should, via a user interface, be able to insert RobWork related elements. In this project the elements that were deemed important to work with were, frames, devices and some geometric primitives.\\
+The way of easing the process of using RobWork, that this project works with, is related to the creation of an environment in RobWork. This means easing the process of adding elements to a WorkCell. Therefore the plugin should, via a user interface, be able to insert RobWork related elements. In this project the elements that were deemed important to work with were, frames, devices and some geometric primitives.\\
 
-As explained in chapter !!!!! this is usually done through an XML file. Doing it this way is seen by some as a tedious process. As new users ourselves, we also saw the potentially steep learning curve for using XML files. This is unwanted if a new user just wants to, as an example, create simple description of a scene.
+As explained in chapter~\ref{subsec:RWSAndXML} this is usually done through an XML file. Doing it this way is seen by some as a tedious process. As new users ourselves, we also saw the potentially steep learning curve for using XML files. This is unwanted if a new user just wants to, as an example, create a simple model of an environment.
 
 \subsection{Analysis of the use of RobWorkStudio}
-Since we (the authors) had never worked with RWS before. We had no personal experience regarding the problem and had to gather information about how RWS is used by current users before implementing a solution. The primary method used to gather this information has been through interviews, to learn about the difficulties and limitations of the current solution/system.
+Since we (the authors) had never worked with RobWorkStudio before. We had no personal experience regarding the problem and had to gather information about how RobWorkStudio is used by current users before implementing a solution. The primary method used to gather this information has been through interviews, to learn about the difficulties and limitations of the current solution/system.
 
-The interviews conducted were largely semi-structured interviews, i.e. an open interview with a template for the interviewer to direct the interview in a proper direction. See appendix !!!!! for the template used. Be aware that this template does not truly reflect what was learned from the interview. The reason for this type of interview, was to keep an open mind and try to get as many creative suggestions and inputs on how the interviewees uses RWS and how they alternatively would like to use it. The interviews lasted from 15 minutes to 30 minutes depending on the interviewee.
+The interviews conducted were largely semi-structured interviews, i.e. an open interview with a template for the interviewer to direct the interview in a proper direction. See appendix~\ref{app:interviewTemp} for the template used. Be aware that this template does not truly reflect what was learned from the interview. The reason for this type of interview, was to keep an open mind and try to get as many creative suggestions and inputs on how the interviewees uses RobWorkStudio and how they alternatively would like to use it. The interviews lasted from 15 minutes to 30 minutes depending on the interviewee.
 
 The following people were interviewed:
 
@@ -40,19 +41,19 @@ Some of the more concrete functionalities and ideas, that was discussed in the i
 \end{itemize}
 
 \subsection{Defining use cases}
-From the interviews a clearer understanding of the use of RobWorkStudio and some general pointers towards the design of the solution was established. From this some general use cases where made, describing the current use of RWS (with XML files). The use cases created were for adding a frame/geometry, adding a device and deleting an element. The use case for adding a frame/geometry can be seen on figure~\ref{fig:currentUseCase}.
+From the interviews a clearer understanding of the use of RobWorkStudio and some general pointers towards the design of the solution was established. From this some general use cases were made, describing the current use of RobWorkStudio (with XML files). The use cases created were for adding a frame/geometry, adding a device and deleting an element. The use case for adding a frame/geometry can be seen on figure~\ref{fig:currentUseCase}.
 
 \begin{figure}
 \begin{framed}
 \underline{\textbf{Adding a frame/geometry to a WorkCell, current}}\\\\
-\textbf{Main Success Scenario:} The user opens the XML-file describing the WorkCell in an editor. The user then writes the appropriate tag for adding the frame/geometry. The user then writes the appropriate tags for adding the additional information for the frame/geometry. The user then saves the WorkCell XML-file. The user then swaps to/ starts up RobWorkStudio. The user then loads the WorkCell from the XML-file via open in RobWorkStudio.\\\\
+\textbf{Main Success Scenario:} The user opens the XML file describing the WorkCell in an editor. The user then writes the appropriate tag for adding the frame/geometry. The user then writes the appropriate tags for adding the additional information for the frame/geometry. The user then saves the WorkCell XML file. The user then swaps to/ starts up RobWorkStudio. The user then loads the WorkCell from the XML file via open in RobWorkStudio.\\\\
 \textbf{Alternate Scenarios:} The user makes an error, the loader or parser catches this error and stops the loading process. The user is informed of the error.
 \end{framed}
 \caption{Use case describing how currently to add a frame/geometry to an environment}
 \label{fig:currentUseCase}
 \end{figure}
 
-Based on these use cases an additional set of use cases were made describing the potential use of the solution. This set of use cases, combined with the first set of use cases, was used to verify that the creation of the solution would actually be beneficial for the user. The use case for adding a frame/geometry for the potential use of the solution can be seen on figure~\ref{fig:pluginUseCase}.
+Based on these use cases an additional set of use cases were made describing the potential use of the solution. This set of use cases, combined with the first set of use cases, was used to verify that the creation of the solution would actually be beneficial for the user. The use case for adding a frame/geometry for the potential use of the solution can be seen on figure~\ref{fig:pluginUseCase}. The rest the use cases for both current use and the potential solution can be seen in appendix~\ref{app:useCases}.
 
 \begin{figure}
 \begin{framed}
@@ -65,7 +66,7 @@ Based on these use cases an additional set of use cases were made describing the
 \end{figure}
 
 \subsection{Requirement specification}
-The requirements are used to specify the solution. The requirements for the project is based on the interviews and the use cases. The requirements have been divided into 2 sections, “need to have” and “nice to have”. The “need to have” requirements are requirements that needs to be fulfilled by the solution and should be verifiable , whereas the “nice to have” requirements should not necessarily be fulfilled and can be more subjective. It was decided, that devices should be described via a XML-file, as it is the standard already in use. It also makes it possible to use the parsers from RobWork to get the information from the device. It was also decided, that the ideas revolving use of the 3D view was ignored, since it would require a lot of research contra the time available to come up with a solution. The reason that the solution is should be a plugin is not part of these requirements is that this was agreed upon before starting the project, hence it is seen as an ingrained part of the project instead of a requirement.\\
+The requirements are used to specify the solution. The requirements for the project is based on the interviews and the use cases. The requirements have been divided into 2 sections, “need to have” and “nice to have”. The “need to have” requirements are requirements that needs to be fulfilled by the solution and should be verifiable, whereas the “nice to have” requirements should not necessarily be fulfilled and can be more subjective. It was decided, that devices should be described via a XML file, as it is the standard already in use. It also makes it possible to use the parsers from RobWork to get the information from the device. It was also decided, that the ideas revolving use of the 3D view was ignored, since it would require a lot of research contra the time available to come up with a solution. The requirement that the solution should be done as a plugin is not part of these requirements since this was agreed upon before starting the project, hence it is seen as an ingrained part of the project instead of a requirement.\\
 
 Need to have requirements:
 \begin{enumerate}
