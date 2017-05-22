@@ -13,7 +13,7 @@ dialog::dialog(QString dialog, QWidget *parent)
 
     setLayout(mainLayout);
 
-    setWindowTitle(dialog);
+    setWindowTitle(dialog); //title of the dialog window
 
 }
 
@@ -25,55 +25,55 @@ dialog::dialog(rw::models::WorkCell::Ptr wc, QString dialog, QWidget *parent)
 
     mainLayout = new QVBoxLayout();
 
-    setWindowTitle(dialog);
+    setWindowTitle(dialog); //title of the dialog window
 
 }
 
 void dialog::addToDialog(QWidget *widget)
 {
-    mainLayout->addWidget(widget);
+    mainLayout->addWidget(widget); //add the widget to the main layout
     setLayout(mainLayout);
 }
 
 QWidget* dialog::createButtonBox()
 {
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel); //create ok and cancel buttons
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept())); //ok --> accept
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject())); //cancel --> reject
 
     return buttonBox;
 }
 
 QWidget* dialog::createNameBox()
 {
-    QGroupBox* nameBox = new QGroupBox(tr("Name"));
-    QHBoxLayout *layout = new QHBoxLayout;
+    QGroupBox* nameBox = new QGroupBox(tr("Name")); //container widget, has name and a frame
+    QHBoxLayout *layout = new QHBoxLayout; //layout for the container widget
 
-    nameLine = new QLineEdit();
-    layout->addWidget(nameLine);
+    nameLine = new QLineEdit(); // a line edit to type in
+    layout->addWidget(nameLine); //add to container wiget
 
-    nameBox->setLayout(layout);
+    nameBox->setLayout(layout); //set container layout
 
     return nameBox;
 }
 
 QWidget* dialog::createCheckFramesBox()
 {
-    QGroupBox* checkBox = new QGroupBox(tr("Configurations:"));
-    QGridLayout *layout = new QGridLayout();
-    QButtonGroup *group = new QButtonGroup();
+    QGroupBox* checkBox = new QGroupBox(tr("Configurations:")); //container widget, has name and a frame
+    QGridLayout *layout = new QGridLayout(); // layout for the container widget
+    QButtonGroup *group = new QButtonGroup();  //check able buttons.
 
 
-    checkFrames[0] = new QCheckBox("New Moveable Frame",this);
-    checkFrames[1] = new QCheckBox("Existing Frame",this);
+    checkFrames[0] = new QCheckBox("New Moveable Frame",this);//we need 2 check buttons
+    checkFrames[1] = new QCheckBox("Existing Frame",this);//we ned 2 check buttons
 
-    group->addButton(checkFrames[0]);
-    group->addButton(checkFrames[1]);
+    group->addButton(checkFrames[0]); // add them to the group
+    group->addButton(checkFrames[1]); // add the to the group
 
-    checkFrames[0]->setChecked(true);
+    checkFrames[0]->setChecked(true); //we allways want one true, exclusive by default
 
-    layout->addWidget(checkFrames[0],0,0);
-    layout->addWidget(checkFrames[1],0,1);
+    layout->addWidget(checkFrames[0],0,0);//add button
+    layout->addWidget(checkFrames[1],0,1);//add button
 
     checkBox->setLayout(layout);
 
@@ -85,7 +85,7 @@ QWidget* dialog::createConfigurationBox()
     QGroupBox* configuration = new QGroupBox(tr("Configurations:"));
     QGridLayout *layout = new QGridLayout();
 
-    QLabel *labels[6];
+    QLabel *labels[6]; //create some labels so we can identify stuff
 
     labels[0] = new QLabel(tr("X"));
     labels[1] = new QLabel(tr("Y"));
@@ -94,27 +94,23 @@ QWidget* dialog::createConfigurationBox()
     labels[4] = new QLabel(tr("Pitch"));
     labels[5] = new QLabel(tr("Yaw"));
 
-    doubleSpinBoxes[0] = makeDoubleSpinBox();
+    doubleSpinBoxes[0] = makeDoubleSpinBox();   //make all the clickie things to increase the value
     doubleSpinBoxes[1] = makeDoubleSpinBox();
     doubleSpinBoxes[2] = makeDoubleSpinBox();
     doubleSpinBoxes[3] = makeDoubleSpinBox();
     doubleSpinBoxes[4] = makeDoubleSpinBox();
     doubleSpinBoxes[5] = makeDoubleSpinBox();
 
-    for (size_t i = 0; i < 3; i++) {
+    for (size_t i = 0; i < 3; i++) {    //adding the x y z label and spinbox
         layout->addWidget(labels[i], i, 0);
         layout->addWidget(doubleSpinBoxes[i], i, 1);
-        //layout->setAlignment(labels[i], Qt::AlignRight);
-        //layout->setAlignment(doubleSpinBoxes[i], Qt::AlignLeft);
     }
-    for (size_t i = 3; i < 6; i++) {
+    for (size_t i = 3; i < 6; i++) { //adding the RPY label and spinbox
         layout->addWidget(labels[i], i-3, 2);
         layout->addWidget(doubleSpinBoxes[i], i-3, 3);
-        //layout->setAlignment(labels[i], Qt::AlignRight);
-        //layout->setAlignment(doubleSpinBoxes[i], Qt::AlignLeft);
     }
 
-    layout->setColumnStretch(1, 10);
+    layout->setColumnStretch(1, 10); //fixed size
     layout->setColumnStretch(3, 10);
     configuration->setLayout(layout);
 
@@ -141,9 +137,6 @@ QWidget* dialog::createConfigurationBoxCube()
         layout->addWidget(labels[i], i, 0);
         layout->addWidget(doubleSpinBoxesGeometires[i], i, 1);
     }
-
-    //layout->setColumnStretch(1, 10);
-    //layout->setColumnStretch(2, 20);
     configurationCube->setLayout(layout);
 
     return configurationCube;
@@ -163,9 +156,6 @@ QWidget* dialog::createConfigurationBoxSphere()
     layout->addWidget(labels, 0, 0);
     layout->addWidget(doubleSpinBoxesGeometires[0], 0, 1);
 
-
-    //layout->setColumnStretch(1, 10);
-    //layout->setColumnStretch(2, 20);
     configurationSphere->setLayout(layout);
 
     return configurationSphere;
@@ -190,9 +180,6 @@ QWidget* dialog::createConfigurationBoxCone()
     layout->addWidget(labels[1], 1, 0);
     layout->addWidget(doubleSpinBoxesGeometires[1], 1, 1);
 
-
-    //layout->setColumnStretch(1, 10);
-    //layout->setColumnStretch(2, 20);
     configurationCone->setLayout(layout);
 
     return configurationCone;
@@ -222,9 +209,6 @@ QWidget* dialog::createConfigurationBoxTube()
     layout->addWidget(labels[2], 2, 0);
     layout->addWidget(doubleSpinBoxesGeometires[2], 2, 1);
 
-
-    //layout->setColumnStretch(1, 10);
-    //layout->setColumnStretch(2, 20);
     configurationCone->setLayout(layout);
 
     return configurationCone;
@@ -232,39 +216,28 @@ QWidget* dialog::createConfigurationBoxTube()
 
 QWidget* dialog::createLibSettingsBox(rw::common::PropertyMap *map)
 {
-    //setupSettings();
-    _settingsMap = map;
-    //QSignalMapper *signalMapper = new QSignalMapper(this);
+    _settingsMap = map; //the propertymap
 
-    //QLineEdit *pathLine[3];
-    QPushButton* btns;
-    QLabel *labels;
+    QPushButton* btns;  // the [...] button
+    QLabel *labels; //a label for line edit
     QGroupBox *libSettingsbox = new QGroupBox(tr("Choose path for libraries: "));
     QGridLayout *layout = new QGridLayout();
 
     labels = new QLabel(tr("Devices"));
 
-    pathLine = new QLineEdit();
-    pathLine->setEchoMode(QLineEdit::Normal);
-    pathLine->setReadOnly(true);
+    pathLine = new QLineEdit(); //line edit with the library path
+    pathLine->setReadOnly(true); //must chose the path with the [...] btn
     layout->addWidget(labels, 0, 0);
     layout->addWidget(pathLine, 0, 1);
     btns = new QPushButton("...",this);
     btns->setFixedSize(25,25);
 
-    /*  connect(btns[i], SIGNAL(clicked()), signalMapper, SLOT(map())); // this mapping is used when more than 1 lirbiary is set
-        signalMapper->setMapping(btns[i], i);                           // because you cant pass integers with the slots
-        layout->addWidget(btns[i], i + 1, 2);                           // so to enable this again, remember to add an parameter int to setdirdialog
-
-    connect(signalMapper, SIGNAL(mapped(int)),this, SIGNAL(clicked(int)));
-    connect(this, SIGNAL(clicked(int)),this, SLOT(setDirectoryDialog(int)));
-    */
     layout->addWidget(btns, 0, 2);
     connect(btns, SIGNAL(clicked()),this, SLOT(setDirectoryDialog()));
 
-    QString str1 = _settingsMap->get<std::string>("Devices", "/").c_str();
+    QString str1 = _settingsMap->get<std::string>("Devices", "/").c_str(); //read the settings of the map
 
-    pathLine->setText(str1);
+    pathLine->setText(str1);    // set the path
 
     libSettingsbox->setLayout(layout);
 
@@ -276,12 +249,12 @@ QWidget* dialog::createFrameSelection()
     QGroupBox* selectFrame = new QGroupBox(tr("Select Frame:"));
     QGridLayout *layout = new QGridLayout();
 
-    comboFrames = new QComboBox();
+    comboFrames = new QComboBox(); // drop down select thingie
 
-    std::vector<rw::kinematics::Frame*> frames = _workCell->getFrames();
+    std::vector<rw::kinematics::Frame*> frames = _workCell->getFrames(); // we want to be able to select all frames
 
     for (size_t i = 0; i < frames.size(); i++) {
-        comboFrames->addItem(QString::fromStdString(frames[i]->getName()));
+        comboFrames->addItem(QString::fromStdString(frames[i]->getName())); //add them all to the combobox
     }
 
     layout->addWidget(comboFrames);
@@ -365,35 +338,20 @@ void dialog::reject()
 
 void dialog::setDirectoryDialog()
 {
-    QString dir = QFileDialog::getExistingDirectory(
+    QString dir = QFileDialog::getExistingDirectory( //this just returns a path the user selectes
 		this,
 		tr("Open Directory"),
        	pathLine->text(),
 	    QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-    //if (i == 0) {
-        //_settingsMap->set<std::string>("Devices", dir.toStdString());
-    //} else if (i == 1) {
-    //    _settingsMap->set<std::string>("Geometries", dir.toStdString());
-    //} else {
-    //    _settingsMap->set<std::string>("Frames", dir.toStdString());
-    //}
 
-    //QString str1 = _settingsMap->get<std::string>("Devices", "/").c_str();
-    //QString str2 = _settingsMap->get<std::string>("Geometries", "/").c_str();
-    //QString str3 = _settingsMap->get<std::string>("Frames", "/").c_str();
-
-    //pathLine->setText(str1);
-    //pathLine[1]->setText(str2);
-    //pathLine[2]->setText(str3);
-
-    if (dir != "") {
-        _settingsMap->set("Devices", dir.toStdString());
-        pathLine->setText(dir);
+    if (dir != "") { //if the user cancels, then nothing is chosen
+        _settingsMap->set("Devices", dir.toStdString()); //update the settings
+        pathLine->setText(dir); //update the path
     }
 
 }
 
-QDoubleSpinBox* dialog::makeDoubleSpinBox()
+QDoubleSpinBox* dialog::makeDoubleSpinBox() //small utility function to help make spinboxes
 {
     QDoubleSpinBox* box = new QDoubleSpinBox();
     box->setDecimals(3);

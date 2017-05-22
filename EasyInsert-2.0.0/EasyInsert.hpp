@@ -4,7 +4,7 @@
 #include <RobWorkStudio.hpp>
 #include <RobWorkStudioConfig.hpp>
 #include <rws/RobWorkStudioPlugin.hpp>
-#include "ui_EasyInsert.h"
+//#include "ui_EasyInsert.h"
 #include "dialog.hpp"
 #include "loader.hpp"
 #include "creator.hpp"
@@ -45,7 +45,7 @@
 
 namespace rw { namespace models { class Device; } }
 
-class EasyInsert: public rws::RobWorkStudioPlugin, private Ui::EasyInsert
+class EasyInsert: public rws::RobWorkStudioPlugin
 {
 
 Q_OBJECT
@@ -64,7 +64,6 @@ public:
 
     virtual void initialize();
 
-    void workcellChangedListener(int notUsed);
 
 
 private:
@@ -75,19 +74,14 @@ private:
     QWidget* createDeleteTab();
     void showFrameStructure();
     void setupFrame(rw::kinematics::Frame& frame, QTreeWidgetItem* parentItem);
-    //void setupDevice(rw::kinematics::Frame& frame, QTreeWidgetItem* parentItem)
     void setupDrawables(rw::kinematics::Frame* frame, QTreeWidgetItem* parent);
-    std::string getFrameName(const rw::kinematics::Frame& frame);
-    //void clearTreeContent();
     void clearListContent();
     void update();
     void removeAllObjects(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc);
-    //void registerFrameItem(Frame* frame, QTreeWidgetItem* item);
 
     rw::kinematics::State _state;
     rw::models::WorkCell* _workcell;
 
-    //QTreeWidget* _treeWidget;
     QListWidget* _deviceWidget;
     QListWidget* _frameWidget;
     QWidget* _frameDelBtns;
@@ -106,20 +100,6 @@ private:
     rw::common::PropertyMap _propMap;
     rw::common::PropertyMap *_settingsMap;
 
-    /*
-    typedef std::map<QTreeWidgetItem*, rw::kinematics::Frame*> FrameMap;
-    FrameMap _frameMap;
-
-    typedef std::map<QTreeWidgetItem*, rw::common::Ptr<rw::graphics::DrawableNode> > DrawableMap;
-    // maintains the drawables that are not constructed and added from this plugin
-    DrawableMap _drawableMap;
-
-    typedef std::map<QTreeWidgetItem*, rw::common::Ptr<rw::models::Device> > DeviceMap;
-    DeviceMap _deviceMap; //not using this anyway it seems
-    */
-
-
-
 
 
 private slots:
@@ -137,7 +117,6 @@ private slots:
     void deleteSingleFrame();
     void deleteFrame();
     void deleteChildren(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc);
-    void findChildren(rw::kinematics::Frame* frame, rw::models::WorkCell::Ptr wc);
     void deleteDev();
     void deleteObj();
 
